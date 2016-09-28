@@ -58,7 +58,7 @@ module.exports = function(RED) {
         
         //const url = `http://localhost:8087/api/${subtype}`;
         rs = request.post({url:url, form: {macaroon:macaroon}})
-               .pipe(stream)
+    	rs.pipe(stream)
     }
 
     function SensingKit(n) {
