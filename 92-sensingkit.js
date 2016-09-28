@@ -57,7 +57,17 @@ module.exports = function(RED) {
         
         //const url = `http://localhost:8087/api/${subtype}`;
         rs = request.post({url:url, form: {macaroon:macaroon}})
-    	rs.pipe(stream)
+        
+        rs.on('error', function(err) {
+        	rs.unpipe(stream);
+        	rs.abort();
+    		console.log('error connecting - retrying in 3s');
+    		console.log(err);
+    		setTimeout(startStreaming(macaroon,stream,subtype), 3000);
+    		
+  		});
+  		
+    	rs.pipe(stream);
     }
 
     function SensingKit(n) {
