@@ -98,6 +98,8 @@ module.exports = function(RED) {
 			}
 			catch(err){
 				console.log(err);
+				console.log("data is");
+				console.log(`[${str.replace("\n","")}]`);
 			}
           }
           done();

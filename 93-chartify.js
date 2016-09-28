@@ -84,6 +84,12 @@ module.exports = function(RED) {
 		this.chart = n.chart;
 		
 		
+		console.log("x type is ");
+		console.log(this.xtype);
+		
+		console.log("y tpe is");
+		console.log(this.ytype);
+		
 		const _options = {
 			title: _isstring(n.title),	
 			xlabel: _isstring(n.xlabel),
