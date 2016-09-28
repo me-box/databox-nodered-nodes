@@ -54,8 +54,13 @@ module.exports = function(RED) {
       
         const url = `http://databox-driver-mobile.store:8080/api/${subtype}`;  
         //const url = `http://localhost:8087/api/${subtype}`;
-        rs = request.post({url:url, form: {macaroon:macaroon}})
-               .pipe(stream)
+        try{
+        	rs = request.post({url:url, form: {macaroon:macaroon}});
+        }catch(err){
+        	console.log(`failed to connect to ${url}`);
+        	return;
+        }	
+        rs.pipe(stream);
     }
 
     function SensingKit(n) {

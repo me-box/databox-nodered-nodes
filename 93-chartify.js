@@ -74,7 +74,6 @@ module.exports = function(RED) {
     
     function Chartify(n) {
     
-    console.log("in chartify node!!!");
         // Create a RED node
         RED.nodes.createNode(this,n);
         
