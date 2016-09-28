@@ -18,8 +18,9 @@
 module.exports = function(RED) {
     
     "use strict";
-     var request = require('request');
-
+    var request = require('request');
+	var rs;
+	
 	function _seen(arr, value){
 		return arr.indexOf(value) != -1;
 	}
@@ -53,7 +54,7 @@ module.exports = function(RED) {
       
         const url = `http://databox-driver-mobile.store:8080/api/${subtype}`;  
         //const url = `http://localhost:8087/api/${subtype}`;
-        request.post({url:url, form: {macaroon:macaroon}})
+        rs = request.post({url:url, form: {macaroon:macaroon}})
                .pipe(stream)
     }
 
@@ -105,6 +106,14 @@ module.exports = function(RED) {
                     startStreaming(body,sensorStream,n.subtype);
         		}
         );
+        
+         
+        this.on("close", function() {
+           	console.log("CLOSING STREAM!!");
+           	sensorStream.end();
+           	console.log("Aborting connection");
+           	rs.abort();
+        });
     }
 
     // Register the node by name. This must be called beforeoverriding any of the
