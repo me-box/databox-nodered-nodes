@@ -51,8 +51,7 @@ module.exports = function(RED) {
 	}
 	
    	function startStreaming(macaroon, stream, subtype){
-        console.log("streaming!");
-        
+      
         const url = `http://databox-driver-mobile.store:8080/api/${subtype}`;  
         console.log(`connecting to ${url}`);
         
@@ -86,7 +85,6 @@ module.exports = function(RED) {
           	try{
 			   const data = JSON.parse(`[${str.replace("\n","")}]`);
 			   const payload = _format_payload(data, n.subtype);
-		   	   console.log(payload);
 			   
 			   node.send({
 					name: node.name || "sensingkit",
@@ -100,6 +98,7 @@ module.exports = function(RED) {
 				console.log(err);
 				console.log("data is");
 				console.log(`[${str.replace("\n","")}]`);
+				str = "";
 			}
           }
           done();

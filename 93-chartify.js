@@ -84,12 +84,6 @@ module.exports = function(RED) {
 		this.chart = n.chart;
 		
 		
-		console.log("x type is ");
-		console.log(this.xtype);
-		
-		console.log("y tpe is");
-		console.log(this.ytype);
-		
 		const _options = {
 			title: _isstring(n.title),	
 			xlabel: _isstring(n.xlabel),
@@ -129,7 +123,7 @@ module.exports = function(RED) {
     
         				payload.values.x = msg.payload[this.xtype[0].name];
         				payload.values.y =  Number(msg.payload[item.name]);	
-        				console.log(payload.values);
+        				
         				node.send({type:this.chart, sourceId: node.id, payload:payload});
         			}
           		});
@@ -148,7 +142,7 @@ module.exports = function(RED) {
         				};
         				payload.values.x = msg.payload[item.name];	
         				
-        				console.log(payload.values);
+        				
         				
         				node.send({type:this.chart, sourceId: node.id, payload:payload});
           			}
