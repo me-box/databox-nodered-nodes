@@ -123,6 +123,7 @@ module.exports = function(RED) {
     
         				payload.values.x = msg.payload[this.xtype[0].name];
         				payload.values.y =  Number(msg.payload[item.name]);	
+        				console.log(payload.values);
         				node.send({type:this.chart, sourceId: node.id, payload:payload});
         			}
           		});
@@ -140,6 +141,9 @@ module.exports = function(RED) {
         					dataid: Date.now(),
         				};
         				payload.values.x = msg.payload[item.name];	
+        				
+        				console.log(payload.values);
+        				
         				node.send({type:this.chart, sourceId: node.id, payload:payload});
           			}
         		});
