@@ -53,7 +53,7 @@ module.exports = function(RED) {
    	function startStreaming(macaroon, stream, subtype){
         console.log("streaming!");
         
-        const url = `http://databox-driver-mobile.store:8080/api/${subtype}`;  
+        const url = `http://databox-driver-mobile.store:8060/api/${subtype}`;  
         console.log(`connecting to ${url}`);
         
         //const url = `http://localhost:8087/api/${subtype}`;
