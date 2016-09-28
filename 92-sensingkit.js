@@ -53,6 +53,8 @@ module.exports = function(RED) {
    	function startStreaming(macaroon, stream, subtype){
         console.log("streaming!");
         const url = `http://databox-driver-mobile.store:8080/api/${subtype}`;  
+        console.log(`connecting to ${url}`);
+        
         //const url = `http://localhost:8087/api/${subtype}`;
         rs = request.post({url:url, form: {macaroon:macaroon}})
                .pipe(stream)
@@ -106,6 +108,11 @@ module.exports = function(RED) {
          
         request.post({url:'http://arbiter:8080/macaroon', form: formData},
                 function optionalCallback(err, httpResponse, body) {
+                	console.log("got body");
+                	console.log(body);
+                	if (err){
+                		console.log(err);
+                	}
                     startStreaming(body,sensorStream,n.subtype);
         		}
         );
