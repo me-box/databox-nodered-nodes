@@ -15,10 +15,10 @@
  **/
 
 
-var ipc;
+
 
 // Sample Node-RED node file
-var sendmessage = function(msg){
+var sendmessage = function(ipc, msg){
     try{
 	   //console.log(msg);
        ipc.of.webserver.emit(
@@ -33,11 +33,11 @@ var sendmessage = function(msg){
 
 module.exports = function(RED) {
     "use strict";
-   
-    ipc = require('node-ipc');
+    
+    var ipc = require('node-ipc');
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
-   
+    ipc.config.silent=true;
     // require any external libraries we may need....
     //var foo = require("foo-library");
 
@@ -49,6 +49,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
 		//'mqtt://mosquitto:1883'
         //client = mqtt.connect('mqtt://mosquitto:1883');
+       
+        
         ipc.connectTo(
             'webserver',
              function(){
@@ -77,7 +79,7 @@ module.exports = function(RED) {
             var msg = {}
 			if (!init){
 				console.log("sending reset!");
-        		sendmessage({channel:node.appId, type:"control", payload:{command:"reset"}});
+        		sendmessage(ipc, {channel:node.appId, type:"control", payload:{command:"reset"}});
         		init = true;
         	}  	
 			msg.channel = node.appId;
@@ -92,7 +94,7 @@ module.exports = function(RED) {
                 data: m.payload, 
             	channel: node.appId, //the websocket room that will receive the msg
             }
-            sendmessage(msg);
+            sendmessage(ipc, msg);
         });
 
         this.on("close", function() {

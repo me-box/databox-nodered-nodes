@@ -86,7 +86,8 @@ module.exports = function(RED) {
           	try{
 			   const data = JSON.parse(`[${str.replace("\n","")}]`);
 			   const payload = _format_payload(data, n.subtype);
-		   
+		   	   console.log(payload);
+			   
 			   node.send({
 					name: node.name || "sensingkit",
 					type: "sensingkit",

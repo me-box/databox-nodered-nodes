@@ -147,7 +147,9 @@ module.exports = function(RED) {
         });
         
         this.on("close", function() {
-           
+           delete this.xtype;
+           delete this.ytype;
+           delete this.chart;
         });
     }
 
