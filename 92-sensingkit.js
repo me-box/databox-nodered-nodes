@@ -52,8 +52,7 @@ module.exports = function(RED) {
 	
    	function startStreaming(macaroon, stream, subtype){
         console.log("streaming!");
-        console.log(process.env);
-        consolel.log(process.env.databox-driver-mobile.store_PORT_8080_TCP_PORT);
+        
         const url = `http://databox-driver-mobile.store:8080/api/${subtype}`;  
         console.log(`connecting to ${url}`);
         
@@ -64,6 +63,7 @@ module.exports = function(RED) {
 
     function SensingKit(n) {
         console.log("in sensing kit!");
+        console.log(process.env);
         
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
         const PORT = process.env.PORT || 8080;
