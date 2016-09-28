@@ -62,8 +62,9 @@ module.exports = function(RED) {
     }
 
     function SensingKit(n) {
-        console.log("in sensing kit!");
-        console.log(process.env);
+        
+        
+        console.log("fresh load of sensing kit");
         
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
         const PORT = process.env.PORT || 8080;
@@ -106,12 +107,10 @@ module.exports = function(RED) {
                 target: 'databox-driver-mobile.store'
         }
         
-        console.log("trying to connect to arbiter url...");
          
         request.post({url:'http://arbiter:8080/macaroon', form: formData},
                 function optionalCallback(err, httpResponse, body) {
-                	console.log("got body");
-                	console.log(body);
+                	
                 	if (err){
                 		console.log(err);
                 	}
@@ -125,6 +124,7 @@ module.exports = function(RED) {
            	sensorStream.end();
            	console.log("Aborting connection");
            	rs.abort();
+        	console.log("done");
         });
     }
 

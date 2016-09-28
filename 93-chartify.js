@@ -74,6 +74,7 @@ module.exports = function(RED) {
     
     function Chartify(n) {
     
+    	console.log("fresh load of chartify");
         // Create a RED node
         RED.nodes.createNode(this,n);
         
@@ -103,7 +104,6 @@ module.exports = function(RED) {
 	
 	
 		this.on('input', function (msg) {
-        	console.log(msg);
         	
           	if (this.xtype && this.ytype){
           		

@@ -43,6 +43,8 @@ module.exports = function(RED) {
 
     // The main node definition - most things happen in here
     function CompanionApp(n) {
+    
+        console.log("fresh load of companion app");
         // Create a RED node
         RED.nodes.createNode(this,n);
 		//'mqtt://mosquitto:1883'
@@ -74,7 +76,7 @@ module.exports = function(RED) {
 			
             var msg = {}
 			if (!init){
-				
+				console.log("sending reset!");
         		sendmessage({channel:node.appId, type:"control", payload:{command:"reset"}});
         		init = true;
         	}  	
