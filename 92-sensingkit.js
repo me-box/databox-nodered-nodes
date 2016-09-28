@@ -51,20 +51,16 @@ module.exports = function(RED) {
 	}
 	
    	function startStreaming(macaroon, stream, subtype){
-      	console.log("starting streaming");
+      
         const url = `http://databox-driver-mobile.store:8080/api/${subtype}`;  
         //const url = `http://localhost:8087/api/${subtype}`;
-        try{
-        	rs = request.post({url:url, form: {macaroon:macaroon}}).pipe(stream);
-        }catch(err){
-        	console.log(`failed to connect to ${url}`);
-        	return;
-        }	
-        //rs.pipe(stream);
+        rs = request.post({url:url, form: {macaroon:macaroon}})
+               .pipe(stream)
     }
 
     function SensingKit(n) {
-       
+        console.log("in sensing kit!");
+        
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
         const PORT = process.env.PORT || 8080;
 
@@ -106,12 +102,10 @@ module.exports = function(RED) {
                 target: 'databox-driver-mobile.store'
         }
         
-        console.log("connecting to arbiter");
+        console.log("trying to connect to arbiter url...");
+         
         request.post({url:'http://arbiter:8080/macaroon', form: formData},
                 function optionalCallback(err, httpResponse, body) {
-                	if (err){
-                		console.log(err);
-                	}
                     startStreaming(body,sensorStream,n.subtype);
         		}
         );
