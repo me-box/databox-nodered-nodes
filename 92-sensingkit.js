@@ -64,7 +64,7 @@ module.exports = function(RED) {
     		console.log(err);
     		setTimeout(function(){
     						startStreaming(macaroon,stream,subtype)
-    				   }, 3000);:
+    				   }, 3000);
   		});
   		
     	rs.pipe(stream);
