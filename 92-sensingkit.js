@@ -59,7 +59,6 @@ module.exports = function(RED) {
         rs = request.post({url:url, form: {macaroon:macaroon}})
         
         rs.on('error', function(err) {
-        	rs.unpipe(stream);
         	rs.abort();
     		console.log('error connecting - retrying in 3s');
     		console.log(err);
