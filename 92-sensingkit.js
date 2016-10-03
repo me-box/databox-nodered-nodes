@@ -62,8 +62,9 @@ module.exports = function(RED) {
         	rs.abort();
     		console.log('error connecting - retrying in 3s');
     		console.log(err);
-    		setTimeout(startStreaming(macaroon,stream,subtype), 3000);
-    		
+    		setTimeout(function(){
+    						startStreaming(macaroon,stream,subtype)
+    				   }, 3000);:
   		});
   		
     	rs.pipe(stream);
