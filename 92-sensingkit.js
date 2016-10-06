@@ -29,7 +29,7 @@ module.exports = function(RED) {
 		
 		if (_seen(["bluetooth"], subtype)){
 			const [ts1, ts, name, address, rssi] = data;	
-			return {id:subtype, ts,name, address,rssi};
+			return {id:subtype, ts, name:`${name}`, address:`${address}`,rssi};
 		}
 		else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], subtype)){
 			const [ts,x,y,z] = data;
@@ -41,7 +41,7 @@ module.exports = function(RED) {
 		}
 		else if (_seen(["battery"], subtype)){
 			const [ts,charge,temperature,voltage,plugged,status,health] = data;
-			return {id:subtype,ts,charge,temperature,voltage,plugged,status,health};
+			return {id:subtype,ts,charge,temperature,voltage,plugged:`${plugged}`,status:`${status}`,health:`${health}`};
 		}
 		else if (_seen(["audio-level", "light"], subtype)){
 			const [ts,value] = data;
