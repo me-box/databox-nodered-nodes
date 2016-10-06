@@ -72,9 +72,6 @@ module.exports = function(RED) {
 
     function SensingKit(n) {
         
-        
-        console.log("fresh load of sensing kit");
-        
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
         const PORT = process.env.PORT || 8080;
 
@@ -93,6 +90,8 @@ module.exports = function(RED) {
 		  
           if (str.indexOf("\n") != -1){
           	try{
+          		console.log("json to parse is ");
+          		console.log(`[${str.replace("\n","")}]`
 			   const data = JSON.parse(`[${str.replace("\n","")}]`);
 			   const payload = _format_payload(data, n.subtype);
 			   
