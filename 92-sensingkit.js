@@ -90,9 +90,10 @@ module.exports = function(RED) {
 		  
           if (str.indexOf("\n") != -1){
           	try{
-          		console.log("json to parse is ");
-          		console.log(`[${str.replace("\n","")}]`
-			   const data = JSON.parse(`[${str.replace("\n","")}]`);
+          	   const data = str.replace("\n","").split(",");
+          	   console.log("data is");
+          	   console.log(data);
+			   //const data = JSON.parse(`[${str.replace("\n","")}]`);
 			   const payload = _format_payload(data, n.subtype);
 			   
 			   node.send({
