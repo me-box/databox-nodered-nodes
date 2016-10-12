@@ -51,8 +51,10 @@ module.exports = function(RED) {
 	}
 	
    	function startStreaming(macaroon, stream, subtype){
-      
-        const url = `http://databox-driver-mobile.store:8080/api/${subtype}`;  
+      	
+      	console.log("starting streaming...");
+      	//databox-driver-mobile.store:8080
+        const url = `http://databox-store-passthrough:8080/api/${subtype}`;  
         console.log(`connecting to ${url}`);
         
         //const url = `http://localhost:8087/api/${subtype}`;
@@ -90,6 +92,7 @@ module.exports = function(RED) {
 		  
           if (str.indexOf("\n") != -1){
           	try{
+          	   console.log(str);
           	   const data = str.replace("\n","").split(",");
         
 			   const payload = _format_payload(data, n.subtype);
@@ -115,14 +118,16 @@ module.exports = function(RED) {
         
         const formData = {
                 token: ARBITER_TOKEN,
-                target: 'databox-driver-mobile.store'
+                //target: 'databox-driver-mobile.store'
+       			target:'databox-store-passthrough'
         }
         
-         
+        console.log("calling arbiter");
         request.post({url:'http://arbiter:8080/macaroon', form: formData},
                 function optionalCallback(err, httpResponse, body) {
-                	
+                	console.log("got response");
                 	if (err){
+                		console.log("error!");
                 		console.log(err);
                 	}
                     startStreaming(body,sensorStream,n.subtype);
