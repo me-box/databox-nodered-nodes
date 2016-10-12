@@ -25,39 +25,39 @@ module.exports = function(RED) {
 		return arr.indexOf(value) != -1;
 	}
 	
-	function _format_payload(data, subtype){
+	function _format_payload(data, sensor){
 		
-		if (_seen(["bluetooth"], subtype)){
+		if (_seen(["bluetooth"], sensor)){
 			const [ts1, ts, name, address, rssi] = data;	
-			return {subtype, ts, name, address, rssi};
+			return {sensor, ts, name, address, rssi};
 		}
-		else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], subtype)){
+		else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], sensor)){
 			const [ts,x,y,z] = data;
-			return {subtype,ts,x,y,z};
+			return {sensor,ts,x,y,z};
 		}
-		else if (_seen(["rotation"], subtype)){
+		else if (_seen(["rotation"], sensor)){
 			const [ts,x,y,z,cos,headingAccuracy] = data;
-			return {subtype,ts,x,y,z,cos,headingAccuracy};
+			return {sensor,ts,x,y,z,cos,headingAccuracy};
 		}
-		else if (_seen(["battery"], subtype)){
+		else if (_seen(["battery"], sensor)){
 			const [ts,charge,temperature,voltage,plugged,status,health] = data;
-			return {subtype,ts,charge,temperature,voltage,plugged,status,health};
+			return {sensor,ts,charge,temperature,voltage,plugged,status,health};
 		}
-		else if (_seen(["audio-level", "light"], subtype)){
+		else if (_seen(["audio-level", "light"], sensor)){
 			const [ts,value] = data;
-			return {subtype,ts, value};
+			return {sensor,ts, value};
 		}
 		return {};
 	}
 	
-   	function startStreaming(macaroon, stream, subtype){
+   	function startStreaming(macaroon, stream, sensor){
       	
       	console.log("starting streaming...");
       	//databox-driver-mobile.store:8080
-        const url =  process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/${subtype}` : `http://databox-store-passthrough:8080/api/${subtype}`;  
+        const url =  process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/${sensor}` : `http://databox-store-passthrough:8080/api/${sensor}`;  
         console.log(`connecting to ${url}`);
         
-        //const url = `http://localhost:8087/api/${subtype}`;
+        //const url = `http://localhost:8087/api/${sensor}`;
         rs = request.post({url:url, form: {macaroon:macaroon}})
         
         rs.on('error', function(err) {
@@ -65,7 +65,7 @@ module.exports = function(RED) {
     		console.log('error connecting - retrying in 3s');
     		console.log(err);
     		setTimeout(function(){
-    						startStreaming(macaroon,stream,subtype)
+    						startStreaming(macaroon,stream,sensor)
     				   }, 3000);
   		});
   		
@@ -98,7 +98,7 @@ module.exports = function(RED) {
           	   console.log(str);
           	   const data = str.replace("\n","").split(",");
         
-			   const payload = _format_payload(data, n.subtype);
+			   const payload = _format_payload(data, n.sensor);
 			   
 			   node.send({
 					name: node.name || "sensingkit",
@@ -135,7 +135,7 @@ module.exports = function(RED) {
                 		console.log("error!");
                 		console.log(err);
                 	}
-                    startStreaming(body,sensorStream,n.subtype);
+                    startStreaming(body,sensorStream,n.sensor);
         		}
         );
         
