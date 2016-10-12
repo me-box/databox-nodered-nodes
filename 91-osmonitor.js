@@ -26,23 +26,24 @@ module.exports = function(RED) {
 
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
         const PORT = process.env.PORT || 8080;
-        const API_ENDPOINT = process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
-        const API_URL = `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/reading/latest`;
-        const SENSOR_ID = API_ENDPOINT.sensor_id;
+        const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
+        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/reading/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/reading/latest`;
+        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
 
         this.name = n.name;
 
         RED.nodes.createNode(this,n);
         var node = this;
        
-        console.log(process.env);
-
+        
 		var options = {
   			method: 'post',
   			body: {sensor_id: SENSOR_ID},
   			json: true,
   			url: API_URL,
 		}
+		
+		console.log(options);
 		
 		setInterval(function(){
 									request(options, function (err, res, body) {
