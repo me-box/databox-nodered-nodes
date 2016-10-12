@@ -54,7 +54,7 @@ module.exports = function(RED) {
       	
       	console.log("starting streaming...");
       	//databox-driver-mobile.store:8080
-        const url =  process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/${sensor}` : `http://databox-store-passthrough:8080/api/${sensor}`;  
+        const url =  process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/api/${sensor}` : `http://databox-store-passthrough:8080/api/${sensor}`;  
         console.log(`connecting to ${url}`);
         
         //const url = `http://localhost:8087/api/${sensor}`;
