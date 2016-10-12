@@ -38,6 +38,7 @@ module.exports = function(RED) {
             try {
                 node.send({
                 	name: node.name || "temperature",
+                	id: node.id,
                 	type: "temperature",
                 	payload: JSON.parse(message.toString()),
                 });                

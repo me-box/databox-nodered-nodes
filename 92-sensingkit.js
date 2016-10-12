@@ -29,23 +29,23 @@ module.exports = function(RED) {
 		
 		if (_seen(["bluetooth"], subtype)){
 			const [ts1, ts, name, address, rssi] = data;	
-			return {id:subtype, ts, name:`${name}`, address:`${address}`,rssi};
+			return {subtype, ts, name, address, rssi};
 		}
 		else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], subtype)){
 			const [ts,x,y,z] = data;
-			return {id:subtype,ts,x,y,z};
+			return {subtype,ts,x,y,z};
 		}
 		else if (_seen(["rotation"], subtype)){
 			const [ts,x,y,z,cos,headingAccuracy] = data;
-			return {id:subtype,ts,x,y,z,cos,headingAccuracy};
+			return {subtype,ts,x,y,z,cos,headingAccuracy};
 		}
 		else if (_seen(["battery"], subtype)){
 			const [ts,charge,temperature,voltage,plugged,status,health] = data;
-			return {id:subtype,ts,charge,temperature,voltage,plugged:`${plugged}`,status:`${status}`,health:`${health}`};
+			return {subtype,ts,charge,temperature,voltage,plugged,status,health};
 		}
 		else if (_seen(["audio-level", "light"], subtype)){
 			const [ts,value] = data;
-			return {id:subtype,ts, value};
+			return {subtype,ts, value};
 		}
 		return {};
 	}
@@ -91,13 +91,12 @@ module.exports = function(RED) {
           if (str.indexOf("\n") != -1){
           	try{
           	   const data = str.replace("\n","").split(",");
-          	   console.log("data is");
-          	   console.log(data);
-			   //const data = JSON.parse(`[${str.replace("\n","")}]`);
+        
 			   const payload = _format_payload(data, n.subtype);
 			   
 			   node.send({
 					name: node.name || "sensingkit",
+					id:  node.id,
 					type: "sensingkit",
 					payload: payload,
 			   });   

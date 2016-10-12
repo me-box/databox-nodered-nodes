@@ -73,8 +73,7 @@ module.exports = function(RED) {
     "use strict";
     
     function Chartify(n) {
-    
-    	console.log("fresh load of chartify");
+
         // Create a RED node
         RED.nodes.createNode(this,n);
         
