@@ -129,6 +129,9 @@ module.exports = function(RED) {
           	}
           	
           	else if (this.xtype){
+          		
+          		console.log("checking item.source " + item.source + " against  msg type " + msg.type);
+          		
           		this.xtype.forEach((item)=>{
           			if (item.source === msg.type){
           				let payload = {};
@@ -142,7 +145,8 @@ module.exports = function(RED) {
         				payload.values.x = msg.payload[item.name];	
         				
         				
-        				
+        				console.log("sending !!!");
+        				console.log(payload);
         				node.send({type:this.chart, sourceId: node.id, payload:payload});
           			}
         		});
