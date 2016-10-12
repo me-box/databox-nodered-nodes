@@ -50,11 +50,13 @@ module.exports = function(RED) {
 										if (err) {
 											console.log(err, 'error posting json')
 										}else{
+											console.log("got");
+											console.log(body);
 											if (body.length > 0){
 												const result = body[0];
 												if (result.length > 0){
 													const {time,value} = result[0];
-						
+													
 													node.send({
 															name: node.name || "osmonitor",
 															id:  node.id,
