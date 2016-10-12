@@ -19,21 +19,57 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
-
+ 	var moment = require('moment');
 	
     function Phidget(n) {
         
-        const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
-        const PORT = process.env.PORT || 8080;
+        const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
+        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/reading/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/reading/latest`;
+        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
+
         this.name = n.name;
-		
+
         RED.nodes.createNode(this,n);
         var node = this;
+       
         
-        console.log(process.env);
-        
+		const options = {
+  			method: 'post',
+  			body: {sensor_id: SENSOR_ID},
+  			json: true,
+  			url: API_URL,
+		}
+		
+		console.log(options);
+		
+		const periodic = setInterval(function(){
+									request(options, function (err, res, body) {
+										if (err) {
+											console.log(err, 'error posting json')
+										}else{
+											if (body.length > 0){
+												const result = body[0];
+												if (result.length > 0){
+													const {time,value} = result[0];
+													
+													node.send({
+															name: node.name || "phidget",
+															id:  node.id,
+															type: node.subtype,
+															payload: {
+																ts: moment.utc(time).unix(),
+																value: Number(value), 
+															},
+													});   
+												}
+											}	
+										}
+									});
+						}, 3000);
+
         this.on("close", function() {
-           
+        	console.log(`${node.id} stopping requests`);
+			clearInterval(periodic);
         });
     }
 
