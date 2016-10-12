@@ -14,26 +14,63 @@
  * limitations under the License.
  **/
 
+
 // If you use this as a template, update the copyright with your own name.
 module.exports = function(RED) {
-    
+
     "use strict";
     var request = require('request');
-	var rs;
-	
+    var moment = require('moment');
+    
     function OSMonitor(n) {
-        
+
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
         const PORT = process.env.PORT || 8080;
+        const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`]);
+        const API_URL = `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/reading/latest`;
+        const SENSOR_ID = API_ENDPOINT.sensor_id;
+
         this.name = n.name;
-		
+
         RED.nodes.createNode(this,n);
         var node = this;
-        
+       
         console.log(process.env);
-        
+
+		var options = {
+  			method: 'post',
+  			body: {sensor_id: SENSOR_ID},
+  			json: true,
+  			url: API_URL,
+		}
+		
+		setInterval(function(){
+									request(options, function (err, res, body) {
+										if (err) {
+											console.log(err, 'error posting json')
+										}else{
+											if (body.length > 0){
+												const result = body[0];
+												if (result.length > 0){
+													const {time,value} = result[0];
+						
+													node.send({
+															name: node.name || "osmonitor",
+															id:  node.id,
+															type: node.subtype,
+															payload: {
+																ts: moment.utc(time).unix(),
+																value: Number(value), 
+															},
+													});   
+												}
+											}	
+										}
+									});
+						}, 3000);
+
         this.on("close", function() {
-           
+
         });
     }
 
