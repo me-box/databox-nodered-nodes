@@ -55,7 +55,7 @@ module.exports = function(RED) {
 													node.send({
 															name: node.name || "phidget",
 															id:  node.id,
-															type: node.subtype,
+															type: "phidget",
 															payload: {
 																ts: moment.utc(time).unix(),
 																value: Number(value), 
