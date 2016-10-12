@@ -76,7 +76,8 @@ module.exports = function(RED) {
         
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
         const PORT = process.env.PORT || 8080;
-
+		const ARBITER = process.env.DATABOX_ARBITER_ENDPOINT.replace("/api","");
+		
         var stream = require('stream');
         var sensorStream = new stream.Writable();
         // Create a RED node
@@ -123,7 +124,9 @@ module.exports = function(RED) {
         }
         
         console.log("calling arbiter");
-        request.post({url:'http://arbiter:8080/macaroon', form: formData},
+        console.log(`${ARBITER}/macaroon`);
+        
+        request.post({url:`${ARBITER}/macaroon`, form: formData},
                 function optionalCallback(err, httpResponse, body) {
                 	console.log("got response");
                 	if (err){
