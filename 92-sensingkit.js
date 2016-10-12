@@ -54,7 +54,7 @@ module.exports = function(RED) {
       	
       	console.log("starting streaming...");
       	//databox-driver-mobile.store:8080
-        const url = `http://databox-store-passthrough:8080/api/${subtype}`;  
+        const url =  process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/subtype` : `http://databox-store-passthrough:8080/api/${subtype}`;  
         console.log(`connecting to ${url}`);
         
         //const url = `http://localhost:8087/api/${subtype}`;
@@ -74,9 +74,10 @@ module.exports = function(RED) {
 
     function SensingKit(n) {
         
+        console.log(process.env);
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
         const PORT = process.env.PORT || 8080;
-		const ARBITER = process.env.DATABOX_ARBITER_ENDPOINT.replace("/api","");
+		const ARBITER = process.env.TESTING ? process.env.MOCK_DATA_SOURCE : process.env.DATABOX_ARBITER_ENDPOINT.replace("/api","");
 		
         var stream = require('stream');
         var sensorStream = new stream.Writable();

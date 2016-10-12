@@ -26,7 +26,7 @@ module.exports = function(RED) {
 
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
         const PORT = process.env.PORT || 8080;
-        const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`]);
+        const API_ENDPOINT = process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
         const API_URL = `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/reading/latest`;
         const SENSOR_ID = API_ENDPOINT.sensor_id;
 
