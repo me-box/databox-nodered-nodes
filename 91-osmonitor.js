@@ -36,7 +36,7 @@ module.exports = function(RED) {
         var node = this;
        
         
-		var options = {
+		const options = {
   			method: 'post',
   			body: {sensor_id: SENSOR_ID},
   			json: true,
@@ -45,7 +45,7 @@ module.exports = function(RED) {
 		
 		console.log(options);
 		
-		setInterval(function(){
+		const periodic = setInterval(function(){
 									request(options, function (err, res, body) {
 										if (err) {
 											console.log(err, 'error posting json')
@@ -73,7 +73,8 @@ module.exports = function(RED) {
 						}, 3000);
 
         this.on("close", function() {
-
+        	console.log("stopping request");
+			clearInterval(periodic);
         });
     }
 
