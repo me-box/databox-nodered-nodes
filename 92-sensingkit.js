@@ -93,8 +93,7 @@ module.exports = function(RED) {
 		  
           if (str.indexOf("\n") != -1){
           	try{
-          		console.log("n is");
-          	   	console.log(n);
+          		
           	   const data = str.replace("\n","").split(",");
         
 			   const payload = _format_payload(data, n.sensor);
@@ -103,6 +102,7 @@ module.exports = function(RED) {
 					name: node.name || "sensingkit",
 					id:  node.id,
 					type: "sensingkit",
+					sensor: n.sensor,
 					payload: payload,
 			   });   
 

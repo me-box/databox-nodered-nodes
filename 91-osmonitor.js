@@ -52,6 +52,8 @@ module.exports = function(RED) {
 												const result = body[0];
 												if (result.length > 0){
 													const {time,value} = result[0];
+													console.log("n is");
+													console.log(n);
 													
 													node.send({
 															name: node.name || "osmonitor",
