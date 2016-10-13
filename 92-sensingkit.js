@@ -25,27 +25,27 @@ module.exports = function(RED) {
 		return arr.indexOf(value) != -1;
 	}
 	
-	function _format_payload(data, sensor){
+	function _format_payload(data,sensor){
 		
 		if (_seen(["bluetooth"], sensor)){
 			const [ts1, ts, name, address, rssi] = data;	
-			return {sensor, ts, name, address, rssi};
+			return {ts, name, address, rssi};
 		}
 		else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], sensor)){
 			const [ts,x,y,z] = data;
-			return {sensor,ts,x,y,z};
+			return {ts,x,y,z};
 		}
 		else if (_seen(["rotation"], sensor)){
 			const [ts,x,y,z,cos,headingAccuracy] = data;
-			return {sensor,ts,x,y,z,cos,headingAccuracy};
+			return {ts,x,y,z,cos,headingAccuracy};
 		}
 		else if (_seen(["battery"], sensor)){
 			const [ts,charge,temperature,voltage,plugged,status,health] = data;
-			return {sensor,ts,charge,temperature,voltage,plugged,status,health};
+			return {ts,charge,temperature,voltage,plugged,status,health};
 		}
 		else if (_seen(["audio-level", "light"], sensor)){
 			const [ts,value] = data;
-			return {sensor,ts, value};
+			return {ts, value};
 		}
 		return {};
 	}
@@ -96,7 +96,7 @@ module.exports = function(RED) {
           		
           	   const data = str.replace("\n","").split(",");
         
-			   const payload = _format_payload(data, n.sensor);
+			   const payload = _format_payload(data, sensor);
 			   
 			   console.log({
 					name: n.name || "sensingkit",
