@@ -96,7 +96,7 @@ module.exports = function(RED) {
           		
           	   const data = str.replace("\n","").split(",");
         
-			   const payload = _format_payload(data, sensor);
+			   const payload = _format_payload(data, n.sensor);
 			   
 			   console.log({
 					name: n.name || "sensingkit",
