@@ -48,36 +48,36 @@ module.exports = function(RED) {
 										if (err) {
 											console.log(err, 'error posting json')
 										}else{
+											console.log(body);
+											
 											if (body.length > 0){
 												const result = body[0];
-												if (result.length > 0){
-													const {time,value} = result[0];
-													console.log("gor result");
-													console.log(value);
+												const {data, sensor_id, vendor_id, timestamp} = result;
+												
+												console.log("got result");
+												console.log(data);	
+												console.log("sending");
 													
-													console.log("sending");
-													
-													console.log({
-															name: n.name || "twitter",
-															id:  n.id,
-															type: "twitter",
-															payload: {
-																ts: moment.utc(time).unix(),
-																value: value, 
-															},
-													});
-													
-													node.send({
-															name: n.name || "twitter",
-															id:  n.id,
-															type: "twitter",
-															payload: {
-																ts: moment.utc(time).unix(),
-																value: value, 
-															},
-													});   
-												}
-											}	
+												console.log({
+														name: n.name || "twitter",
+														id:  n.id,
+														type: "twitter",
+														payload: {
+															ts: Math.ceil(timestamp/1000),
+															value: data, 
+														},
+												});
+												
+												node.send({
+														name: n.name || "twitter",
+														id:  n.id,
+														type: "twitter",
+														payload: {
+															ts: Math.ceil(timestamp/1000),
+															value: data, 
+														},
+												});   
+											}
 										}
 									});
 						}, 10000);
