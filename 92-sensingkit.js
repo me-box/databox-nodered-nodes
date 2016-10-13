@@ -98,7 +98,7 @@ module.exports = function(RED) {
         
 			   const payload = _format_payload(data, n.sensor);
 			   
-			   coonsole.log({
+			   console.log({
 					name: n.name || "sensingkit",
 					id:  n.id,
 					type: "sensingkit",
