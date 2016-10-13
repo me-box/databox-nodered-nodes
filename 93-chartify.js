@@ -123,6 +123,9 @@ module.exports = function(RED) {
         				payload.values.x = msg.payload[this.xtype[0].name];
         				payload.values.y =  Number(msg.payload[item.name]);	
         				
+        				console.log("sending out");
+        				console.log({type:this.chart, sourceId: node.id, payload:payload});
+        				
         				node.send({type:this.chart, sourceId: node.id, payload:payload});
         			}
           		});
@@ -144,8 +147,9 @@ module.exports = function(RED) {
         				payload.values.x = msg.payload[item.name];	
         				
         				
-        				console.log("sending !!!");
-        				console.log(payload);
+        				console.log("sending out");
+        				console.log({type:this.chart, sourceId: node.id, payload:payload});
+        				
         				node.send({type:this.chart, sourceId: node.id, payload:payload});
           			}
         		});
