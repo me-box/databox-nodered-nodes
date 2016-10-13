@@ -131,6 +131,12 @@ module.exports = function(RED) {
           		rows:rows,
           	}};
           	
+          	console.log("keys ate");
+          	console.log(keys);
+          	
+          	console.log("rows ate")
+          	console.log(rows);
+          	
           	console.log("sending");
           	console.log(msg);
           	node.send(msg);
