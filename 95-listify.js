@@ -131,6 +131,8 @@ module.exports = function(RED) {
           		rows:rows,
           	}};
           	
+          	console.log("sending");
+          	console.log(msg);
           	node.send(msg);
         
         });
