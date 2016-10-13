@@ -98,9 +98,17 @@ module.exports = function(RED) {
         
 			   const payload = _format_payload(data, n.sensor);
 			   
+			   coonsole.log({
+					name: n.name || "sensingkit",
+					id:  n.id,
+					type: "sensingkit",
+					sensor: n.sensor,
+					payload: payload,
+			   });
+	
 			   node.send({
-					name: node.name || "sensingkit",
-					id:  node.id,
+					name: n.name || "sensingkit",
+					id:  n.id,
 					type: "sensingkit",
 					sensor: n.sensor,
 					payload: payload,

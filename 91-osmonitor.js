@@ -56,8 +56,9 @@ module.exports = function(RED) {
 													console.log(n);
 													
 													node.send({
-															name: node.name || "osmonitor",
-															id:  node.id,
+															name: n.name || "osmonitor",
+															id:  n.id,
+															subtype: n.subtype,
 															type: "osmonitor",
 															payload: {
 																ts: moment.utc(time).unix(),
