@@ -130,12 +130,8 @@ module.exports = function(RED) {
           	
           	else if (this.xtype){
           		
-          		
-          		
           		this.xtype.forEach((item)=>{
-          			
-          			console.log("checking item.source " + item.source + " against  msg type " + msg.type);
-          			
+          					
           			if (item.source === msg.type){
           				let payload = {};
           				payload.options = options;

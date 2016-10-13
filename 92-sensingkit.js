@@ -75,9 +75,7 @@ module.exports = function(RED) {
     function SensingKit(n) {
         
         
-        console.log(process.env);
         const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
-        const PORT = process.env.PORT || 8080;
 		const ARBITER = process.env.TESTING ? process.env.MOCK_DATA_SOURCE : process.env.DATABOX_ARBITER_ENDPOINT.replace("/api","");
 		
         var stream = require('stream');
@@ -95,7 +93,8 @@ module.exports = function(RED) {
 		  
           if (str.indexOf("\n") != -1){
           	try{
-          	   console.log(str);
+          		console.log("n is");
+          	   	console.log(n);
           	   const data = str.replace("\n","").split(",");
         
 			   const payload = _format_payload(data, n.sensor);
