@@ -115,7 +115,7 @@ module.exports = function(RED) {
 	      				payload.options = options;
           			
           				payload.values = {
-        					id: `${msg.payload.id} ${item.name}`,
+        					id: `${msg.id} ${item.name}`,
         					type: 'data',
         					dataid: Date.now(),
         				};
@@ -137,7 +137,7 @@ module.exports = function(RED) {
           				payload.options = options;
           			
           				payload.values = {
-        					id: `${msg.payload.id} ${item.name}`,
+        					id: `${msg.id} ${item.name}`,
         					type: 'data',
         					dataid: Date.now(),
         				};
