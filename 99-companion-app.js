@@ -98,6 +98,7 @@ module.exports = function(RED) {
         });
 
         this.on("close", function() {
+        	sendmessage(ipc, {channel:node.appId, type:"control", payload:{command:"reset"}});
             // Called when the node is shutdown - eg on redeploy.
             // Allows ports to be closed, connections dropped etc.
             // eg: node.client.disconnect();

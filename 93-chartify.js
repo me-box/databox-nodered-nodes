@@ -87,9 +87,10 @@ module.exports = function(RED) {
 			title: _isstring(n.title),	
 			xlabel: _isstring(n.xlabel),
 			ylabel: _isstring(n.ylabel),
-			yaxismin: _isnumber(n.yaxismin),
-			yaxismax: _isnumber(n.yaxismax),
+			min: _isnumber(n.min),
+			max: _isnumber(n.max),
 			ticks: _isnumber(n.ticks),
+			labels: _isstring(n.labels),
 			maxreadings: _isnumber(n.maxreadings),
 		};
 		
