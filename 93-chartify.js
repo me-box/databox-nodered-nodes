@@ -104,6 +104,8 @@ module.exports = function(RED) {
 	
 	
 		this.on('input', function (msg) {
+        	console.log("chart got");
+        	console.log(msg);
         	
           	if (this.xtype && this.ytype){
           		
@@ -122,11 +124,7 @@ module.exports = function(RED) {
         				};
     
         				payload.values.x = msg.payload[this.xtype[0].name];
-        				payload.values.y =  Number(msg.payload[item.name]);	
-        				
-        				console.log("sending out");
-        				console.log({type:this.chart, sourceId: node.id, payload:payload});
-        				
+        				payload.values.y =  Number(msg.payload[item.name]);
         				node.send({type:this.chart, sourceId: node.id, payload:payload});
         			}
           		});
@@ -145,12 +143,7 @@ module.exports = function(RED) {
         					type: 'data',
         					dataid: Date.now(),
         				};
-        				payload.values.x = msg.payload[item.name];	
-        				
-        				
-        				console.log("sending out");
-        				console.log({type:this.chart, sourceId: node.id, payload:payload});
-        				
+        				payload.values.x = msg.payload[item.name];				
         				node.send({type:this.chart, sourceId: node.id, payload:payload});
           			}
         		});
