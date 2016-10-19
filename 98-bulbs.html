@@ -1,14 +1,6 @@
-<script type="text/x-red" data-template-name="bulbs">
-   
+<script type="text/x-red" data-template-name="bulbs">   
     <div class="form-row">
-        <label for="node-input-topic"><i class="fa fa-tasks"></i> Topic</label>
-        <input type="text" id="node-input-topic" placeholder="Topic">
-    </div>
-
-    <br/>
-   
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i>Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 </script>
@@ -16,12 +8,12 @@
 
 <script type="text/x-red" data-help-name="bulbs">
    <p>Bulbs node</p>
-   <p>reads data from the bulbs datastore</p>
+   <p>turns phillips hue bulbs on and off</p>
 </script>
 
 
 <script type="text/javascript">
-    RED.nodes.registerType('bulbs',{
+    RED.nodes.registerType('outputs',{
         category: 'databox',      // the palette category
         defaults: {             // defines the editable properties of the node
             name: {value:""},   //  along with default values.

@@ -17,14 +17,11 @@
 // If you use this as a template, update the copyright with your own name.
 module.exports = function(RED) {
     "use strict";
-    var mqtt = require('mqtt');
+    
   
     function Bulbs(n) {
         // Create a RED node
         RED.nodes.createNode(this,n);
-
-        var client = mqtt.connect('mqtt://mosquitto:1883');
-
        
         var node = this;
 
@@ -32,25 +29,15 @@ module.exports = function(RED) {
             client.subscribe('ds/bulbs')
         })
 
+		console.log(process.env);
+		
         client.on('message', (topic, message) => {  
-            try {
-                
-               
-                node.send({
-                 	name : node.name || "bulbs",
-                	type : "bulbs",
-                	id: node.id,
-                	payload : JSON.parse(message.toString()),
-                });                
-            }
-            catch(err){
-                console.log(err);
-                throw err;
-            }
+			console.log("seen message");
+			console.log(message);
         });
 
         this.on("close", function() {
-            client.unsubscribe('ds/bulbs')
+           
         });
     }
 
