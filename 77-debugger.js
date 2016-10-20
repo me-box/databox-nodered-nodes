@@ -93,7 +93,7 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("debug",DebugNode);
+    RED.nodes.registerType("debugger",DebugNode);
 
     function sendDebug(msg) {
         if (msg.msg instanceof Error) {
