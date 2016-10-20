@@ -142,6 +142,8 @@ module.exports = function(RED) {
         if (msg.msg.length > debuglength) {
             msg.msg = msg.msg.substr(0,debuglength) +" ....";
         }
+        console.log("sending message from debug");
+        console.log(msg);
         sendmessage(ipc, msg);
     }
 
