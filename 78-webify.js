@@ -45,7 +45,15 @@ module.exports = function(RED) {
                 
                 //node.send(msg);
                
-          	
+          		console.log({
+          			type: "html",
+          			sourceId: node.id,
+          			payload: {
+          				values:msg
+          			}	
+          		});
+          		
+          		
           		node.send({
           			type: "html",
           			sourceId: node.id,
