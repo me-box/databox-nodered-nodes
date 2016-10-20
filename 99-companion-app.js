@@ -16,21 +16,6 @@
 
 
 
-
-// Sample Node-RED node file
-var sendmessage = function(ipc, msg){
-    try{
-	   //console.log(msg);
-       ipc.of.webserver.emit(
-                        'message',  //any event or message type your server listens for 
-                        JSON.stringify(msg)
-                    )
-        //client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
-    }catch(err){
-        console.log(err);
-    }
-}
-
 module.exports = function(RED) {
     "use strict";
     
@@ -104,6 +89,19 @@ module.exports = function(RED) {
             // eg: node.client.disconnect();
         });
     }
+    
+    function sendmessage(ipc, msg){
+		try{
+		   //console.log(msg);
+		   ipc.of.webserver.emit(
+							'message',  //any event or message type your server listens for 
+							JSON.stringify(msg)
+						)
+			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
+		}catch(err){
+			console.log(err);
+		}
+	}
 
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
