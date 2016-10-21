@@ -27,7 +27,7 @@ module.exports = function(RED) {
  	var ipc = require('node-ipc');
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
-    ipc.config.silent=true;
+    ipc.config.silent=false;
     
     function DebugNode(n) {
         RED.nodes.createNode(this,n);
@@ -37,7 +37,7 @@ module.exports = function(RED) {
              ipc.of.webserver.on(
                 'connect',
                 function(){
-                    
+                    console.log("connected to webserver!!");
                 }
             );
         });
