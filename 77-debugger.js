@@ -61,7 +61,7 @@ module.exports = function(RED) {
                     node.log("\n"+util.inspect(msg, {colors:useColors, depth:10}));
                 }
                 if (this.active) {
-                    sendDebug({id:this.id,name:this.name,topic:msg.topic,msg:msg,_path:msg._path});
+                    sendDebug({id:this.id,name:this.name,channel:this.channel,topic:msg.topic,msg:msg,_path:msg._path});
                 }
             } else {
             // debug user defined msg property
