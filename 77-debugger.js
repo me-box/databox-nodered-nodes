@@ -150,7 +150,9 @@ module.exports = function(RED) {
 	function sendmessage(ipc, msg){
 		try{
 		  ipc.of.webserver.emit('debug',JSON.stringify(msg));
+		  console.log("scuccessfully sent message to socket");
 		}catch(err){
+			console.log("error sending debug messsage");
 			console.log(err);
 		}
 	}
