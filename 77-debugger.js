@@ -43,6 +43,7 @@ module.exports = function(RED) {
         });
        
         this.name = n.name;
+        this.channel = n.appId;
         this.complete = (n.complete||"payload").toString();
 
         if (this.complete === "false") {
@@ -87,7 +88,7 @@ module.exports = function(RED) {
                     }
                 }
                 if (this.active) {
-                    sendDebug({id:this.id,name:this.name,topic:msg.topic,property:property,msg:output,_path:msg._path});
+                    sendDebug({id:this.id,name:this.name,channel:this.channel,topic:msg.topic,property:property,msg:output,_path:msg._path});
                 }
             }
         });
