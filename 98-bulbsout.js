@@ -54,14 +54,14 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         var node = this;
        
-        
 		this.on('input', function (msg) {
 			console.log("bulbs out seen input");
 			console.log(msg);
+			//msg.payload ? Number(msg.payload) : n.value ? Number(n.value) : 0
 			
         	const options = {
   				method: 'post',
-  				body: {actuator_id: SENSOR_ID, data: msg.payload ? Number(msg.payload) : n.value ? Number(n.value) : 0},
+  				body: {actuator_id: SENSOR_ID, data: 20},
   				json: true,
   				url: API_URL,
 			}
