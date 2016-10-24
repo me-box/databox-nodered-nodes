@@ -32,9 +32,12 @@ module.exports = function(RED) {
         var node = this;
        
 		this.on('input', function (msg) {
+			console.log("bulkbs out seen input");
+			console.log(msg);
+			
         	const options = {
   				method: 'post',
-  				body: {actuator_id: SENSOR_ID, data: msg.payload.data ? Number(msg.payload.data) : n.value ? Number(n.value) : 0 : 0},
+  				body: {actuator_id: SENSOR_ID, data: msg.payload ? Number(msg.payload) : n.value ? Number(n.value) : 0 : 0},
   				json: true,
   				url: API_URL,
 			}
