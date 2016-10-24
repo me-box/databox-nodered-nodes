@@ -61,7 +61,7 @@ module.exports = function(RED) {
 			
         	const options = {
   				method: 'post',
-  				body: {actuator_id: SENSOR_ID, data: msg.payload ? Number(msg.payload) : n.value ? Number(n.value) : 0 : 0},
+  				body: {actuator_id: SENSOR_ID, data: msg.payload ? Number(msg.payload) : n.value ? Number(n.value) : 0},
   				json: true,
   				url: API_URL,
 			}
