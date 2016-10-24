@@ -50,11 +50,11 @@ module.exports = function(RED) {
 						if (err) {
 							console.log(err, 'error posting json')
 						}else{
-							
+							console.log("result is ");
+								console.log(body);
 							if (body.length > 0){
 								const result = body[0];
-								console.log("result is ");
-								console.log(body);
+								
 								if (result.length > 0){
 									const {time,value} = result[0];
 								
