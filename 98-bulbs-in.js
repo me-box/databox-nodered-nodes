@@ -26,6 +26,7 @@ module.exports = function(RED) {
         const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/reading/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/reading/latest`;
         const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
 
+		
         this.name = n.name;
 
         RED.nodes.createNode(this,n);
@@ -38,31 +39,25 @@ module.exports = function(RED) {
   			url: API_URL,
 		}
 		
-		console.log("posting");
-		console.log(options);
+		
 		
 		const periodic = setInterval(function(){
+					console.log("posting - sensor is is " + SENSOR_ID);
+					console.log("options are");
+					console.log(options);
+					
 					request(options, function (err, res, body) {
 						if (err) {
 							console.log(err, 'error posting json')
 						}else{
-							console.log(body);
+							
 							if (body.length > 0){
 								const result = body[0];
+								console.log("result is ");
+								console.log(body);
 								if (result.length > 0){
 									const {time,value} = result[0];
-									
-									console.log({
-											name: n.name || "bulbs-in",
-											id:  n.id,
-											subtype: n.subtype,
-											type: "bulbs-in",
-											payload: {
-												ts: moment.utc(time).unix(),
-												value: Number(value), 
-											},
-									});
-									
+								
 									node.send({
 											name: n.name || "bulbs-in",
 											id:  n.id,
