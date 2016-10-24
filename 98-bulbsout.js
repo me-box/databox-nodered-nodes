@@ -21,8 +21,7 @@ module.exports = function(RED) {
     var request = require('request');
      
     function Bulbs(n) {
-    
- 		console.log(process.env);
+
  		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
         const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/actuate` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/actuate`;
         const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
@@ -36,7 +35,7 @@ module.exports = function(RED) {
 			
         	const options = {
   				method: 'post',
-  				body: {actuator_id: SENSOR_ID, method: n.subtype||"", data: msg.payload ? Number(msg.payload) : n.value ? Number(n.value) : 0},
+  				body: {actuator_id: SENSOR_ID, method: n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null},
   				json: true,
   				url: API_URL,
 			}
@@ -45,7 +44,6 @@ module.exports = function(RED) {
 						if (err) {
 							console.log(err, 'error posting json')
 						}else{
-							console.log("result is ");
 							console.log(body);
 						}
 			});	
