@@ -55,25 +55,6 @@ module.exports = function(RED) {
         var node = this;
        
 		this.on('input', function (msg) {
-			console.log("bulbs out seen input");
-			console.log(msg);
-			
-			
-        	const options = {
-  				method: 'post',
-  				body: {actuator_id: SENSOR_ID, data: msg.payload ? Number(msg.payload) : n.value ? Number(n.value) : 0},
-  				json: true,
-  				url: API_URL,
-			}
-			console.log(options);
-			request(options, function (err, res, body) {
-						if (err) {
-							console.log(err, 'error posting json')
-						}else{
-							console.log("result is ");
-							console.log(body);
-						}
-			});	
 		
         });
         
