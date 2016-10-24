@@ -18,7 +18,8 @@
 module.exports = function(RED) {
     
     "use strict";
-   
+    var request = require('request');
+     
     function Bulbs(n) {
     
  		console.log(process.env);
@@ -32,9 +33,6 @@ module.exports = function(RED) {
         var node = this;
        
 		this.on('input', function (msg) {
-			console.log("bulbs out seen input");
-			console.log(msg);
-			
 			
         	const options = {
   				method: 'post',
