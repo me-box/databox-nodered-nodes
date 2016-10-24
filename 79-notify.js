@@ -34,7 +34,10 @@ module.exports = function(RED) {
         		case "twitter":
         			tweet(msg, n);
         			break;
-        			
+        		case "sms":
+        			sms(msg, n);
+        			break;
+        				
         		default: //no op
         		
         	}
@@ -44,6 +47,48 @@ module.exports = function(RED) {
         this.on("close", function() {
            
         });
+    }
+    
+    function sms(msg, n){
+    	var message;
+        var to;
+        
+        if (msg.payload.message && msg.payload.message.trim() != ""){
+        	message = msg.payload.message.trim();
+        }
+        else{
+        	message = n.message.trim() != "" ? n.message.trim() : null;
+        }	
+		
+		if (msg.payload.to && msg.payload.to.trim() != ""){
+			to = msg.payload.to.trim();
+		}
+		else{
+			to = n.to.trim() != "" ? n.to.trim() : null; 
+		}
+		
+		if (message && to){
+			if (!(/^(?:\W*\d){11}\W*$/.test(to)))
+				return;
+			
+			const options = {
+				method: 'post',
+				body: {to:to, body:message},
+				json: true,
+				url: `${ENDPOINT}/sms`,
+			}
+			
+			console.log("notify options are");
+			console.log(options);
+			
+			request(options, function (err, res, body) {
+				if (err) {
+					console.log(err, 'error posting json')
+				}else{
+					console.log(body);
+				}
+			});		
+		}
     }
     
     function tweet(msg, n){
