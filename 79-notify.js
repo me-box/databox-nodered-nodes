@@ -17,6 +17,7 @@
 module.exports = function(RED) {
     "use strict";
     var request = require('request');
+    var ENDPOINT = process.env.DATABOX_NOTIFICATIONS_ENDPOINT;
     
     function Notify(n) {
  		
@@ -24,7 +25,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         
         var node = this; 
-		var ENDPOINT = process.env.DATABOX_NOTIFICATIONS_ENDPOINT;
+		
 		
 		this.on('input', function (msg) {
         	var channel = msg.channel || n.subtype;
