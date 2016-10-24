@@ -16,23 +16,78 @@
 	
 module.exports = function(RED) {
     "use strict";
+    var request = require('request');
     
     function Notify(n) {
-
+ 		
         // Create a RED node
         RED.nodes.createNode(this,n);
         
         var node = this; 
-		
-		console.log(process.env);
+		var ENDPOINT = process.env.DATABOX_NOTIFICATIONS_ENDPOINT;
 		
 		this.on('input', function (msg) {
+        	var channel = msg.channel || n.subtype;
+        	switch (channel){
+        
+        		case "twitter":
+        			tweet(msg, n);
+        			break;
+        			
+        		default: //no op
+        		
+        	}
         	
         });
         
         this.on("close", function() {
            
         });
+    }
+    
+    function tweet(msg, n){
+    	
+        var message;
+        var to;
+        
+        if (msg.payload.message && msg.payload.message.trim() != ""){
+        	message = msg.payload.message.trim();
+        }
+        else{
+        	message = n.message.trim() != "" ? n.message.trim() : null;
+        }	
+		
+		if (msg.payload.to && msg.payload.to.trim() != ""){
+			to = msg.payload.to.trim();
+		}
+		else{
+			to = n.to.trim() != "" ? n.to.trim() : null; 
+		}
+		
+		if (message && to){
+			
+			to = to.indexOf("@") == 0 ? to : `@${to}`;
+			
+			const options = {
+				method: 'post',
+				body: {to:to, body:message},
+				json: true,
+				url: `${ENDPOINT}/twitter`,
+			}
+			
+			console.log("notify options are");
+			console.log(options);
+			
+			request(options, function (err, res, body) {
+				if (err) {
+					console.log(err, 'error posting json')
+				}else{
+					console.log(body);
+				}
+			});
+		}else{
+			console.log("to or message not set, so cannot send");
+		}
     }
 
     // Register the node by name. This must be called before overriding any of the
