@@ -57,11 +57,11 @@ module.exports = function(RED) {
 		this.on('input', function (msg) {
 			console.log("bulbs out seen input");
 			console.log(msg);
-			//msg.payload ? Number(msg.payload) : n.value ? Number(n.value) : 0
+			
 			
         	const options = {
   				method: 'post',
-  				body: {actuator_id: SENSOR_ID, data: 20},
+  				body: {actuator_id: SENSOR_ID, data: msg.payload ? Number(msg.payload) : n.value ? Number(n.value) : 0},
   				json: true,
   				url: API_URL,
 			}
@@ -85,5 +85,4 @@ module.exports = function(RED) {
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
     RED.nodes.registerType("bulbsout",Bulbs);
-
 }
