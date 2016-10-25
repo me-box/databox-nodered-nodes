@@ -48,22 +48,28 @@ module.exports = function(RED) {
 										if (err) {
 											console.log(err, 'error posting json')
 										}else{
-											if (body.length > 0){
-												const result = body[0];
-												const {data, sensor_id, vendor_id, timestamp} = result;
+											try{
+												if (body.length > 0){
+													const result = body[0];
+													const {data, sensor_id, vendor_id, timestamp} = result;
 												
-												console.log("got result");
-												console.log(data.text);	
+													console.log("got result");
+													console.log(data);
+													console.log(data.text);	
 												
-												node.send({
-														name: n.name || "twitter",
-														id:  n.id,
-														type: "twitter",
-														payload: {
-															ts: Math.ceil(timestamp/1000),
-															value: data.text, 
-														},
-												});   
+													node.send({
+															name: n.name || "twitter",
+															id:  n.id,
+															type: "twitter",
+															payload: {
+																ts: Math.ceil(timestamp/1000),
+																value: data.text, 
+															},
+													});   
+												}
+											}
+											catch(err){
+												console.log(err);
 											}
 										}
 									});
