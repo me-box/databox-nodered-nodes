@@ -19,7 +19,7 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
-    var moment = require('moment');
+
     
     function Bulbs(n) {
  		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
@@ -64,7 +64,7 @@ module.exports = function(RED) {
 									subtype: n.subtype,
 									type: "bulbs-in",
 									payload: {
-										ts: moment.utc(time).unix(),
+										ts: timestamp,
 										value: formattedvalue,
 									}
 								}
