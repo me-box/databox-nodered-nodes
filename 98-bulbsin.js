@@ -52,10 +52,10 @@ module.exports = function(RED) {
 						}else{
 							console.log("response:");
 							console.log(body);
-							
+						
 							if (body.length > 0){
 								const result = body[0];
-								
+								console.log("subtype is " + n.subtype);
 								
 								if (result.length > 0){
 									const {time,value} = result[0];
