@@ -59,6 +59,9 @@ module.exports = function(RED) {
 								
 								if (result.length > 0){
 									const {time,value} = result[0];
+									
+									const formattedvalue = n.subtype==="bulb-on" ? value ? 'on': 'off' : Number(value);
+													
 									const msg = {
 										name: n.name || "bulbs-in",
 										id:  n.id,
@@ -66,8 +69,8 @@ module.exports = function(RED) {
 										type: "bulbs-in",
 										payload: {
 											ts: moment.utc(time).unix(),
-											value: value, 
-										},
+											value: formattedvalue,
+										}
 									}
 									
 									console.log(msg)
