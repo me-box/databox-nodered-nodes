@@ -58,9 +58,9 @@ module.exports = function(RED) {
 								console.log("subtype is " + n.subtype);
 								
 								if (result.length > 0){
-									const {time,value} = result[0];
+									const {data,timestamp} = result[0];
 									
-									const formattedvalue = n.subtype==="bulb-on" ? value ? 'on': 'off' : Number(value);
+									const formattedvalue = n.subtype==="bulb-on" ? data ? 'on': 'off' : Number(data);
 													
 									const msg = {
 										name: n.name || "bulbs-in",
