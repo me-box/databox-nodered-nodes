@@ -43,13 +43,14 @@ module.exports = function(RED) {
 		
 		const periodic = setInterval(function(){
 					
-					console.log("options are");
+					console.log("options:");
 					console.log(options);
 					
 					request(options, function (err, res, body) {
 						if (err) {
 							console.log(err, 'error posting json')
 						}else{
+							console.log("response:");
 							console.log(body);
 							
 							if (body.length > 0){
