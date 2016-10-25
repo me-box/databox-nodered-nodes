@@ -41,8 +41,7 @@ module.exports = function(RED) {
   			url: API_URL,
 		}
 		
-		console.log(options);
-		
+	
 		const periodic = setInterval(function(){
 									request(options, function (err, res, body) {
 										if (err) {
@@ -73,7 +72,7 @@ module.exports = function(RED) {
 											}
 										}
 									});
-						}, 10000);
+						}, 2000);
 
         this.on("close", function() {
         	console.log(`${node.id} stopping requests`);
