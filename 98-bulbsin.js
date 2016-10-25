@@ -55,27 +55,22 @@ module.exports = function(RED) {
 						
 							if (body.length > 0){
 								const result = body[0];
-								console.log("subtype is " + n.subtype);
-								
-								if (result.length > 0){
-									const {data,timestamp} = result[0];
-									
-									const formattedvalue = n.subtype==="bulb-on" ? data ? 'on': 'off' : Number(data);
+								const {data,timestamp} = result;
+								const formattedvalue = n.subtype==="bulb-on" ? data ? 'on': 'off' : Number(data);
 													
-									const msg = {
-										name: n.name || "bulbs-in",
-										id:  n.id,
-										subtype: n.subtype,
-										type: "bulbs-in",
-										payload: {
-											ts: moment.utc(time).unix(),
-											value: formattedvalue,
-										}
+								const msg = {
+									name: n.name || "bulbs-in",
+									id:  n.id,
+									subtype: n.subtype,
+									type: "bulbs-in",
+									payload: {
+										ts: moment.utc(time).unix(),
+										value: formattedvalue,
 									}
-									
-									console.log(msg)
-									node.send(msg);   
 								}
+									
+								console.log(msg)
+								node.send(msg);   
 							}	
 						}
 					});
