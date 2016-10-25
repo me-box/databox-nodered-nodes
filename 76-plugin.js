@@ -21,7 +21,7 @@ module.exports = function(RED) {
     var request = require('request');
 
     
-    function Bulbs(n) {
+    function Plug(n) {
  		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
         const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/data/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/data/latest`;
         const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
@@ -39,8 +39,6 @@ module.exports = function(RED) {
   			url: API_URL,
 		}
 		
-		
-		
 		const periodic = setInterval(function(){
 					
 					console.log("options:");
@@ -56,13 +54,13 @@ module.exports = function(RED) {
 							if (body.length > 0){
 								const result = body[0];
 								const {data,timestamp} = result;
-								const formattedvalue = n.subtype==="bulb-on" ? data ? 'on': 'off' : Number(data);
+								const formattedvalue = n.subtype==="power-state" ? data ? 'on': 'off' : Number(data);
 													
 								const msg = {
-									name: n.name || "bulbsin",
+									name: n.name || "plugin",
 									id:  n.id,
 									subtype: n.subtype,
-									type: "bulbsin",
+									type: "plugin",
 									payload: {
 										ts: timestamp,
 										value: formattedvalue,
@@ -84,6 +82,6 @@ module.exports = function(RED) {
 
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
-    RED.nodes.registerType("bulbsin",Bulbs);
+    RED.nodes.registerType("plugin",Plug);
 
 }
