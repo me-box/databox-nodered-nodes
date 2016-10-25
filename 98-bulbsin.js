@@ -50,24 +50,25 @@ module.exports = function(RED) {
 						if (err) {
 							console.log(err, 'error posting json')
 						}else{
-							console.log("result is ");
-								console.log(body);
+							
 							if (body.length > 0){
 								const result = body[0];
 								
 								if (result.length > 0){
 									const {time,value} = result[0];
-								
-									node.send({
-											name: n.name || "bulbs-in",
-											id:  n.id,
-											subtype: n.subtype,
-											type: "bulbs-in",
-											payload: {
-												ts: moment.utc(time).unix(),
-												value: Number(value), 
-											},
-									});   
+									const msg = {
+										name: n.name || "bulbs-in",
+										id:  n.id,
+										subtype: n.subtype,
+										type: "bulbs-in",
+										payload: {
+											ts: moment.utc(time).unix(),
+											value: value, 
+										},
+									}
+									
+									console.log(msg)
+									node.send(msg);   
 								}
 							}	
 						}
