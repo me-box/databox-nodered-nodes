@@ -42,7 +42,7 @@ module.exports = function(RED) {
 		
 		
 		const periodic = setInterval(function(){
-					console.log("posting - sensor is is " + SENSOR_ID);
+					
 					console.log("options are");
 					console.log(options);
 					
@@ -50,10 +50,11 @@ module.exports = function(RED) {
 						if (err) {
 							console.log(err, 'error posting json')
 						}else{
+							console.log(body);
 							
 							if (body.length > 0){
 								const result = body[0];
-								console.log(result);
+								
 								
 								if (result.length > 0){
 									const {time,value} = result[0];
