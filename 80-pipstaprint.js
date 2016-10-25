@@ -15,19 +15,38 @@
  **/
 	
 module.exports = function(RED) {
-    "use strict";
     
+    "use strict";
+    var request = require('request');
+     
     function PipstaPrint(n) {
 
-        // Create a RED node
+ 		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
+        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/actuate` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/actuate`;
+        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
+
+        this.name = n.name;
+
         RED.nodes.createNode(this,n);
-        
-        var node = this; 
-		
-		console.log(process.env);
-		
+        var node = this;
+       
 		this.on('input', function (msg) {
-        	
+			
+        	const options = {
+  				method: 'post',
+  				body: {actuator_id: SENSOR_ID, method: n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null},
+  				json: true,
+  				url: API_URL,
+			}
+			console.log(options);
+			request(options, function (err, res, body) {
+						if (err) {
+							console.log(err, 'error posting json')
+						}else{
+							console.log(body);
+						}
+			});	
+		
         });
         
         this.on("close", function() {
@@ -38,5 +57,4 @@ module.exports = function(RED) {
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
     RED.nodes.registerType("pipstaprint",PipstaPrint);
-
 }
