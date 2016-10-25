@@ -74,7 +74,7 @@ module.exports = function(RED) {
 							}	
 						}
 					});
-		}, 1500);
+		}, 1000);
 
         this.on("close", function() {
           	console.log(`${node.id} stopping requests`);
