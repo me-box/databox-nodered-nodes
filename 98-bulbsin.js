@@ -53,6 +53,7 @@ module.exports = function(RED) {
 							
 							if (body.length > 0){
 								const result = body[0];
+								console.log(result);
 								
 								if (result.length > 0){
 									const {time,value} = result[0];
