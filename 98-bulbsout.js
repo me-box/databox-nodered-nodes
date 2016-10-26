@@ -51,17 +51,19 @@ module.exports = function(RED) {
         
 		this.on('input', function (msg) {
 			
+			
+			console.log("BULBS-->seen an input message");
+			console.log(msg);
+			
         	const options = {
   				method: 'post',
-  				body: {actuator_id: SENSOR_ID, method: msg.payload.type||n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null},
+  				body: {actuator_id: SENSOR_ID, method: msg.type||n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null},
   				json: true,
   				url: API_URL,
 			}
 			
 			if (process.env.TESTING){
-				const testmsg =  {actuator_id: n.id, method: msg.payload.type||n.subtype||"", channel:n.appId, data: msg.payload ? msg.payload : n.value ? n.value : null};
-				console.log("sending test message");
-				console.log(testmsg);
+				const testmsg =  {actuator_id: n.id, method: msg.type||n.subtype||"", channel:n.appId, data: msg.payload ? msg.payload : n.value ? n.value : null};
 				sendmessage(ipc,testmsg);
 			}
 			
