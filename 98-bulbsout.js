@@ -59,7 +59,7 @@ module.exports = function(RED) {
 			}
 			
 			if (process.env.TESTING){
-				sendmessage(ips,options.body);
+				sendmessage(ipc,options.body);
 			}
 			
 			request(options, function (err, res, body) {
