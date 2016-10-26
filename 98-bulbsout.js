@@ -60,6 +60,8 @@ module.exports = function(RED) {
 			
 			if (process.env.TESTING){
 				const testmsg =  {actuator_id: SENSOR_ID, method: n.subtype||"", channel:node.appId, data: msg.payload ? msg.payload : n.value ? n.value : null};
+				console.log("sending test message");
+				console.log(testmsg);
 				sendmessage(ipc,testmsg);
 			}
 			
