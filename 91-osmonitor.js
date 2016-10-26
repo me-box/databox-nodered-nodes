@@ -41,7 +41,6 @@ module.exports = function(RED) {
   			url: API_URL,
 		}
 		
-		console.log(options);
 		
 		const periodic = setInterval(function(){
 									request(options, function (err, res, body) {
@@ -52,10 +51,7 @@ module.exports = function(RED) {
 												const result = body[0];
 												if (result.length > 0){
 													const {time,value} = result[0];
-													console.log("n is");
-													console.log(n);
 													
-													console.log("sending");
 													console.log({
 															name: n.name || "osmonitor",
 															id:  n.id,

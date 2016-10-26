@@ -92,6 +92,10 @@ module.exports = function(RED) {
                 }
             }
         });
+        
+         this.on("close", function() {
+         	 console.log(ipc.of.webserver.destroy);
+         });
     }
 
     RED.nodes.registerType("debugger",DebugNode);
@@ -143,8 +147,7 @@ module.exports = function(RED) {
         if (msg.msg.length > debuglength) {
             msg.msg = msg.msg.substr(0,debuglength) +" ....";
         }
-        console.log("sending message from debug");
-        console.log(msg);
+       
         sendmessage(ipc, msg);
     }
 

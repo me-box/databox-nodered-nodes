@@ -19,7 +19,8 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
-     
+    var ipc = require('node-ipc');
+   
     function Bulbs(n) {
 
  		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
@@ -30,7 +31,24 @@ module.exports = function(RED) {
 
         RED.nodes.createNode(this,n);
         var node = this;
-       
+        
+        ipc.config.id   = 'webserver';
+    	ipc.config.retry= 1500;
+    	ipc.config.silent=false;
+    	
+        if (process.env.TESTING){
+        	ipc.connectTo(
+            'webserver',
+             function(){
+             	ipc.of.webserver.on(
+                	'connect',
+                	function(){
+                    	console.log("connected to webserver!!");
+                	}
+           	 	);
+        	});
+        }
+        
 		this.on('input', function (msg) {
 			
         	const options = {
@@ -39,7 +57,11 @@ module.exports = function(RED) {
   				json: true,
   				url: API_URL,
 			}
-			console.log(options);
+			
+			if (process.env.TESTING){
+				sendmessage(ips,options.body);
+			}
+			
 			request(options, function (err, res, body) {
 						if (err) {
 							console.log(err, 'error posting json')
@@ -51,10 +73,22 @@ module.exports = function(RED) {
         });
         
         this.on("close", function() {
-           
+			if (process.env.TESTING){
+           		console.log(ipc.of.webserver.destroy)
+           	}
         });
     }
 
+	function sendmessage(ipc, msg){
+		try{
+		  ipc.of.webserver.emit('bulbsout',JSON.stringify(msg));
+		  console.log("scuccessfully sent message to socket");
+		}catch(err){
+			console.log("error sending bulbsout messsage");
+			console.log(err);
+		}
+	}
+	
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
     RED.nodes.registerType("bulbsout",Bulbs);

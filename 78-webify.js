@@ -21,7 +21,7 @@ module.exports = function(RED) {
     function WebifyNode(n) {
         RED.nodes.createNode(this,n);
         this.name = n.name;
-        this.field = n.field || "msg";
+        this.field = n.field || "payload";
         this.template = n.template;
         this.syntax = n.syntax || "mustache";
         this.fieldType = n.fieldType || "msg";
