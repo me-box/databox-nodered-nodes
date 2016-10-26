@@ -34,7 +34,7 @@ module.exports = function(RED) {
         
         ipc.config.id   = 'webserver';
     	ipc.config.retry= 1500;
-    	ipc.config.silent=false;
+    	ipc.config.silent=true;
     	
         if (process.env.TESTING){
         	ipc.connectTo(
