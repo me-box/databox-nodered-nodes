@@ -25,6 +25,23 @@ module.exports = function(RED) {
         const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/actuate` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/actuate`;
         const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
 
+		ipc.config.id   = 'webserver';
+    	ipc.config.retry= 1500;
+    	ipc.config.silent=true;
+    	
+        if (process.env.TESTING){
+        	ipc.connectTo(
+            'webserver',
+             function(){
+             	ipc.of.webserver.on(
+                	'connect',
+                	function(){
+                    	console.log("connected to webserver!!");
+                	}
+           	 	);
+        	});
+        }
+        
         this.name = n.name;
 
         RED.nodes.createNode(this,n);
@@ -34,10 +51,16 @@ module.exports = function(RED) {
 			
         	const options = {
   				method: 'post',
-  				body: {actuator_id: SENSOR_ID, method: n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null},
+  				body: {actuator_id: SENSOR_ID, method: msg.type||n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null},
   				json: true,
   				url: API_URL,
 			}
+			
+			if (process.env.TESTING){
+				const testmsg =  {actuator_id: n.id, method: msg.type||n.subtype||"", channel:n.appId, data: msg.payload ? msg.payload : n.value ? n.value : null};
+				sendmessage(ipc,testmsg);
+			}
+			
 			console.log(options);
 			request(options, function (err, res, body) {
 						if (err) {
@@ -50,10 +73,21 @@ module.exports = function(RED) {
         });
         
         this.on("close", function() {
-           
+           if (process.env.TESTING){
+           		console.log(ipc.of.webserver.destroy)
+           }
         });
     }
 
+	function sendmessage(ipc, msg){
+		try{
+		  ipc.of.webserver.emit('pipstaprint',JSON.stringify(msg));
+		  console.log("scuccessfully sent message to socket");
+		}catch(err){
+			console.log("error sending bulbsout messsage");
+			console.log(err);
+		}
+	}
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
     RED.nodes.registerType("pipstaprint",PipstaPrint);
