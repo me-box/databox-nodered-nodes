@@ -27,7 +27,7 @@ module.exports = function(RED) {
         const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
         const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/data/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/data/latest`;
         const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
-		let socket;
+		let socket, periodic;
         
         this.name = n.name;
 
@@ -85,7 +85,7 @@ module.exports = function(RED) {
   				url: API_URL,
 			}
 		
-			const periodic = setInterval(function(){
+			periodic = setInterval(function(){
 							request(options, function (err, res, body) {
 								if (err) {
 									console.log(err, 'error posting json')
@@ -118,7 +118,13 @@ module.exports = function(RED) {
         this.on("close", function() {
         	console.log(`${node.id} stopping requests`);
         	if (process.env.TESTING){
-				clearInterval(periodic);
+        		console.log("clearing timer!");
+        		try{
+					clearInterval(periodic);
+				}catch(err){
+					console.log("hmmm failed to clear timer!");
+					console.log(err);
+				}
 			}else{
 				try{
 					socket.close();
