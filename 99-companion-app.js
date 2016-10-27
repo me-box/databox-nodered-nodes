@@ -62,11 +62,11 @@ module.exports = function(RED) {
         this.on('input', function (m) {
 			
             var msg = {}
-			if (!init){
+			/*if (!init){
 				console.log("sending reset!");
         		sendmessage(ipc, {channel:node.appId, type:"control", payload:{command:"reset"}});
         		init = true;
-        	}  	
+        	} */ 	
 			msg.channel = node.appId;
 			msg.sourceId = m.sourceId || fallbackId;
 			msg.type = "data";
@@ -83,7 +83,7 @@ module.exports = function(RED) {
         });
 
         this.on("close", function() {
-        	sendmessage(ipc, {channel:node.appId, type:"control", payload:{command:"reset"}});
+        	sendmessage(ipc, {channel:node.appId, type:"control", payload:{command:"reset", channel:node.appId}});
         	console.log(ipc.of.webserver.destroy);
         });
     }
