@@ -48,8 +48,9 @@ module.exports = function(RED) {
 		 	socket = new WebSocket(`wss://${API_ENDPOINT.hostname}`);
 		
 			console.log(`connecting to wss://${API_ENDPOINT.hostname}`);
+			console.log(socket);
 			
-			socket.onopen() = (event)=>{
+			socket.onopen = (event)=>{
 				console.log("socket --- opened!!");
 				socket.send("message", {sensor_id: SENSOR_ID});
 			};
