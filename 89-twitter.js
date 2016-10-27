@@ -45,12 +45,12 @@ module.exports = function(RED) {
 		
 		if (!process.env.TESTING){
 			
-		 	socket = new WebSocket(`wss://${API_ENDPOINT.hostname}`);
+		 	socket = new WebSocket(`ws://${API_ENDPOINT.hostname}`);
 		
-			console.log(`connecting to wss://${API_ENDPOINT.hostname}`);
+			console.log(`connecting to ws://${API_ENDPOINT.hostname}`);
 			console.log(socket);
 			
-			socket.onopen = (event)=>{
+			socket.onopen? = (event)=>{
 				console.log("socket --- opened!!");
 				socket.send("message", {sensor_id: SENSOR_ID});
 			};
