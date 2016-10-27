@@ -64,25 +64,25 @@ module.exports = function(RED) {
 						socket.send(JSON.stringify({sensor_id: SENSOR_ID}));
 					}else{
 						try{
-							//const {data, sensor_id, vendor_id, timestamp} = event.data;
+							const {data, sensor_id, vendor_id, timestamp} = JSON.parse(event.data);
 							
-							console.log("event data");
-							console.log(event.data);
+							/*console.log("event data");
+							console.log(JSON.parse(event.data));
 							
 							console.log("event data data");
 							console.log(event.data.data);
 							
 							console.log("event data text");
-							console.log(event.data.data.text);
+							console.log(event.data.data.text);*/
 							
-							/*node.send({	name: n.name || "twitter",
+							node.send({	name: n.name || "twitter",
 										id:  n.id,
 										type: "twitter",
 										payload: {
 											ts: Math.ceil(timestamp/1000),
 											value: data.text, 
 										},
-							});   */
+							});   
 						}catch(err){
 							console.log("error parsing twitter data!");
 							console.log(err);
