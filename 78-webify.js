@@ -46,19 +46,20 @@ module.exports = function(RED) {
                 //node.send(msg);
                
           		console.log({
+          			name: n.name || "webify",
           			type: "html",
-          			sourceId: node.id,
+          			sourceId: n.id,
           			payload: {
-          				values:msg
+          				values:value
           			}	
           		});
           		
-          		
           		node.send({
+          			name: n.name || "webify",
           			type: "html",
-          			sourceId: node.id,
+          			sourceId: n.id,
           			payload: {
-          				values:msg
+          				values:value
           			}	
           		});
           		
