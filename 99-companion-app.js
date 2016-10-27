@@ -84,6 +84,7 @@ module.exports = function(RED) {
 
         this.on("close", function() {
         	sendmessage(ipc, {channel:node.appId, type:"control", payload:{command:"reset", channel:node.appId}});
+        	ipc.of.webserver.destroy;
         });
     }
     

@@ -30,6 +30,10 @@ module.exports = function(RED) {
     ipc.config.silent=false;
     
     function DebugNode(n) {
+    
+    	if (!process.env.TESTING) //do nothing if not testing
+    		return;
+        
         RED.nodes.createNode(this,n);
         ipc.connectTo(
             'webserver',
@@ -159,6 +163,8 @@ module.exports = function(RED) {
 		}catch(err){
 			console.log("error sending close messsage");
 			console.log(err);
+		}finally{
+			ipc.of.webserver.destroy;
 		}
 	}
 	

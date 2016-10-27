@@ -74,11 +74,23 @@ module.exports = function(RED) {
         });
         
         this.on("close", function() {
-           if (process.env.TESTING){
-           		console.log(ipc.of.webserver.destroy)
-           }
+        	if (process.env.TESTING){
+           		sendClose(ipc, n.appId);
+           	}
         });
     }
+    
+    function sendClose(ipc, channel){
+		try{
+		  ipc.of.webserver.emit('message',JSON.stringify({channel:channel, type:"control", payload:{command:"reset", channel:channel}}));
+		  console.log("scuccessfully sent close message to socket");
+		}catch(err){
+			console.log("error sending close messsage");
+			console.log(err);
+		}finally{
+			ipc.of.webserver.destroy;
+		}
+	}
 
 	function sendmessage(ipc, msg){
 		try{
