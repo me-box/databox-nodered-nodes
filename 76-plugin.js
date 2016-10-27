@@ -19,7 +19,7 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
-
+	var WebSocket = require('ws');
     
     function Plug(n) {
  		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
@@ -32,31 +32,31 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         var node = this;
        
-		const options = {
-  			method: 'post',
-  			body: {sensor_id: SENSOR_ID},
-  			json: true,
-  			url: API_URL,
-		}
+       	if (!process.env.TESTING){
+			
+			try{
+				socket = new WebSocket(`ws://${API_ENDPOINT.hostname}`);
 		
-		const periodic = setInterval(function(){
-					
-					console.log("options:");
-					console.log(options);
-					
-					request(options, function (err, res, body) {
-						if (err) {
-							console.log(err, 'error posting json')
-						}else{
-							console.log("response:");
-							console.log(body);
-						
-							if (body.length > 0){
-								const result = body[0];
-								const {data,timestamp} = result;
-								const formattedvalue = n.subtype==="power-state" ? data ? 'on': 'off' : Number(data);
+				console.log(`connecting to ws://${API_ENDPOINT.hostname}`);
+				console.log(socket);
+			
+				socket.onopen = (event)=>{
+					console.log("successfully opened websocket");
+				};
+		
+				socket.onmessage = (event)=>{
+				
+				
+					if (event.data === "ack"){
+						//subscribe
+						console.log("subscribing to sensor!");
+						socket.send(JSON.stringify({sensor_id: SENSOR_ID}));
+					}else{
+						try{
+							const {data,timestamp} = JSON.parse(event.data);
+							const formattedvalue = n.subtype==="power-state" ? data ? 'on': 'off' : Number(data);
 													
-								const msg = {
+							const msg = {
 									name: n.name || "plugin",
 									id:  n.id,
 									subtype: n.subtype,
@@ -65,18 +65,78 @@ module.exports = function(RED) {
 										ts: timestamp,
 										value: formattedvalue,
 									}
-								}
+							}
 									
-								console.log(msg)
-								node.send(msg);   
-							}	
+							node.send(msg);    
 						}
-					});
-		}, 1000);
+						catch(err){
+							console.log("error parsing plugin data!");
+							console.log(err);
+						}
+					}
+				};
+			}catch(err){
+				console.log("error receiving data!");
+				console.log(err);
+			}
+		}
+		else{
+		
+			const options = {
+				method: 'post',
+				body: {sensor_id: SENSOR_ID},
+				json: true,
+				url: API_URL,
+			}
+		
+			const periodic = setInterval(function(){
+					
+						console.log("options:");
+						console.log(options);
+					
+						request(options, function (err, res, body) {
+							if (err) {
+								console.log(err, 'error posting json')
+							}else{
+								console.log("response:");
+								console.log(body);
+						
+								if (body.length > 0){
+									const result = body[0];
+									const {data,timestamp} = result;
+									const formattedvalue = n.subtype==="power-state" ? data ? 'on': 'off' : Number(data);
+													
+									const msg = {
+										name: n.name || "plugin",
+										id:  n.id,
+										subtype: n.subtype,
+										type: "plugin",
+										payload: {
+											ts: timestamp,
+											value: formattedvalue,
+										}
+									}
+									
+									console.log(msg)
+									node.send(msg);   
+								}	
+							}
+						});
+			}, 1000);
+		}
 
         this.on("close", function() {
-          	console.log(`${node.id} stopping requests`);
-			clearInterval(periodic);
+        	console.log(`${node.id} stopping requests`);
+        	if (process.env.TESTING){
+				clearInterval(periodic);
+			}else{
+				try{
+					socket.close();
+				}catch(err){
+					console.log("error closing socket");
+					console.log(err);
+				}
+			}
         });
     }
 

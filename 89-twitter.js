@@ -34,15 +34,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         var node = this;
        
-        
-		const options = {
-  			method: 'post',
-  			body: {sensor_id: SENSOR_ID},
-  			json: true,
-  			url: API_URL,
-		}
-		
-		
+    	
 		if (!process.env.TESTING){
 			
 			try{
@@ -66,15 +58,6 @@ module.exports = function(RED) {
 						try{
 							const {data, sensor_id, vendor_id, timestamp} = JSON.parse(event.data);
 							
-							/*console.log("event data");
-							console.log(JSON.parse(event.data));
-							
-							console.log("event data data");
-							console.log(event.data.data);
-							
-							console.log("event data text");
-							console.log(event.data.data.text);*/
-							
 							node.send({	name: n.name || "twitter",
 										id:  n.id,
 										type: "twitter",
@@ -95,6 +78,13 @@ module.exports = function(RED) {
 			}
 		}
 		else if (process.env.TESTING){
+			const options = {
+  				method: 'post',
+  				body: {sensor_id: SENSOR_ID},
+  				json: true,
+  				url: API_URL,
+			}
+		
 			const periodic = setInterval(function(){
 							request(options, function (err, res, body) {
 								if (err) {
@@ -104,10 +94,6 @@ module.exports = function(RED) {
 										if (body.length > 0){
 											const result = body[0];
 											const {data, sensor_id, vendor_id, timestamp} = result;
-										
-											console.log("got result");
-											console.log(data);
-											console.log(data.text);	
 										
 											node.send({
 													name: n.name || "twitter",
@@ -121,6 +107,7 @@ module.exports = function(RED) {
 										}
 									}
 									catch(err){
+										console.log("error parsing twitter data");
 										console.log(err);
 									}
 								}
