@@ -45,60 +45,76 @@ module.exports = function(RED) {
 		
 		if (!process.env.TESTING){
 			
-		 	socket = new WebSocket(`ws://${API_ENDPOINT.hostname}`);
+			try{
+				socket = new WebSocket(`ws://${API_ENDPOINT.hostname}`);
 		
-			console.log(`connecting to ws://${API_ENDPOINT.hostname}`);
-			console.log(socket);
+				console.log(`connecting to ws://${API_ENDPOINT.hostname}`);
+				console.log(socket);
 			
-			socket.onopen = (event)=>{
-				console.log("successfully opened websocket");
-			};
+				socket.onopen = (event)=>{
+					console.log("successfully opened websocket");
+				};
 		
-			socket.onmessage = (event)=>{
+				socket.onmessage = (event)=>{
 				
-				console.log("socket --- got data!!");
- 	 			console.log(event.data);
- 	 			if (event.data === "ack"){
- 	 				//subscribe
- 	 				console.log("subscribing to sensor!");
- 	 				socket.send(JSON.stringify({sensor_id: SENSOR_ID}));
- 	 			}
-			};
+				
+					if (event.data === "ack"){
+						//subscribe
+						console.log("subscribing to sensor!");
+						socket.send(JSON.stringify({sensor_id: SENSOR_ID}));
+					}else{
+						try{
+							const {data, sensor_id, vendor_id, timestamp} = event.data;
+							node.send({	name: n.name || "twitter",
+										id:  n.id,
+										type: "twitter",
+										payload: {
+											ts: Math.ceil(timestamp/1000),
+											value: data.text, 
+										},
+							});   
+						}catch(err){
+							console.log("error parsing twitter data!");
+						}
+					}
+				};
+			}catch(err){
+				console.log("error receiving data!");
+				console.log(err);
+			}
 		}
-		
-		
-		if (process.env.TESTING){
-					const periodic = setInterval(function(){
-									request(options, function (err, res, body) {
-										if (err) {
-											console.log(err, 'error posting json')
-										}else{
-											try{
-												if (body.length > 0){
-													const result = body[0];
-													const {data, sensor_id, vendor_id, timestamp} = result;
-												
-													console.log("got result");
-													console.log(data);
-													console.log(data.text);	
-												
-													node.send({
-															name: n.name || "twitter",
-															id:  n.id,
-															type: "twitter",
-															payload: {
-																ts: Math.ceil(timestamp/1000),
-																value: data.text, 
-															},
-													});   
-												}
-											}
-											catch(err){
-												console.log(err);
-											}
+		else if (process.env.TESTING){
+			const periodic = setInterval(function(){
+							request(options, function (err, res, body) {
+								if (err) {
+									console.log(err, 'error posting json')
+								}else{
+									try{
+										if (body.length > 0){
+											const result = body[0];
+											const {data, sensor_id, vendor_id, timestamp} = result;
+										
+											console.log("got result");
+											console.log(data);
+											console.log(data.text);	
+										
+											node.send({
+													name: n.name || "twitter",
+													id:  n.id,
+													type: "twitter",
+													payload: {
+														ts: Math.ceil(timestamp/1000),
+														value: data.text, 
+													},
+											});   
 										}
-									});
-						}, 2000);
+									}
+									catch(err){
+										console.log(err);
+									}
+								}
+							});
+				}, 2000);
 		}
 		
         this.on("close", function() {
@@ -106,7 +122,12 @@ module.exports = function(RED) {
         	if (process.env.TESTING){
 				clearInterval(periodic);
 			}else{
-				socket.close();
+				try{
+					socket.close();
+				}catch(err){
+					console.log("error closing socket");
+					console.log(err);
+				}
 			}
         });
     }
