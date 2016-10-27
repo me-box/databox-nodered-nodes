@@ -27,7 +27,8 @@ module.exports = function(RED) {
         const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
         const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/data/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/data/latest`;
         const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
-
+		let socket;
+        
         this.name = n.name;
 
         RED.nodes.createNode(this,n);
@@ -41,8 +42,27 @@ module.exports = function(RED) {
   			url: API_URL,
 		}
 		
-	
-		const periodic = setInterval(function(){
+		
+		if (!process.env.TESTING){
+			
+		 	socket = new WebSocket(`wss://${API_ENDPOINT.hostname}`);
+		
+			console.log(`connecting to wss://${API_ENDPOINT.hostname}`);
+			
+			socket.onopen() = (event)=>{
+				console.log("socket --- opened!!");
+				socket.send("message", {sensor_id: SENSOR_ID});
+			};
+		
+			socket.onmessage = (event)=>{
+				console.log("socket --- got data!!");
+ 	 			console.log(event.data);
+			};
+		}
+		
+		
+		if (process.env.TESTING){
+					const periodic = setInterval(function(){
 									request(options, function (err, res, body) {
 										if (err) {
 											console.log(err, 'error posting json')
@@ -73,10 +93,15 @@ module.exports = function(RED) {
 										}
 									});
 						}, 2000);
-
+		}
+		
         this.on("close", function() {
         	console.log(`${node.id} stopping requests`);
-			clearInterval(periodic);
+        	if (process.env.TESTING){
+				clearInterval(periodic);
+			}else{
+				socket.close();
+			}
         });
     }
 
