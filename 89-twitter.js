@@ -60,7 +60,8 @@ module.exports = function(RED) {
  	 			console.log(event.data);
  	 			if (event.data === "ack"){
  	 				//subscribe
- 	 				socket.send("message", {sensor_id: SENSOR_ID});
+ 	 				console.log("subscribing to sensor!");
+ 	 				socket.send({sensor_id: SENSOR_ID});
  	 			}
 			};
 		}
