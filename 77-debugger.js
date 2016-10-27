@@ -34,6 +34,8 @@ module.exports = function(RED) {
     	if (!process.env.TESTING) //do nothing if not testing
     		return;
         
+       
+        
         RED.nodes.createNode(this,n);
         ipc.connectTo(
             'webserver',
@@ -45,6 +47,8 @@ module.exports = function(RED) {
                 }
             );
         });
+        
+        closeWebsocket(ipc, n.appId);
        
         this.name = n.name;
         this.channel = n.appId;
@@ -155,6 +159,17 @@ module.exports = function(RED) {
         sendmessage(ipc, msg);
     }
 
+	
+	function closeWebsocket(ipc, channel){
+		console.log("closing any open websockets");
+		try{
+		  ipc.of.webserver.emit('message',JSON.stringify({channel:channel, type:"control", payload:{command:"reset", channel:channel}}));
+		  console.log("scuccessfully sent close message to socket");
+		}catch(err){
+			console.log("error sending close messsage");
+			console.log(err);
+		}
+	}
 	
 	function sendClose(ipc, channel){
 		try{
