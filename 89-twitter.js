@@ -51,13 +51,17 @@ module.exports = function(RED) {
 			console.log(socket);
 			
 			socket.onopen = (event)=>{
-				console.log("socket --- opened!!");
-				socket.send("message", {sensor_id: SENSOR_ID});
+				console.log("successfully opened websocket");
 			};
 		
 			socket.onmessage = (event)=>{
+				
 				console.log("socket --- got data!!");
  	 			console.log(event.data);
+ 	 			if (event.data === "ack"){
+ 	 				//subscribe
+ 	 				socket.send("message", {sensor_id: SENSOR_ID});
+ 	 			}
 			};
 		}
 		
