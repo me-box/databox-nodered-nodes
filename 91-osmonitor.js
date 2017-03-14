@@ -8,7 +8,7 @@ module.exports = function(RED) {
 
     function OSMonitor(n) {
 
-        const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.subtype}`] || '{}');
+        const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.nid}`] || '{}');
         const  HREF_ENDPOINT = API_ENDPOINT.href || ''; 
         this.name = n.name;
 
@@ -21,12 +21,14 @@ module.exports = function(RED) {
             
             if (HREF_ENDPOINT != ''){
 
-                console.log("setting up endpoints...");
+               
                 var endpointUrl = url.parse(HREF_ENDPOINT);
                 var dsID = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasDatasourceid'; })[0].val;
                 var dsUrl = endpointUrl.protocol + '//' + endpointUrl.host;
                 var dsType = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasType';})[0].val;
-        
+                console.log(`API_ENDPOINT: ${API_ENDPOINT}`);
+                console.log(`HREF_ENDPOINT: ${HREF_ENDPOINT}`);
+                console.log(`dsID:${dsID} dsUrl:${dsUrl} dsType${dsType}`);
                 //pull out the latest....
                 databox.timeseries.latest(dsUrl, dsID)
                 .then((data)=>{
