@@ -10,6 +10,9 @@ module.exports = function(RED) {
 
         const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
         const  HREF_ENDPOINT = API_ENDPOINT.href || ''; 
+        console.log(`API_ENDPOINT: ${API_ENDPOINT}`);
+        console.log(`HREF_ENDPOINT: ${HREF_ENDPOINT}`);
+
         this.name = n.name;
 
         RED.nodes.createNode(this,n);
@@ -26,20 +29,30 @@ module.exports = function(RED) {
                 var dsID = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasDatasourceid'; })[0].val;
                 var dsUrl = endpointUrl.protocol + '//' + endpointUrl.host;
                 var dsType = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasType';})[0].val;
-                console.log(`API_ENDPOINT: ${API_ENDPOINT}`);
-                console.log(`HREF_ENDPOINT: ${HREF_ENDPOINT}`);
+                
                 console.log(`dsID:${dsID} dsUrl:${dsUrl} dsType${dsType}`);
                 //pull out the latest....
-                databox.timeseries.latest(dsUrl, dsID)
-                .then((data)=>{
-                    console.log("GOT LATEST READING!");
-                    console.log(data);
-                    console.log(data[0].data);
-                })
-                .catch((err)=>{
-                    console.log("[Error getting timeseries.latest]",dsUrl, dsID);
-                });
 
+                const periodic = setInterval(function(){
+                    databox.timeseries.latest(dsUrl, dsID)
+                    .then((data)=>{
+                         console.log("sending data");
+                         console.log(data[0].data);
+                         node.send({
+                            name: n.name || "osmonitor",
+                            id:  n.id,
+                            subtype: n.subtype,
+                            type: "osmonitor",
+                            payload: {
+                                ts: moment.utc(time).unix(),
+                                value: data[0].data, 
+                            },
+                        });   
+                    })
+                    .catch((err)=>{
+                        console.log("[Error getting timeseries.latest]",dsUrl, dsID);
+                    });
+                }, 3000);
                 //subscribe
                 databox.subscriptions.connect(HREF_ENDPOINT)
                 .then((emitter)=>{
@@ -74,6 +87,7 @@ module.exports = function(RED) {
 
         this.on("close", function() {
             console.log(`${node.id} stopping requests`);
+            clearInterval(periodic);
         });
        
     }
