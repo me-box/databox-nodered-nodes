@@ -8,7 +8,7 @@ module.exports = function(RED) {
 
     function OSMonitor(n) {
 
-        const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.nid}`] || '{}');
+        const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
         const  HREF_ENDPOINT = API_ENDPOINT.href || ''; 
         this.name = n.name;
 
