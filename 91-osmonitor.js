@@ -8,6 +8,7 @@ module.exports = function(RED) {
 
     function OSMonitor(n) {
 
+        var periodic;
         const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
         const  HREF_ENDPOINT = API_ENDPOINT.href || ''; 
         console.log(`API_ENDPOINT: ${API_ENDPOINT}`);
@@ -33,7 +34,7 @@ module.exports = function(RED) {
                 console.log(`dsID:${dsID} dsUrl:${dsUrl} dsType${dsType}`);
                 //pull out the latest....
 
-                const periodic = setInterval(function(){
+                periodic = setInterval(function(){
                     databox.timeseries.latest(dsUrl, dsID)
                     .then((data)=>{
                          console.log("sending data");
@@ -44,7 +45,7 @@ module.exports = function(RED) {
                             subtype: n.subtype,
                             type: "osmonitor",
                             payload: {
-                                ts: moment.utc(time).unix(),
+                                ts: Date.now(),
                                 value: data[0].data, 
                             },
                         });   
@@ -53,8 +54,9 @@ module.exports = function(RED) {
                         console.log("[Error getting timeseries.latest]",dsUrl, dsID);
                     });
                 }, 3000);
-                //subscribe
-                databox.subscriptions.connect(HREF_ENDPOINT)
+
+                //subscribe - this doesn't work at the mo!
+                /*databox.subscriptions.connect(HREF_ENDPOINT)
                 .then((emitter)=>{
                     dataEmitter = emitter;
                     var endpointUrl = url.parse(HREF_ENDPOINT);
@@ -71,7 +73,7 @@ module.exports = function(RED) {
                             subtype: n.subtype,
                             type: "osmonitor",
                             payload: {
-                                ts: moment.utc(time).unix(),
+                                ts: Date.now(),
                                 value: data, 
                             },
                         });   
@@ -81,7 +83,7 @@ module.exports = function(RED) {
                         console.log(error);
                     });
                 
-                }).catch((err)=>{console.log("[Error] connecting ws endpoint ",err);});
+                }).catch((err)=>{console.log("[Error] connecting ws endpoint ",err);});*/
             }
         });
 
