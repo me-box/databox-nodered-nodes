@@ -6,8 +6,8 @@ module.exports = function(RED) {
     var databox = require('node-databox');
     var url = require("url");
 
-    function testing(n){
-        
+    function testing(node, n){
+
         const API_URL  = `${process.env.MOCK_DATA_SOURCE}/reading/latest`;
 
         const options = {
@@ -62,9 +62,11 @@ module.exports = function(RED) {
     }
 
     function OSMonitor(n) {
-
+        
+        RED.nodes.createNode(this,n);
+        
         if (process.env.TESTING){
-            return testing(n);
+            return testing(this, n);
         }
 
         var periodic;
@@ -73,10 +75,9 @@ module.exports = function(RED) {
         console.log(`API_ENDPOINT: ${API_ENDPOINT}`);
         console.log(`HREF_ENDPOINT: ${HREF_ENDPOINT}`);
 
-        this.name = n.name;
-
-        RED.nodes.createNode(this,n);
+        this.name = n.name; 
         var node = this;
+
         new Promise((resolve,reject)=>{
                 setTimeout(resolve,10000);
         }).then(()=>{
