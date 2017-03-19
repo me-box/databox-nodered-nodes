@@ -1,0 +1,25 @@
+{
+  "name": "databox-nodes",
+  "version": "1.0.0",
+  "description": "node-red nodes for databox sdk",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tlodge/databox-nodered-nodes.git"
+  },
+  "author": "Tom Lodge",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tlodge/databox-nodered-nodes/issues"
+  },
+  "homepage": "https://github.com/tlodge/databox-nodered-nodes#readme",
+  "dependencies": {
+    "moment": "^2.18.0",
+    "node-databox": "^0.2.8",
+    "node-ipc": "^8.10.3",
+    "request": "^2.81.0"
+  }
+}
