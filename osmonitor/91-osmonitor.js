@@ -6,7 +6,66 @@ module.exports = function(RED) {
     var databox = require('node-databox');
     var url = require("url");
 
+    function testing(n){
+        
+        const API_URL  = `${process.env.MOCK_DATA_SOURCE}/reading/latest`;
+
+        const options = {
+            method: 'post',
+            body: {sensor_id: n.subtype},
+            json: true,
+            url: API_URL,
+        }
+        
+        const periodic = setInterval(function(){
+                    request(options, function (err, res, body) {
+                        if (err) {
+                            console.log(err, 'error posting json')
+                        }else{
+                            if (body.length > 0){
+                                const result = body[0];
+                                if (result.length > 0){
+                                    const {time,value} = result[0];
+                                    
+                                    console.log({
+                                            name: n.name || "osmonitor",
+                                            id:  n.id,
+                                            subtype: n.subtype,
+                                            type: "osmonitor",
+                                            payload: {
+                                                ts: moment.utc(time).unix(),
+                                                value: Number(value), 
+                                            },
+                                    });
+                                    
+                                    node.send({
+                                            name: n.name || "osmonitor",
+                                            id:  n.id,
+                                            subtype: n.subtype,
+                                            type: "osmonitor",
+                                            payload: {
+                                                ts: moment.utc(time).unix(),
+                                                value: Number(value), 
+                                            },
+                                    });   
+                                }
+                            }   
+                        }
+                    });
+        }, 3000);
+
+
+        this.on("close", function() {
+            console.log(`${node.id} stopping requests`);
+            clearInterval(periodic);
+        });
+    }
+
     function OSMonitor(n) {
+
+        if (process.env.TESTING){
+            return testing(n);
+        }
 
         var periodic;
         const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
