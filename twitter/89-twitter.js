@@ -21,6 +21,7 @@ module.exports = function(RED) {
     "use strict";
     var request = require('request');
   	var databox = require('node-databox');
+    var url = require("url");
     
     function testing(node, n){
     	const options = {
@@ -67,7 +68,7 @@ module.exports = function(RED) {
 			}catch(err){
 				console.log(err);
 			}
-		}
+		});
     }
 
 
@@ -93,9 +94,10 @@ module.exports = function(RED) {
 			const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
 
         	const  HREF_ENDPOINT = API_ENDPOINT.href || ''; 
-
-        	databox.subscriptions.connect(HREF_ENDPOINT)
-                .then((emitter)=>{
+			
+			var dataEmitter = null; 
+        	
+        	databox.subscriptions.connect(HREF_ENDPOINT).then((emitter)=>{
                     dataEmitter = emitter;
                     
                     var endpointUrl = url.parse(HREF_ENDPOINT);
@@ -126,7 +128,7 @@ module.exports = function(RED) {
                         console.log(error);
                     });
                 
-                }).catch((err)=>{console.log("[Error] connecting ws endpoint ",err);});	
+            }).catch((err)=>{console.log("[Error] connecting ws endpoint ",err);});	
 		}
 		catch(err){
 			console.log("error receiving data!");
