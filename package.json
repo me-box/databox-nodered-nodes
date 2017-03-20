@@ -18,6 +18,7 @@
   "homepage": "https://github.com/tlodge/databox-nodered-nodes#readme",
   "dependencies": {
     "moment": "^2.18.0",
+    "mustache": "^2.3.0",
     "node-databox": "^0.2.8",
     "node-ipc": "^8.10.3",
     "request": "^2.81.0"
