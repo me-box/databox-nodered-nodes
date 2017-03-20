@@ -20,8 +20,57 @@ module.exports = function(RED) {
 
     "use strict";
     var request = require('request');
-    var WebSocket = require('ws');
+  	var databox = require('node-databox');
     
+    function testing(node, n){
+    	const options = {
+  			method: 'post',
+  			body: {sensor_id: SENSOR_ID},
+  			json: true,
+  			url: API_URL,
+		}
+		
+		const periodic = setInterval(function(){
+			request(options, function (err, res, body) {
+				if (err) {
+					console.log(err, 'error posting json')
+				}else{
+					try{
+						if (body.length > 0){
+							const result = body[0];
+							const {data, sensor_id, vendor_id, timestamp} = result;
+						
+							node.send({
+									name: n.name || "twitter",
+									id:  n.id,
+									type: "twitter",
+									payload: {
+										ts: Math.ceil(timestamp/1000),
+										value: data.text, 
+									},
+							});   
+						}
+					}
+					catch(err){
+						console.log("error parsing twitter data");
+						console.log(err);
+					}
+				}
+			});
+		}, 2000);
+
+		node.on("close", function() {
+
+        	console.log("clearing timer!");
+        	try{
+				clearInterval(periodic);
+			}catch(err){
+				console.log(err);
+			}
+		}
+    }
+
+
     function Twitter(n) {
     
         const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
@@ -35,104 +84,58 @@ module.exports = function(RED) {
         var node = this;
        
     	
-		if (!process.env.TESTING){
-			
-			try{
-				socket = new WebSocket(`ws://${API_ENDPOINT.hostname}`);
-		
-				console.log(`connecting to ws://${API_ENDPOINT.hostname}`);
-				console.log(socket);
-			
-				socket.onopen = (event)=>{
-					console.log("successfully opened websocket");
-				};
-		
-				socket.onmessage = (event)=>{
-				
-				
-					if (event.data === "ack"){
-						//subscribe
-						console.log("subscribing to sensor!");
-						socket.send(JSON.stringify({sensor_id: SENSOR_ID}));
-					}else{
-						try{
-							const {data, sensor_id, vendor_id, timestamp} = JSON.parse(event.data);
-							
-							node.send({	name: n.name || "twitter",
-										id:  n.id,
-										type: "twitter",
-										payload: {
-											ts: Math.ceil(timestamp/1000),
-											value: data.text, 
-										},
-							});   
-						}catch(err){
-							console.log("error parsing twitter data!");
-							console.log(err);
-						}
-					}
-				};
-			}catch(err){
-				console.log("error receiving data!");
-				console.log(err);
-			}
+		if (process.env.TESTING){
+			return testing(node, n);
 		}
-		else if (process.env.TESTING){
-			const options = {
-  				method: 'post',
-  				body: {sensor_id: SENSOR_ID},
-  				json: true,
-  				url: API_URL,
-			}
-		
-			periodic = setInterval(function(){
-							request(options, function (err, res, body) {
-								if (err) {
-									console.log(err, 'error posting json')
-								}else{
-									try{
-										if (body.length > 0){
-											const result = body[0];
-											const {data, sensor_id, vendor_id, timestamp} = result;
-										
-											node.send({
-													name: n.name || "twitter",
-													id:  n.id,
-													type: "twitter",
-													payload: {
-														ts: Math.ceil(timestamp/1000),
-														value: data.text, 
-													},
-											});   
-										}
-									}
-									catch(err){
-										console.log("error parsing twitter data");
-										console.log(err);
-									}
-								}
-							});
-				}, 2000);
+			
+		try{
+
+			const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
+
+        	const  HREF_ENDPOINT = API_ENDPOINT.href || ''; 
+
+        	databox.subscriptions.connect(HREF_ENDPOINT)
+                .then((emitter)=>{
+                    dataEmitter = emitter;
+                    
+                    var endpointUrl = url.parse(HREF_ENDPOINT);
+                    
+                    var dsID = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasDatasourceid'; })[0].val;
+                    
+                    var dsUrl = endpointUrl.protocol + '//' + endpointUrl.host;
+                    
+                    console.log("[subscribing]",dsUrl,dsID);
+                    
+                    databox.subscriptions.subscribe(dsUrl,dsID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});
+                    
+                    dataEmitter.on('data',(hostname, dsID, data)=>{
+                    	console.log("GOT SOME TWITTER DATA!")
+                    	console.log(hostname, dsID, data);		
+						
+						node.send({	name: n.name || "twitter",
+									id:  n.id,
+									type: "twitter",
+									payload: {
+										ts: Math.ceil(timestamp/1000),
+										value: data, 
+									},
+						});   
+                    });
+
+                    dataEmitter.on('error',(error)=>{
+                        console.log(error);
+                    });
+                
+                }).catch((err)=>{console.log("[Error] connecting ws endpoint ",err);});	
+		}
+		catch(err){
+			console.log("error receiving data!");
+			console.log(err);
 		}
 		
+
         this.on("close", function() {
         	console.log(`${node.id} stopping requests`);
-        	if (process.env.TESTING){
-        		console.log("clearing timer!");
-        		try{
-					clearInterval(periodic);
-				}catch(err){
-					console.log("hmmm failed to clear timer!");
-					console.log(err);
-				}
-			}else{
-				try{
-					socket.close();
-				}catch(err){
-					console.log("error closing socket");
-					console.log(err);
-				}
-			}
         });
     }
 

@@ -55,7 +55,7 @@ module.exports = function(RED) {
         }, 3000);
 
 
-        this.on("close", function() {
+        node.on("close", function() {
             console.log(`${node.id} stopping requests`);
             clearInterval(periodic);
         });
