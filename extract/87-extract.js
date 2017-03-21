@@ -53,10 +53,10 @@ module.exports = function(RED) {
                 if (Object.keys(extracted).length > 0){
                     console.log("************* sending");
                     console.log({
-                        payload: extracted;
+                        payload: extracted
                     });
                     node.send({
-                        payload: extracted;
+                        payload: extracted
                     });
                 }
             }
