@@ -22,7 +22,7 @@ module.exports = function(RED) {
     var request = require('request');
   	var databox = require('node-databox');
     var url = require("url");
-    
+
     function testing(node, n){
     	const options = {
   			method: 'post',
@@ -76,9 +76,7 @@ module.exports = function(RED) {
     
         const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
         const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/data/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/data/latest`;
-        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
-		let socket, periodic;
-        
+        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;        
         this.name = n.name;
 
         RED.nodes.createNode(this,n);
@@ -92,42 +90,61 @@ module.exports = function(RED) {
 		try{
 
 			const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
+        	const  HREF_ENDPOINT = API_ENDPOINT.href || '';
+        	
+        	const dsID = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasDatasourceid'; })[0].val;
+            const dsUrl = endpointUrl.protocol + '//' + endpointUrl.host;
+            const dsType = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasType';})[0].val;
+                
+            //first pull out the last reading from twitter and send this 
+            databox.timeseries.latest(dsUrl, dsID)
+            .then((d)=>{
+                 console.log("sending data");
+                 console.log(d);
+                 console.log(d[0].data);
+                 node.send({	
+                	name: n.name || "twitter",
+					id:  n.id,
+					type: "twitter",
+					payload: {
+						ts: Math.ceil(timestamp/1000),
+						value: d[0].data, 
+					},
+				});   
+            })
+            .catch((err)=>{
+                console.log("[Error getting timeseries.latest]",dsUrl, dsID);
+            });
+             
 
-        	const  HREF_ENDPOINT = API_ENDPOINT.href || ''; 
-			
+            //now listen for any new messages
 			var dataEmitter = null; 
         	
         	databox.subscriptions.connect(HREF_ENDPOINT).then((emitter)=>{
-                    dataEmitter = emitter;
-                    
-                    var endpointUrl = url.parse(HREF_ENDPOINT);
-                    
-                    var dsID = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasDatasourceid'; })[0].val;
-                    
-                    var dsUrl = endpointUrl.protocol + '//' + endpointUrl.host;
-                    
-                    console.log("[subscribing]",dsUrl,dsID);
-                    
-                    databox.subscriptions.subscribe(dsUrl,dsID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});
-                    
-                    dataEmitter.on('data',(hostname, dsID, data)=>{
-                    	console.log("GOT SOME TWITTER DATA!")
-                    	console.log(hostname, dsID, data);		
-						
-						node.send({	name: n.name || "twitter",
-									id:  n.id,
-									type: "twitter",
-									payload: {
-										ts: Math.ceil(timestamp/1000),
-										value: data, 
-									},
-						});   
-                    });
+                dataEmitter = emitter;
 
-                    dataEmitter.on('error',(error)=>{
-                        console.log(error);
-                    });
+                var endpointUrl = url.parse(HREF_ENDPOINT);    
+                console.log("[subscribing]",dsUrl,dsID);
                 
+                databox.subscriptions.subscribe(dsUrl,dsID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});
+                
+                dataEmitter.on('data',(hostname, dsID, data)=>{
+                	console.log("NEW TWITTER DATA!")
+                	console.log(hostname, dsID, data);		
+					
+					node.send({	name: n.name || "twitter",
+								id:  n.id,
+								type: "twitter",
+								payload: {
+									ts: Math.ceil(timestamp/1000),
+									value: data, 
+								},
+					});   
+                });
+
+                dataEmitter.on('error',(error)=>{
+                    console.log(error);
+                });
             }).catch((err)=>{console.log("[Error] connecting ws endpoint ",err);});	
 		}
 		catch(err){
