@@ -93,6 +93,7 @@ module.exports = function(RED) {
         	const  HREF_ENDPOINT = API_ENDPOINT.href || '';
         	
         	const dsID = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasDatasourceid'; })[0].val;
+        	const endpointUrl = url.parse(HREF_ENDPOINT); 
             const dsUrl = endpointUrl.protocol + '//' + endpointUrl.host;
             const dsType = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasType';})[0].val;
                 
@@ -123,7 +124,7 @@ module.exports = function(RED) {
         	databox.subscriptions.connect(HREF_ENDPOINT).then((emitter)=>{
                 dataEmitter = emitter;
 
-                var endpointUrl = url.parse(HREF_ENDPOINT);    
+                   
                 console.log("[subscribing]",dsUrl,dsID);
                 
                 databox.subscriptions.subscribe(dsUrl,dsID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});
