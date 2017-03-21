@@ -161,8 +161,8 @@ module.exports = function(RED) {
         databox.subscriptions.subscribe(mobileStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
         
         dataEmitter.on('data',(hostname, dsID, d)=>{
-            
-            const payload = _format_payload(data, n.subtype);
+            console.log(d);
+            const payload = _format_payload(d, n.subtype);
 
             node.send({
               name: n.name || "sensingkit",
