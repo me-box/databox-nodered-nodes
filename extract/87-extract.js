@@ -11,11 +11,21 @@ module.exports = function(RED) {
         
         var node = this;
 
-        const filter = n.filters.reduce()
+        const _lookup = n.filters.reduce((acc, item)=>{
+            const entry = acc[item.source] || []
+            entry.push(item.path);
+            acc[item.source] = entry;
+            return acc;
+        },{});
+
+        console.log("created lookup");
+        console.log(_lookup);
 
         this.on('input', function (msg) {
-        
-
+            
+            console.log("seen a msg");
+            console.log(msg);
+            node.send(msg);
 
         });
     }
