@@ -35,7 +35,7 @@ module.exports = function(RED) {
             
             console.log("seen a msg");
             console.log(msg);
-            const paths = _lookup[msg];
+            const paths = _lookup[msg.type];
             console.log("paths are");
             console.log(paths);
 
