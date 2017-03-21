@@ -19,10 +19,6 @@ module.exports = function(RED) {
         },{});
 
         const _extract = (msg,path)=>{
-            console.log("extracting msg");
-            console.log(msg);
-            console.log("path");
-            console.log(path);
             return path.reduce((acc,item)=>{
                 return msg[item];
             },null)
@@ -33,12 +29,9 @@ module.exports = function(RED) {
 
         this.on('input', function (msg) {
             
-            console.log("seen a msg");
-            console.log(msg);
+          
             const paths = _lookup[msg.type];
-            console.log("paths are");
-            console.log(paths);
-
+          
             if (paths){
                 const extracted = paths.reduce((acc,path)=>{
                     if (path.length > 0){
@@ -51,7 +44,7 @@ module.exports = function(RED) {
                 },{}); 
 
                 if (Object.keys(extracted).length > 0){
-                    console.log("************* sending");
+                    console.log("sending:")
                     console.log({
                         payload: extracted
                     });
