@@ -46,9 +46,13 @@ module.exports = function(RED) {
                 if (Object.keys(extracted).length > 0){
                     console.log("sending:")
                     console.log({
+                        name: n.name || "extract",
+                        id:  n.id,
                         payload: extracted
                     });
                     node.send({
+                        name: n.name || "extract",
+                        id:  n.id,
                         payload: extracted
                     });
                 }
