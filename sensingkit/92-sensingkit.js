@@ -15,149 +15,167 @@
  **/
 
 // If you use this as a template, update the copyright with your own name.
+
 module.exports = function(RED) {
     
-    "use strict";
-    var request = require('request');
-	var rs;
-	
-	function _seen(arr, value){
-		return arr.indexOf(value) != -1;
-	}
-	
-	function _format_payload(data,sensor){
-		
-		if (_seen(["bluetooth"], sensor)){
-			const [ts1, ts, name, address, rssi] = data;	
-			return {ts, name, address, rssi};
-		}
-		else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], sensor)){
-			const [ts,x,y,z] = data;
-			return {ts,x,y,z};
-		}
-		else if (_seen(["rotation"], sensor)){
-			const [ts,x,y,z,cos,headingAccuracy] = data;
-			return {ts,x,y,z,cos,headingAccuracy};
-		}
-		else if (_seen(["battery"], sensor)){
-			const [ts,charge,temperature,voltage,plugged,status,health] = data;
-			return {ts,charge,temperature,voltage,plugged,status,health};
-		}
-		else if (_seen(["audio-level", "light"], sensor)){
-			const [ts,value] = data;
-			return {ts, value};
-		}
-		return {};
-	}
-	
-   	function startStreaming(macaroon, stream, sensor){
-      	
-      	console.log("starting streaming...");
-      	//databox-driver-mobile.store:8080
-        const url =  process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/api/${sensor}` : `http://databox-store-passthrough:8080/api/${sensor}`;  
+  "use strict";
+  var request = require('request');
+  var databox = require('node-databox');
+  var url = require("url");
+
+  //for testing only
+  var stream = require('stream');
+  var rs = null;     
+
+  function _seen(arr, value){
+    return arr.indexOf(value) != -1;
+  }
+  
+  function startStreaming(stream, sensor){
+        
+        console.log("starting streaming...");
+        //databox-driver-mobile.store:8080
+        const url =  `${process.env.MOCK_DATA_SOURCE}/api/${sensor}`
         console.log(`connecting to ${url}`);
         
         //const url = `http://localhost:8087/api/${sensor}`;
-        rs = request.post({url:url, form: {macaroon:macaroon}})
+        rs = request.post({url:url})
         
         rs.on('error', function(err) {
-        	rs.abort();
-    		console.log('error connecting - retrying in 3s');
-    		console.log(err);
-    		setTimeout(function(){
-    						startStreaming(macaroon,stream,sensor)
-    				   }, 3000);
-  		});
-  		
-    	rs.pipe(stream);
+        rs.abort();
+        console.log('error connecting - retrying in 3s');
+        console.log(err);
+        setTimeout(function(){
+          startStreaming(stream,sensor)
+        }, 3000);
+      });
+      
+      rs.pipe(stream);
+  }
+
+  function _format_payload(data,sensor){
+    
+    if (_seen(["bluetooth"], sensor)){
+      const [ts1, ts, name, address, rssi] = data;  
+      return {ts, name, address, rssi};
     }
+    else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], sensor)){
+      const [ts,x,y,z] = data;
+      return {ts,x,y,z};
+    }
+    else if (_seen(["rotation"], sensor)){
+      const [ts,x,y,z,cos,headingAccuracy] = data;
+      return {ts,x,y,z,cos,headingAccuracy};
+    }
+    else if (_seen(["battery"], sensor)){
+      const [ts,charge,temperature,voltage,plugged,status,health] = data;
+      return {ts,charge,temperature,voltage,plugged,status,health};
+    }
+    else if (_seen(["audio-level", "light"], sensor)){
+      const [ts,value] = data;
+      return {ts, value};
+    }
+    return {};
+  }
+  
 
-    function SensingKit(n) {
-        
-        
-        const ARBITER_TOKEN = process.env.ARBITER_TOKEN || "";
-		const ARBITER = process.env.TESTING ? process.env.MOCK_DATA_SOURCE : process.env.DATABOX_ARBITER_ENDPOINT.replace("/api","");
-		
-        var stream = require('stream');
-        var sensorStream = new stream.Writable();
-        // Create a RED node
-        this.description = n.description;
-        this.name = n.name;
-		
-        RED.nodes.createNode(this,n);
-        var node = this;
-        var str = "";
-       
-        sensorStream._write = function(chunk, encoding, done){
-          str += chunk.toString();
-		  
-          if (str.indexOf("\n") != -1){
-          	try{
-          		
-          	   const data = str.replace("\n","").split(",");
-        
-			   const payload = _format_payload(data, n.sensor);
-			   
-			   console.log({
-					name: n.name || "sensingkit",
-					id:  n.id,
-					type: "sensingkit",
-					sensor: n.sensor,
-					payload: payload,
-			   });
-	
-			   node.send({
-					name: n.name || "sensingkit",
-					id:  n.id,
-					type: "sensingkit",
-					sensor: n.sensor,
-					payload: payload,
-			   });   
+  function testing(node, n){
+     
+    var sensorStream = new stream.Writable();
+    var str="";
 
-			   str = "";
-			}
-			catch(err){
-				console.log(err);
-				console.log("data is");
-				console.log(`[${str.replace("\n","")}]`);
-				str = "";
-			}
-          }
-          done();
-        }
+    sensorStream._write = function(chunk, encoding, done){
+      
+      str += chunk.toString();
+      
+      if (str.indexOf("\n") != -1){
+        try{
+          
+          const data = str.replace("\n","").split(",");
         
-        const formData = {
-                token: ARBITER_TOKEN,
-                //target: 'databox-driver-mobile.store'
-       			target:'databox-store-passthrough'
-        }
-        
-        console.log("calling arbiter");
-        console.log(`${ARBITER}/macaroon`);
-        
-        request.post({url:`${ARBITER}/macaroon`, form: formData},
-                function optionalCallback(err, httpResponse, body) {
-                	console.log("got response");
-                	if (err){
-                		console.log("error!");
-                		console.log(err);
-                	}
-                    startStreaming(body,sensorStream,n.sensor);
-        		}
-        );
-        
+          const payload = _format_payload(data, n.sensor);
          
-        this.on("close", function() {
-           	console.log("CLOSING STREAM!!");
-           	sensorStream.end();
-           	console.log("Aborting connection");
-           	rs.abort();
-        	console.log("done");
-        });
+          console.log({
+            name: n.name || "sensingkit",
+            id:  n.id,
+            type: "sensingkit",
+            subtype: n.subtype,
+            payload: payload,
+          });
+  
+          node.send({
+            name: n.name || "sensingkit",
+            id:  n.id,
+            type: "sensingkit",
+            subtype: n.subtype,
+            payload: payload,
+          });   
+          str = "";
+        }
+        catch(err){
+          console.log(err);
+          console.log("data is");
+          console.log(`[${str.replace("\n","")}]`);
+          str = "";
+        }
+      }
+      done();
+    }  
+    startStreaming(sensorStream,n.subtype);
+  
+    node.on("close", function() {
+      console.log("CLOSING STREAM!!");
+      sensorStream.end();
+      console.log("Aborting connection");
+      rs.abort();
+      console.log("done");
+    });
+  }
+
+  function SensingKit(n){
+      
+    this.name = n.name;
+  
+    RED.nodes.createNode(this,n);
+    var node = this;
+    
+    if (process.env.TESTING){
+      return testing(this, n);
     }
 
-    // Register the node by name. This must be called beforeoverriding any of the
-    // Node functions.
-    RED.nodes.registerType("sensingkit",SensingKit);
+    const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
+    //const DATASOURCE_DS_light = JSON.parse(process.env.DATASOURCE_DS_light || '{}');
+    const mobileStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
+    const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
+    
+    var dataEmitter = null; 
+    
+    databox.waitForStoreStatus(mobileStore, 'active')
+      .then(() => databox.subscriptions.connect(mobileStore))
+      .then((emitter) => {
+        
+        dataEmitter = emitter;
+        databox.subscriptions.subscribe(mobileStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
+        
+        dataEmitter.on('data',(hostname, dsID, d)=>{
+            
+            const payload = _format_payload(data, n.subtype);
 
+            node.send({
+              name: n.name || "sensingkit",
+              id:  n.id,
+              type: "sensingkit",
+              subtype: n.subtype,
+              payload: payload,
+             }); 
+        });
+      }).catch((err) => console.error(err));
+
+      this.on("close", function() {
+        console.log("closed")
+        //TODO: cleanup
+      });
+  }
+  
+  RED.nodes.registerType("sensingkit",SensingKit);
 }
