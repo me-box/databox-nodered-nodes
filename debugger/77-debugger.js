@@ -96,7 +96,7 @@ module.exports = function(RED) {
                     }
                 }
                 if (this.active) {
-                    sendDebug({id:this.id,name:this.name,channel:this.channel,topic:msg.topic,property:property,msg:output,_path:msg._path});
+                    sendDebug({id:msg.id||this.id,name:msg.name||this.name,channel:this.channel,topic:msg.topic,property:property,msg:output,_path:msg._path});
                 }
             }
         });
