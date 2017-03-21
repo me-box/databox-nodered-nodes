@@ -93,7 +93,10 @@ module.exports = function(RED) {
           
           const data = str.replace("\n","").split(",");
         
-          const payload = _format_payload(data, n.sensor);
+          console.log("formatting data for");
+          console.log(data);
+
+          const payload = _format_payload(data, n.subtype);
          
           console.log({
             name: n.name || "sensingkit",
@@ -176,6 +179,6 @@ module.exports = function(RED) {
         //TODO: cleanup
       });
   }
-  
+
   RED.nodes.registerType("sensingkit",SensingKit);
 }
