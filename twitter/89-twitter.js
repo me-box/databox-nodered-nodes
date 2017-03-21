@@ -100,9 +100,18 @@ module.exports = function(RED) {
             //first pull out the last reading from twitter and send this 
             databox.timeseries.latest(dsUrl, dsID)
             .then((d)=>{
-                 console.log("sending data");
-                 console.log(d[0]);
-                 const {data, datasource_id, timestamp} = JSON.parse(d[0]);
+           
+                 const {data, datasource_id, timestamp} = d[0];
+
+                 console.log({	
+                	name: n.name || "twitter",
+					id:  n.id,
+					type: "twitter",
+					payload: {
+						ts: Math.ceil(timestamp/1000),
+						value: data.text, 
+					}
+				 });
 
                  node.send({	
                 	name: n.name || "twitter",
@@ -132,8 +141,11 @@ module.exports = function(RED) {
                 
                 dataEmitter.on('data',(hostname, dsID, d)=>{
                 	console.log("NEW TWITTER DATA!")
+                	
+                	console.log(d);
+
                 	console.log(hostname, dsID, data);		
-					const {data, datasource_id, timestamp} = JSON.parse(d);
+					const {data, datasource_id, timestamp} = d;
 
 					node.send({	name: n.name || "twitter",
 								id:  n.id,
