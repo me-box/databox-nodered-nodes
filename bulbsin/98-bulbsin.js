@@ -20,7 +20,8 @@ module.exports = function(RED) {
     "use strict";
     var request = require('request');
  	var databox = require('node-databox');
-
+ 	 var url = require("url");
+ 	 
     function testing(node, n){
     	
     	const API_URL  = `${process.env.MOCK_DATA_SOURCE}/reading/latest`;
