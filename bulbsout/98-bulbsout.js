@@ -23,15 +23,17 @@ module.exports = function(RED) {
    
     function Bulbs(n) {
 
- 		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
-        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/actuate` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/actuate`;
-        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
-
-        this.name = n.name;
-
+    	this.name = n.name;
         RED.nodes.createNode(this,n);
         var node = this;
-        
+
+    	const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
+    	const actuationStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
+    	const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
+
+    	console.log(`store: ${actuationStore}`);
+    	console.log(`sensorID: ${sensorID}`);
+
         ipc.config.id   = 'webserver';
     	ipc.config.retry= 1500;
     	ipc.config.silent=true;
@@ -51,31 +53,23 @@ module.exports = function(RED) {
         
 		this.on('input', function (msg) {
 			
-			
-			console.log("BULBS-->seen an input message");
-			console.log(msg);
-			
-        	const options = {
-  				method: 'post',
-  				body: {actuator_id: SENSOR_ID, method: msg.type||n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null},
-  				json: true,
-  				url: API_URL,
-			}
-			
 			if (process.env.TESTING){
 				const testmsg =  {actuator_id: n.id, method: msg.type||n.subtype||"", channel:n.appId, data: msg.payload ? msg.payload : n.value ? n.value : null};
 				sendmessage(ipc,testmsg);
+				return;
 			}
+
+			const value == msg.type||n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null
 			
-			request(options, function (err, res, body) {
-						if (err) {
-							console.log(err, 'error posting json')
-						}else{
-							console.log(body);
-						}
-			});	
+			databox.timeseries.write(actuationStore,sensorID,{data:value})
+		    .then((body)=>{
+		        res.send("<h2>OK > " + body + "</h2>");
+		    })
+		    .catch((error)=>{
+		        res.send("<h2>ERROR::" + error + "</h2>");
+		    });
 		
-        });
+       	});
         
         this.on("close", function() {
         	if (process.env.TESTING){
