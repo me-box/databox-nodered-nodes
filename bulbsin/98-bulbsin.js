@@ -41,7 +41,7 @@ module.exports = function(RED) {
 					
 					if (body.length > 0){
 						const result = body[0];
-						const {data,timestamp} = result;
+						const {data,timestamp=Date.now()} = result;
 						const formattedvalue = n.subtype==="bulb-on" ? data ? 'on': 'off' : Number(data);
 											
 						const msg = {
