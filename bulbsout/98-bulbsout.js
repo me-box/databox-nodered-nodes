@@ -59,7 +59,7 @@ module.exports = function(RED) {
 
         if (process.env.TESTING){
         	console.log("test mode");
-        	return tesing(this, n);
+        	return testing(this, n);
         }
 
         console.log("real mode");
