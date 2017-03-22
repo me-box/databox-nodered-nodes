@@ -74,13 +74,16 @@ module.exports = function(RED) {
 		this.on('input', function (msg) {
 			
 			const value = msg.payload ? msg.payload : n.value ? n.value : null;
+			console.log("writing ");
+			console.log({data:value});
 			
 			databox.timeseries.write(actuationStore,sensorID,{data:value})
 		    .then((body)=>{
-		        res.send("<h2>OK > " + body + "</h2>");
+		        console.log(body);
 		    })
 		    .catch((error)=>{
-		        res.send("<h2>ERROR::" + error + "</h2>");
+		      console.log("error");
+		      console.log(err);
 		    });
 		
        	});
