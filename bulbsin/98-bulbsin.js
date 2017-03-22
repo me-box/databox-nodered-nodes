@@ -85,7 +85,7 @@ module.exports = function(RED) {
     	const bulbStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
     	const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
     
-    	var dataEmitter = null; 
+    	
 
     	databox.timeseries.latest(bulbStore, sensorID)
         .then((d)=>{
@@ -94,7 +94,7 @@ module.exports = function(RED) {
        		
        		const {timestamp, data} = d[0];
 
-       		const msg = {
+       		var msg = {
 					name: n.name || "bulbsin",
 					id:  n.id,
 					subtype: n.subtype,
@@ -108,18 +108,23 @@ module.exports = function(RED) {
         })
         .catch((err)=>{console.log("[Error getting timeseries.latest]",bulbStore, sensorID);});
 
+        var dataEmitter = null; 
+
+        console.log("subscribing now");
     	databox.waitForStoreStatus(bulbStore, 'active')
     	.then(() => databox.subscriptions.connect(bulbStore))
       	.then((emitter) => {
-        
+        	console.log("in after sub");
         	dataEmitter = emitter;
 
         	databox.subscriptions.subscribe(bulbStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
-        
+        	
+        	console.log("called subscribe");
+
         	dataEmitter.on('data',(hostname, dsID, d)=>{
             	console.log("seen some data!!");
             	console.log(d);
-            	const msg = {
+            	var msg = {
 					name: n.name || "bulbsin",
 					id:  n.id,
 					subtype: n.subtype,
@@ -133,8 +138,8 @@ module.exports = function(RED) {
 				console.log(msg);
 				node.send(msg);
 
-      		}).catch((err) => console.error(err));		
-		})
+      		})	
+		}).catch((err) => console.error(err));
     }
     
     // Register the node by name. This must be called before overriding any of the
