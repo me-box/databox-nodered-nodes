@@ -23,11 +23,43 @@ module.exports = function(RED) {
    	var databox = require('node-databox');
  	var url = require("url");
     
+
+    function testing (node, n){
+    	ipc.config.id   = 'webserver';
+    	ipc.config.retry= 1500;
+    	ipc.config.silent=true;
+    	
+        
+		ipc.connectTo(
+	    'webserver',
+	     function(){
+	     	ipc.of.webserver.on(
+	        	'connect',
+	        	function(){
+	            	console.log("connected to webserver!!");
+	        	}
+	   	 	);
+		});
+
+		node.on('input', function (msg) {
+			const testmsg =  {actuator_id: n.id, method: msg.type||n.subtype||"", channel:n.appId, data: msg.payload ? msg.payload : n.value ? n.value : null};
+			sendmessage(ipc,testmsg);
+       	});
+
+		node.on("close", function() {
+			sendClose(ipc, n.appId);
+        });
+    }
+
     function Bulbs(n) {
 
     	this.name = n.name;
         RED.nodes.createNode(this,n);
         var node = this;
+
+        if (process.env.TESTING){
+        	return tesing(this, n);
+        }
 
     	const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
     	const actuationStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
@@ -36,31 +68,9 @@ module.exports = function(RED) {
     	console.log(`store: ${actuationStore}`);
     	console.log(`sensorID: ${sensorID}`);
 
-        ipc.config.id   = 'webserver';
-    	ipc.config.retry= 1500;
-    	ipc.config.silent=true;
-    	
-        if (process.env.TESTING){
-        	ipc.connectTo(
-            'webserver',
-             function(){
-             	ipc.of.webserver.on(
-                	'connect',
-                	function(){
-                    	console.log("connected to webserver!!");
-                	}
-           	 	);
-        	});
-        }
         
 		this.on('input', function (msg) {
 			
-			if (process.env.TESTING){
-				const testmsg =  {actuator_id: n.id, method: msg.type||n.subtype||"", channel:n.appId, data: msg.payload ? msg.payload : n.value ? n.value : null};
-				sendmessage(ipc,testmsg);
-				return;
-			}
-
 			const value = msg.payload ? msg.payload : n.value ? n.value : null;
 			
 			databox.timeseries.write(actuationStore,sensorID,{data:value})
@@ -72,12 +82,6 @@ module.exports = function(RED) {
 		    });
 		
        	});
-        
-        this.on("close", function() {
-        	if (process.env.TESTING){
-				sendClose(ipc, n.appId);
-			}
-        });
     }
     
     function sendClose(ipc, channel){
