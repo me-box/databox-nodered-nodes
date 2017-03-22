@@ -21,7 +21,7 @@ module.exports = function(RED) {
     var request = require('request');
  	var databox = require('node-databox');
  	 var url = require("url");
- 	 
+
     function testing(node, n){
     	
     	const API_URL  = `${process.env.MOCK_DATA_SOURCE}/reading/latest`;
@@ -87,7 +87,21 @@ module.exports = function(RED) {
     	databox.timeseries.latest(bulbStore, sensorID)
         .then((d)=>{
        		console.log("got latest reading as ");
-       		console.log(d);
+       		console.log(d[0]);
+       		
+       		const {timestamp, data} = d[0];
+
+       		const msg = {
+					name: n.name || "bulbsin",
+					id:  n.id,
+					subtype: n.subtype,
+					type: "bulbsin",
+					payload: {
+						ts: timestamp,
+						value: data,
+					}
+			}
+			node.send(msg);
         })
         .catch((err)=>{console.log("[Error getting timeseries.latest]",dsUrl, dsID);});
 
@@ -102,6 +116,20 @@ module.exports = function(RED) {
         	dataEmitter.on('data',(hostname, dsID, d)=>{
             	console.log("seen some data!!");
             	console.log(d);
+            	const msg = {
+					name: n.name || "bulbsin",
+					id:  n.id,
+					subtype: n.subtype,
+					type: "bulbsin",
+					payload: {
+						ts: Date.now(),
+						value: d,
+					}
+				}
+				console.log('sending');
+				console.log(msg);
+				node.send(msg);
+
       		}).catch((err) => console.error(err));		
 		})
     }
