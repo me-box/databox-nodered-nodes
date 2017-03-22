@@ -73,10 +73,13 @@ module.exports = function(RED) {
  		
  		RED.nodes.createNode(this,n);
         
+        var node = this;
+
         if (process.env.TESTING){
             return testing(this, n);
         }
 		
+
 		const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
     
     	const bulbStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
@@ -103,7 +106,7 @@ module.exports = function(RED) {
 			}
 			node.send(msg);
         })
-        .catch((err)=>{console.log("[Error getting timeseries.latest]",dsUrl, dsID);});
+        .catch((err)=>{console.log("[Error getting timeseries.latest]",bulbStore, sensorID);});
 
     	databox.waitForStoreStatus(bulbStore, 'active')
     	.then(() => databox.subscriptions.connect(bulbStore))
