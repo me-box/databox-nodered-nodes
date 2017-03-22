@@ -97,7 +97,7 @@ module.exports = function(RED) {
         
         	dataEmitter = emitter;
 
-        	databox.subscriptions.subscribe(mobileStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
+        	databox.subscriptions.subscribe(bulbStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
         
         	dataEmitter.on('data',(hostname, dsID, d)=>{
             	console.log("seen some data!!");
