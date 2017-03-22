@@ -61,7 +61,7 @@ module.exports = function(RED) {
 				return;
 			}
 
-			const value == msg.type||n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null
+			const value = msg.payload ? msg.payload : n.value ? n.value : null;
 			
 			databox.timeseries.write(actuationStore,sensorID,{data:value})
 		    .then((body)=>{
