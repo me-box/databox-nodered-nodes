@@ -19,69 +19,92 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
+ 	var databox = require('node-databox');
 
-    
-    function Bulbs(n) {
- 		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
-        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/data/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/data/latest`;
-        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
+    function testing(node, n){
+    	
+    	const API_URL  = `${process.env.MOCK_DATA_SOURCE}/reading/latest`;
 
-		
-        this.name = n.name;
-
-        RED.nodes.createNode(this,n);
-        var node = this;
-       
-		const options = {
+    	const options = {
   			method: 'post',
-  			body: {sensor_id: SENSOR_ID},
+  			body: {sensor_id: n.subtype},
   			json: true,
   			url: API_URL,
 		}
-		
-		
-		
-		const periodic = setInterval(function(){
+
+    	const periodic = setInterval(function(){
+								
+			request(options, function (err, res, body) {
+				if (err) {
+					console.log(err, 'error posting json')
+				}else{
 					
-					console.log("options:");
-					console.log(options);
-					
-					request(options, function (err, res, body) {
-						if (err) {
-							console.log(err, 'error posting json')
-						}else{
-							console.log("response:");
-							console.log(body);
-						
-							if (body.length > 0){
-								const result = body[0];
-								const {data,timestamp} = result;
-								const formattedvalue = n.subtype==="bulb-on" ? data ? 'on': 'off' : Number(data);
-													
-								const msg = {
-									name: n.name || "bulbsin",
-									id:  n.id,
-									subtype: n.subtype,
-									type: "bulbsin",
-									payload: {
-										ts: timestamp,
-										value: formattedvalue,
-									}
-								}
-									
-								console.log(msg)
-								node.send(msg);   
-							}	
+					if (body.length > 0){
+						const result = body[0];
+						const {data,timestamp} = result;
+						const formattedvalue = n.subtype==="bulb-on" ? data ? 'on': 'off' : Number(data);
+											
+						const msg = {
+							name: n.name || "bulbsin",
+							id:  n.id,
+							subtype: n.subtype,
+							type: "bulbsin",
+							payload: {
+								ts: timestamp,
+								value: formattedvalue,
+							}
 						}
-					});
+							
+						console.log(msg)
+						node.send(msg);   
+					}	
+				}
+			});
 		}, 1000);
 
-        this.on("close", function() {
+        node.on("close", function() {
           	console.log(`${node.id} stopping requests`);
 			clearInterval(periodic);
         });
     }
+    
+    function Bulbs(n) {
+ 		
+ 		RED.nodes.createNode(this,n);
+        
+        if (process.env.TESTING){
+            return testing(this, n);
+        }
+		
+		const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
+    
+    	const bulbStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
+    	const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
+    
+    	var dataEmitter = null; 
 
+    	databox.timeseries.latest(bulbStore, sensorID)
+        .then((d)=>{
+       		console.log("got latest reading as ");
+       		console.log(d);
+        })
+        .catch((err)=>{console.log("[Error getting timeseries.latest]",dsUrl, dsID);});
+
+    	databox.waitForStoreStatus(bulbStore, 'active')
+    	.then(() => databox.subscriptions.connect(bulbStore))
+      	.then((emitter) => {
+        
+        	dataEmitter = emitter;
+
+        	databox.subscriptions.subscribe(mobileStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
+        
+        	dataEmitter.on('data',(hostname, dsID, d)=>{
+            	console.log("seen some data!!");
+            	console.log(d);
+      		}).catch((err) => console.error(err));		
+		})
+    }
+    
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
     RED.nodes.registerType("bulbsin",Bulbs);
