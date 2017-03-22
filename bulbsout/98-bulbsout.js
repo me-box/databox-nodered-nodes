@@ -58,9 +58,11 @@ module.exports = function(RED) {
         var node = this;
 
         if (process.env.TESTING){
+        	console.log("test mode");
         	return tesing(this, n);
         }
 
+        console.log("real mode");
     	const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
     	const actuationStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
     	const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
