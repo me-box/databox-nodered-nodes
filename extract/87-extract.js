@@ -19,7 +19,15 @@ module.exports = function(RED) {
         },{});
 
         const _extract = (msg,path)=>{
+            console.log("extracting " );
+            console.log(msg);
+            console.log("with path");
+            console.log(path);
             return path.reduce((acc,item)=>{
+                console.log("reduce - item is " + item);
+                console.log("acc is");
+                console.log(acc);
+                console.log(acc[item]);
                 return acc[item];
             },msg)
         }
