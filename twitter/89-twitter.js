@@ -138,9 +138,9 @@ module.exports = function(RED) {
                 dataEmitter.on('data',(hostname, dsID, d)=>{
                 	console.log("NEW TWITTER DATA!")
                 	
-                	console.log(d);
+                	//console.log(d);
 
-                	console.log(hostname, dsID, data);		
+                	console.log(hostname, dsID, d);		
 					const {data, datasource_id, timestamp} = d;
 
 					node.send({	name: n.name || "twitter",
