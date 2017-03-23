@@ -151,7 +151,7 @@ module.exports = function(RED) {
 								id:  n.id,
 								type: "twitter",
 								payload: {
-									ts: Math.ceil(timestamp/1000),
+									ts: Math.ceil(Date.now()/1000),
 									value: d.text, 
 								},
 					}); 
