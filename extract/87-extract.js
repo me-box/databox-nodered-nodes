@@ -20,8 +20,8 @@ module.exports = function(RED) {
 
         const _extract = (msg,path)=>{
             return path.reduce((acc,item)=>{
-                return msg[item];
-            },null)
+                return acc[item];
+            },msg)
         }
 
         console.log("created lookup");
