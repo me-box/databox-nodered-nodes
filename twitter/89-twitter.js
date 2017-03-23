@@ -142,17 +142,17 @@ module.exports = function(RED) {
                 	console.log("***");
 
                 	/*console.log(hostname, dsID, d);	*/	
-					const {data, datasource_id, timestamp} = d;
+					//const {data, datasource_id, timestamp} = d;
 
-					console.log("data is");
-					console.log(data);
+					console.log("d is");
+					
 
 					node.send({	name: n.name || "twitter",
 								id:  n.id,
 								type: "twitter",
 								payload: {
 									ts: Math.ceil(timestamp/1000),
-									value: data.text, 
+									value: d.text, 
 								},
 					}); 
                 });
