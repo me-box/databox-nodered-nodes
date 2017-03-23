@@ -28,7 +28,7 @@ module.exports = function(RED) {
   			method: 'post',
   			body: {sensor_id: n.subtype},
   			json: true,
-  			url: API_URL,
+  			url: `${process.env.MOCK_DATA_SOURCE}/data/latest`,
 		}
 		
 		const periodic = setInterval(function(){
@@ -74,11 +74,8 @@ module.exports = function(RED) {
 
     function Twitter(n) {
     
-        const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
-        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/data/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/data/latest`;
-        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;        
+      
         this.name = n.name;
-
         RED.nodes.createNode(this,n);
         var node = this;
        
