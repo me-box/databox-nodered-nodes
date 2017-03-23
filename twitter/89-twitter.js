@@ -144,7 +144,7 @@ module.exports = function(RED) {
                 	/*console.log(hostname, dsID, d);	*/	
 					//const {data, datasource_id, timestamp} = d;
 
-					console.log("d is");
+					
 					
 
 					node.send({	name: n.name || "twitter",
