@@ -141,8 +141,11 @@ module.exports = function(RED) {
                 	console.log(d);
                 	console.log("***");
 
-                	/*console.log(hostname, dsID, d);		
+                	/*console.log(hostname, dsID, d);	*/	
 					const {data, datasource_id, timestamp} = d;
+
+					console.log("data is");
+					console.log(data);
 
 					node.send({	name: n.name || "twitter",
 								id:  n.id,
@@ -151,7 +154,7 @@ module.exports = function(RED) {
 									ts: Math.ceil(timestamp/1000),
 									value: data.text, 
 								},
-					});  */ 
+					}); 
                 });
 
                 dataEmitter.on('error',(error)=>{
