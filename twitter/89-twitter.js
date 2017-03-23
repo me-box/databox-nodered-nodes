@@ -26,7 +26,7 @@ module.exports = function(RED) {
     function testing(node, n){
     	const options = {
   			method: 'post',
-  			body: {sensor_id: SENSOR_ID},
+  			body: {sensor_id: n.subtype},
   			json: true,
   			url: API_URL,
 		}
@@ -95,8 +95,7 @@ module.exports = function(RED) {
         	const dsID = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasDatasourceid'; })[0].val;
         	const endpointUrl = url.parse(HREF_ENDPOINT); 
             const dsUrl = endpointUrl.protocol + '//' + endpointUrl.host;
-            const dsType = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasType';})[0].val;
-                
+               
             //first pull out the last reading from twitter and send this 
             databox.timeseries.latest(dsUrl, dsID)
             .then((d)=>{
