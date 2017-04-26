@@ -17,6 +17,7 @@ module.exports = function(RED) {
             url: API_URL,
         }
         
+
         const periodic = setInterval(function(){
                     request(options, function (err, res, body) {
                         if (err) {
