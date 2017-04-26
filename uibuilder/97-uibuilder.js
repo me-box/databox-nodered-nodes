@@ -37,7 +37,7 @@ module.exports = function(RED) {
         	console.log("seen inoput msg");
         	console.log(msg);
 
-        	node.send({type:'uibuilder', sourceId: msg.id || "", payload:msg.payload});
+        	node.send({type:'uibuilder', sourceId: n.id, payload:msg});
 		})
 
         this.on("close", function() {
