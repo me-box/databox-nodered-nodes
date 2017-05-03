@@ -23,20 +23,15 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         var node = this;
        
-
-        console.log("would init node");
-        console.log(JSON.stringify(node,null,4));
-
-       	console.log("-----");
+        console.log("initing node");
        	console.log(JSON.stringify(n,null,4));
 		
 		sendmessage(ipc, {type:"control", payload:{command:"init", data:n}});
         
         //TODO: force node red to send message and originatore with the input event!
         this.on('input', function (msg) {
-        	console.log("seen inoput msg");
-        	console.log(msg);
-
+        	console.log("uibuilder");
+        	console.log(JSON.stringify(msg, null, 4));
         	node.send({type:'uibuilder', sourceId: n.id, payload:msg});
 		})
 

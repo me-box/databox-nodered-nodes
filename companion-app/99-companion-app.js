@@ -23,62 +23,46 @@ module.exports = function(RED) {
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
     ipc.config.silent=true;
-    // require any external libraries we may need....
-    //var foo = require("foo-library");
-
+    
     // The main node definition - most things happen in here
     function CompanionApp(n) {
     
-        console.log("fresh load of companion app");
+        console.log("loaded companion app");
         // Create a RED node
         RED.nodes.createNode(this,n);
-		//'mqtt://mosquitto:1883'
-        //client = mqtt.connect('mqtt://mosquitto:1883');
-       
-        
+		
         ipc.connectTo(
             'webserver',
              function(){
              ipc.of.webserver.on(
                 'connect',
                 function(){
-                    
+                    console.log("have connected to ipc - sending init message");
+                    sendmessage(ipc, {type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
                 }
             );
         });
 
-       
         // Store local copies of the node configuration (as defined in the .html)
         this.appId = n.appId;
-		this.layout = n.layout;
-		
-        // copy "this" object in case we need it in context of callbacks of other functions.
+		this.layout = n.layout;        
         var node = this;
 		
 		var fallbackId = (1+Math.random()*42949433295).toString(16);
 		
-		let init = false;
-        // respond to inputs....
         this.on('input', function (m) {
-			
-            var msg = {}
-			/*if (!init){
-				console.log("sending reset!");
-        		sendmessage(ipc, {channel:node.appId, type:"control", payload:{command:"reset"}});
-        		init = true;
-        	} */ 	
-			msg.channel = node.appId;
-			msg.sourceId = m.sourceId || fallbackId;
-			msg.type = "data";
-            msg.layout = node.layout;// || [[]];
-            
-            msg.payload = {
-                id:   node.id,
-                name: node.name || "app", 
-                view: m.type || "text", 
-                data: m.payload, 
-            	channel: node.appId, //the websocket room that will receive the msg
-            }
+            var msg = {
+                channel: node.appId,
+                sourceId: m.sourceId || fallbackId,
+                type: "data",
+                payload: {
+                    id:   node.id,
+                    name: node.name || "app", 
+                    view: m.type || "text", 
+                    data: m.payload, 
+                    channel: node.appId, 
+                }
+            }	
             sendmessage(ipc, msg);
         });
 
