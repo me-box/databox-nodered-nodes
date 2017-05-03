@@ -36,9 +36,7 @@ module.exports = function(RED) {
              function(){
              ipc.of.webserver.on(
                 'connect',
-                function(){
-                    console.log("have connected to ipc - sending init message");
-                    sendmessage(ipc, {type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
+                function(){  
                 }
             );
         });
@@ -50,6 +48,10 @@ module.exports = function(RED) {
 		
 		var fallbackId = (1+Math.random()*42949433295).toString(16);
 		
+        console.log("sending init message");
+        console.log(JSON.stringify({data:{id:n.id, layout:n.layout}}));
+        sendmessage(ipc, {type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
+
         this.on('input', function (m) {
             var msg = {
                 channel: node.appId,
