@@ -24,14 +24,17 @@ module.exports = function(RED) {
     var url = require("url");
 
     function testing(node, n){
+
+    	let shouldquery = true;
+
     	const options = {
   			method: 'post',
   			body: {sensor_id: n.subtype},
   			json: true,
   			url: `${process.env.MOCK_DATA_SOURCE}/data/latest`,
 		}
-		
-		const periodic = setInterval(function(){
+
+		const getData = ()=>{
 			request(options, function (err, res, body) {
 				if (err) {
 					console.log(err, 'error posting json')
@@ -58,16 +61,18 @@ module.exports = function(RED) {
 					}
 				}
 			});
-		}, 2000);
+			const nextQuery = Math.round(Math.random() * 30000);
+			console.log(`next twitter request in ${nextQuery}s`);
+			if (shouldquery){
+				setTimeout(getData(),nextQuery);
+			}
+		};
+
+		getData();
 
 		node.on("close", function() {
-
-        	console.log("clearing timer!");
-        	try{
-				clearInterval(periodic);
-			}catch(err){
-				console.log(err);
-			}
+        	console.log("closed!");
+        	shouldquery  = false;
 		});
     }
 
