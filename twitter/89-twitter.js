@@ -64,7 +64,7 @@ module.exports = function(RED) {
 			const nextQuery = Math.round(Math.random() * 30000);
 			console.log(`next twitter request in ${nextQuery}s`);
 			if (shouldquery){
-				setTimeout(getData(),nextQuery);
+				setTimeout(getData,nextQuery);
 			}
 		};
 
