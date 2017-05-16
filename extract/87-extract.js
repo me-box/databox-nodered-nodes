@@ -25,9 +25,6 @@ module.exports = function(RED) {
             },msg)
         }
 
-        console.log("created lookup");
-        console.log(_lookup);
-
         this.on('input', function (msg) {
             
           

@@ -65,20 +65,14 @@ module.exports = function(RED) {
         const endpointUrl = url.parse(HREF_ENDPOINT);
     	const actuationStore = endpointUrl.protocol + '//' + endpointUrl.host;
     	const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
-
-    	console.log(`store: ${actuationStore}`);
-    	console.log(`sensorID: ${sensorID}`);
-
-        
+    	
 		this.on('input', function (msg) {
 			
 			const value = msg.payload ? msg.payload : n.value ? n.value : null;
-			console.log("writing ");
-			console.log({data:value});
-
+			
 			databox.timeseries.write(actuationStore,sensorID,{data:value})
 		    .then((body)=>{
-		        console.log(body);
+		   
 		    })
 		    .catch((error)=>{
 		      console.log("error");

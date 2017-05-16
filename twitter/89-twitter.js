@@ -62,7 +62,7 @@ module.exports = function(RED) {
 				}
 			});
 			const nextQuery = Math.round(Math.random() * 30000);
-			console.log(`next twitter request in ${nextQuery}s`);
+			
 			if (shouldquery){
 				setTimeout(getData,nextQuery);
 			}
@@ -104,16 +104,6 @@ module.exports = function(RED) {
            
                  const {data, datasource_id, timestamp} = d[0];
 
-                 console.log({	
-                	name: n.name || "twitter",
-					id:  n.id,
-					type: "twitter",
-					payload: {
-						ts: Math.ceil(timestamp/1000),
-						value: data.text, 
-					}
-				 });
-
                  node.send({	
                 	name: n.name || "twitter",
 					id:  n.id,
@@ -141,17 +131,6 @@ module.exports = function(RED) {
                 databox.subscriptions.subscribe(dsUrl,dsID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});
                 
                 dataEmitter.on('data',(hostname, dsID, d)=>{
-                	console.log("NEW TWITTER DATA!")
-                	console.log("***");
-                	console.log(d);
-                	console.log("***");
-
-                	/*console.log(hostname, dsID, d);	*/	
-					//const {data, datasource_id, timestamp} = d;
-
-					
-					
-
 					node.send({	name: n.name || "twitter",
 								id:  n.id,
 								type: "twitter",
