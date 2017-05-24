@@ -22,14 +22,12 @@ module.exports = function(RED) {
         this.name = n.name;
         RED.nodes.createNode(this,n);
         var node = this;
-       
-        console.log("uibuilder: initing node");
-       	console.log(JSON.stringify(n,null,4));
-		
+       	
 		sendmessage(ipc, {type:"control", payload:{command:"init", data:n}});
         
-        //TODO: force node red to send message and originatore with the input event!
         this.on('input', function (msg) {
+        	//pass along the full route + data of this node.        	
+        	msg._path = this.path();
         	node.send({type:'uibuilder', sourceId: n.id, payload:msg});
 		})
 
