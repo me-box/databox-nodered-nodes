@@ -26,11 +26,10 @@ module.exports = function(RED) {
 		sendmessage(ipc, {type:"control", payload:{command:"init", data:n}});
         
         this.on('input', function (msg) {
-        	//pass along the full route + data of this node.        	
-        	msg._path = this.path();
+        	//pass along the full route + data of this node.  
 
-        	console.log("path is");
-        	console.log(JSON.stringify(msg._path.hops, null, 4));
+        	console.log("uibuilder, received msg", msg);      	
+        	msg._path = this.path();
         	node.send({type:'uibuilder', sourceId: n.id, payload:msg});
 		})
 
