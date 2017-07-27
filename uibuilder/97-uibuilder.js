@@ -5,7 +5,7 @@ module.exports = function(RED) {
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
     ipc.config.silent=false;*/
-
+ 	var client = new net.Socket();
     function UIBuilder(n) {
      
         /*ipc.connectTo(
@@ -56,7 +56,7 @@ module.exports = function(RED) {
     function sendmessage(msg){
 		try{
 			client.write(JSON.stringify(msg));
-			
+
 		   //console.log(msg);
 		   /*ipc.of.webserver.emit(
 							'message',  //any event or message type your server listens for 

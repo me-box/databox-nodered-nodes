@@ -19,7 +19,7 @@
 module.exports = function(RED) {
     "use strict";
     var net = require('net');
-
+    var client = new net.Socket();
     /*var ipc = require('node-ipc');
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
@@ -32,7 +32,7 @@ module.exports = function(RED) {
         // Create a RED node
         RED.nodes.createNode(this,n);
 		
-        var client = new net.Socket();
+       
         
         client.connect(8435, 'databox-test-server', function() {
             console.log('Connected');
