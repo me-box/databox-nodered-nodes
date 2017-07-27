@@ -35,12 +35,11 @@ module.exports = function(RED) {
             8435, 
             "udp4",
             function(){
-                
                 ipc.server.on('connect', function(){
-                    console.log("successfully connected to ipc socket");
+                    console.log("companion app: successfully connected to ipc socket");
                 });
             }
-        }
+        );
 
         ipc.server.start();
         
