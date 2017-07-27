@@ -31,7 +31,7 @@ module.exports = function(RED) {
     function connect(){
         connected = false;
         client.connect(8435, 'databox-test-server', function() {
-            console.log('Connected');
+            console.log('***** Connected *******');
             connected = true;
         });
     }
@@ -74,7 +74,6 @@ module.exports = function(RED) {
 		var fallbackId = (1+Math.random()*42949433295).toString(16);
 		
         console.log("sending init message");
-        console.log(JSON.stringify({data:{id:n.id, layout:n.layout}}));
         sendmessage({type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
 
         this.on('input', function (m) {

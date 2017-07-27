@@ -92,20 +92,8 @@ module.exports = function(RED) {
         try{
           
           const data = str.replace("\n","").split(",");
-        
-          console.log("formatting data for");
-          console.log(data);
-
           const payload = _format_payload(data, n.subtype);
-         
-          console.log({
-            name: n.name || "sensingkit",
-            id:  n.id,
-            type: "sensingkit",
-            subtype: n.subtype,
-            payload: payload,
-          });
-  
+          
           node.send({
             name: n.name || "sensingkit",
             id:  n.id,
