@@ -20,8 +20,6 @@ module.exports = function(RED) {
         });*/
       
       	ipc.serveNet(
-            8435, 
-            "tcp",
             function(){
                 ipc.server.on('connect', function(){
                     console.log("uibuilder: successfully connected to ipc socket");

@@ -32,8 +32,6 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
 		
         ipc.serveNet(
-            8435, 
-            "tcp",
             function(){
                 ipc.server.on('connect', function(){
                     console.log("companion app: successfully connected to ipc socket");
@@ -82,7 +80,6 @@ module.exports = function(RED) {
 
         this.on("close", function() {
         	sendmessage({channel:node.appId, type:"control", payload:{command:"reset", channel:node.appId}});
-        	ipc.server.destroy;
         });
     }
     
@@ -100,7 +97,7 @@ module.exports = function(RED) {
 						)
 			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
 		}catch(err){
-			console.log(err);
+			console.log("error sending", err);
 		}
 	}
 
