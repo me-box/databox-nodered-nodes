@@ -22,7 +22,7 @@ module.exports = function(RED) {
     var ipc = require('node-ipc');
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
-    ipc.config.silent=true;
+    ipc.config.silent=false;
     
     // The main node definition - most things happen in here
     function CompanionApp(n) {
@@ -31,7 +31,14 @@ module.exports = function(RED) {
         // Create a RED node
         RED.nodes.createNode(this,n);
 		
-        ipc.connectTo(
+        ipc.serveNet(
+            8435, 
+            "udp4",
+        }
+
+        ipc.server.start();
+        
+        /*ipc.connectTo(
             'webserver',
              function(){
              ipc.of.webserver.on(
@@ -39,7 +46,7 @@ module.exports = function(RED) {
                 function(){  
                 }
             );
-        });
+        });*/
 
         // Store local copies of the node configuration (as defined in the .html)
         this.appId = n.appId;
@@ -50,7 +57,7 @@ module.exports = function(RED) {
 		
         console.log("sending init message");
         console.log(JSON.stringify({data:{id:n.id, layout:n.layout}}));
-        sendmessage(ipc, {type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
+        sendmessage({type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
 
         this.on('input', function (m) {
             var msg = {
@@ -69,15 +76,19 @@ module.exports = function(RED) {
         });
 
         this.on("close", function() {
-        	sendmessage(ipc, {channel:node.appId, type:"control", payload:{command:"reset", channel:node.appId}});
-        	ipc.of.webserver.destroy;
+        	sendmessage({channel:node.appId, type:"control", payload:{command:"reset", channel:node.appId}});
+        	ipc.server.destroy;
         });
     }
     
-    function sendmessage(ipc, msg){
+    function sendmessage(msg){
 		try{
 		   //console.log(msg);
-		   ipc.of.webserver.emit(
+		   ipc.server.emit(
+                            {
+                                address : 'databox-test-app', //any hostname will work 
+                                port    : 8435
+                            },
 							'message',  //any event or message type your server listens for 
 							JSON.stringify(msg)
 						)

@@ -8,7 +8,7 @@ module.exports = function(RED) {
 
     function UIBuilder(n) {
      
-        ipc.connectTo(
+        /*ipc.connectTo(
             'webserver',
              function(){
              ipc.of.webserver.on(
@@ -17,18 +17,25 @@ module.exports = function(RED) {
                     
                 }
             );
-        });
+        });*/
       
+      	ipc.serveNet(
+            8435, 
+            "udp4",
+        }
+
+        ipc.server.start();
+
         this.name = n.name;
         RED.nodes.createNode(this,n);
         var node = this;
        	
-		sendmessage(ipc, {type:"control", payload:{command:"init", data:n}});
+		sendmessage({type:"control", payload:{command:"init", data:n}});
         
         this.on('input', function (msg) {
         	//pass along the full route + data of this node.  
 
-        	console.log("uibuilder, received msg", msg);      	
+        	  	
         	msg._path = this.path();
         	node.send({type:'uibuilder', sourceId: n.id, payload:msg});
 		})
@@ -38,14 +45,22 @@ module.exports = function(RED) {
         });
     }
 
-    function sendmessage(ipc, msg){
+    function sendmessage(msg){
 		try{
 		   //console.log(msg);
-		   ipc.of.webserver.emit(
+		   /*ipc.of.webserver.emit(
 							'message',  //any event or message type your server listens for 
 							JSON.stringify(msg)
-						)
+						)*/
 			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
+		  ipc.server.emit(
+                        {
+                            address : 'databox-test-app', //any hostname will work 
+                            port    : 8435
+                        },
+						'message',  //any event or message type your server listens for 
+						JSON.stringify(msg)
+					)
 		}catch(err){
 			console.log(err);
 		}
