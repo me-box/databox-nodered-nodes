@@ -1,10 +1,10 @@
 module.exports = function(RED) {
 
     "use strict";
- 	var ipc = require('node-ipc');
+ 	/*var ipc = require('node-ipc');
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
-    ipc.config.silent=false;
+    ipc.config.silent=false;*/
 
     function UIBuilder(n) {
      
@@ -18,8 +18,13 @@ module.exports = function(RED) {
                 }
             );
         });*/
-      
-      	ipc.serveNet(
+      	
+
+        client.connect(8435, 'databox-test-server', function() {
+            console.log('Connected');
+        });
+
+      	/*ipc.serveNet(
             function(){
                 ipc.server.on('connect', function(){
                     console.log("uibuilder: successfully connected to ipc socket");
@@ -27,7 +32,7 @@ module.exports = function(RED) {
             }
         );
 
-        ipc.server.start();
+        ipc.server.start();*/
 
         this.name = n.name;
         RED.nodes.createNode(this,n);
@@ -50,20 +55,22 @@ module.exports = function(RED) {
 
     function sendmessage(msg){
 		try{
+			client.write(JSON.stringify(msg));
+			
 		   //console.log(msg);
 		   /*ipc.of.webserver.emit(
 							'message',  //any event or message type your server listens for 
 							JSON.stringify(msg)
 						)*/
 			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
-		  ipc.server.emit(
+		  /*ipc.server.emit(
                         {
                             address : 'databox-test-server', //any hostname will work 
                             port    : 8435
                         },
 						'message',  //any event or message type your server listens for 
 						JSON.stringify(msg)
-					)
+					)*/
 		}catch(err){
 			console.log(err);
 		}
