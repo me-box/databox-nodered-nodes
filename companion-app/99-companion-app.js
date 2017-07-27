@@ -33,6 +33,7 @@ module.exports = function(RED) {
 		
         ipc.serveNet(
             8435, 
+            "tcp",
             function(){
                 ipc.server.on('connect', function(){
                     console.log("companion app: successfully connected to ipc socket");
