@@ -4,7 +4,7 @@ module.exports = function(RED) {
  	var ipc = require('node-ipc');
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
-    ipc.config.silent=true;
+    ipc.config.silent=false;
 
     function UIBuilder(n) {
      
@@ -55,7 +55,7 @@ module.exports = function(RED) {
 			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
 		  ipc.server.emit(
                         {
-                            address : 'databox-test-app', //any hostname will work 
+                            address : 'databox-test-server', //any hostname will work 
                             port    : 8435
                         },
 						'message',  //any event or message type your server listens for 

@@ -27,13 +27,19 @@ module.exports = function(RED) {
     // The main node definition - most things happen in here
     function CompanionApp(n) {
     
-        console.log("loaded companion app");
+        
         // Create a RED node
         RED.nodes.createNode(this,n);
 		
         ipc.serveNet(
             8435, 
             "udp4",
+            function(){
+                
+                ipc.server.on('connect', function(){
+                    console.log("successfully connected to ipc socket");
+                });
+            }
         }
 
         ipc.server.start();
@@ -84,9 +90,10 @@ module.exports = function(RED) {
     function sendmessage(msg){
 		try{
 		   //console.log(msg);
+           console.log("companion app, sending message");
 		   ipc.server.emit(
                             {
-                                address : 'databox-test-app', //any hostname will work 
+                                address : 'databox-test-server', //any hostname will work 
                                 port    : 8435
                             },
 							'message',  //any event or message type your server listens for 
