@@ -89,14 +89,14 @@ module.exports = function(RED) {
     function sendmessage(msg){
 		try{
 		   //console.log(msg);
-           console.log("companion app, sending message");
+           console.log("companion app, sending message", msg);
 		   ipc.server.emit(
                             {
                                 address : 'databox-test-server', //any hostname will work 
                                 port    : 8435
                             },
 							'message',  //any event or message type your server listens for 
-							JSON.stringify(msg)
+							"hello"//JSON.stringify(msg)
 						)
 			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
 		}catch(err){
