@@ -9,19 +9,27 @@ module.exports = function(RED) {
  	var client = new net.Socket();
  	var connected = false;
 
+	client.on("error", function(err){
+        console.log("error connecting, retrying in 2 sec");
+        setTimeout(function(){connect()}, 2000);
+    });
+	
+	client.on('uncaughtException', function (err) {
+  		console.error(err.stack);
+  		setTimeout(function(){connect()}, 2000);
+	});
+
  	function connect(fn){
         connected = false;
-        
+   
         client.connect(8435, 'databox-test-server', function() {
             console.log('***** Connected *******');
             connected = true;
+  		
             if (fn){
             	fn();
             }
-        }).on("error", function(err){
-        	console.log("error connecting, retrying in 2 sec");
-        	setTimeout(function(){connect(fn)}, 2000);
-        });
+        })
     }
 
     function UIBuilder(n) {
@@ -47,11 +55,8 @@ module.exports = function(RED) {
 
     function sendmessage(msg){
         if (connected){
-            client.write(JSON.stringify({type: "message", msg: msg})).on("error", function(err){
-                console.log('error writing to socket', err); 
-                connect(function(){sendmessage(msg)});
-            });
-        }
+           client.write(JSON.stringify({type: "bulbsout", msg: msg}))
+	    }
 	}
 
     // Register the node by name. This must be called before overriding any of the

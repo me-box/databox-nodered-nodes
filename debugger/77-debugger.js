@@ -28,19 +28,27 @@ module.exports = function(RED) {
     var client = new net.Socket();
     var connected = false;
 
+    client.on("error", function(err){
+        console.log("error connecting, retrying in 2 sec");
+        setTimeout(function(){connect()}, 2000);
+    });
+    
+    client.on('uncaughtException', function (err) {
+        console.error(err.stack);
+        setTimeout(function(){connect()}, 2000);
+    });
+
     function connect(fn){
         connected = false;
-        
+   
         client.connect(8435, 'databox-test-server', function() {
             console.log('***** Connected *******');
             connected = true;
+        
             if (fn){
                 fn();
             }
-        }).on("error", function(err){
-            console.log("error connecting, retrying in 2 sec");
-            setTimeout(function(){connect(fn)}, 2000);
-        });
+        })
     }
 
     function DebugNode(n) {
@@ -180,10 +188,7 @@ module.exports = function(RED) {
                                                             channel:channel
                                                         }
                                             }
-                                        })).on("error", function(err){
-                                                console.log('error writing to socket', err); 
-                                                connect(function(){sendmessage(msg)});
-                                     });
+                                        }));
     }
     
 	function sendClose(channel){
@@ -191,21 +196,15 @@ module.exports = function(RED) {
         client.write(JSON.stringify({
                                         type: "message", 
                                         msg: {channel:channel, type:"control", payload:{command:"reset", channel:channel}}
-                                     })).on("error", function(err){
-                                                console.log('error writing to socket', err); 
-                                                connect(function(){sendmessage(msg)});
-                                     });
+                                     }))
 	}
 	
 
-	function sendmessage(msg){
+    function sendmessage(msg){
         if (connected){
-            client.write(JSON.stringify({type: "message", msg: msg})).on("error", function(err){
-                console.log('error writing to socket', err); 
-                connect(function(){sendmessage(msg)});
-            });
+           client.write(JSON.stringify({type: "bulbsout", msg: msg}))
         }
-	}
+    }
 
     DebugNode.logHandler = new events.EventEmitter();
     DebugNode.logHandler.on("log",function(msg) {
