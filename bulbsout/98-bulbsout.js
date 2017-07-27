@@ -19,7 +19,7 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
-  
+  	var net = require('net');
    	var databox = require('node-databox');
  	var url = require("url");
 	var client = new net.Socket();

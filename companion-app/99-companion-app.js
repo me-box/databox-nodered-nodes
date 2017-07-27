@@ -23,11 +23,13 @@ module.exports = function(RED) {
     var connected = false;
 
     client.on("error", function(err){
+        connected = false;
         console.log("error connecting, retrying in 2 sec");
         setTimeout(function(){connect()}, 2000);
     });
     
     client.on('uncaughtException', function (err) {
+        connected = false;
         console.error(err.stack);
         setTimeout(function(){connect()}, 2000);
     });
@@ -36,7 +38,7 @@ module.exports = function(RED) {
         connected = false;
    
         client.connect(8435, 'databox-test-server', function() {
-            console.log('***** Connected *******');
+            console.log('***** companion app connected *******');
             connected = true;
         
             if (fn){
@@ -52,6 +54,7 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
 		   
         connect(function(){
+            console.log("sending control message!");
             sendmessage({type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
         });
     
@@ -87,6 +90,7 @@ module.exports = function(RED) {
     }
     
     function sendmessage(msg){
+
         if (connected){
            client.write(JSON.stringify({type: "bulbsout", msg: msg}))
         }

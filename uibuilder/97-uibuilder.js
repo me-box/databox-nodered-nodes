@@ -1,10 +1,7 @@
 module.exports = function(RED) {
 
     "use strict";
- 	/*var ipc = require('node-ipc');
-    ipc.config.id   = 'webserver';
-    ipc.config.retry= 1500;
-    ipc.config.silent=false;*/
+ 
     var net = require('net');
  	var client = new net.Socket();
  	var connected = false;
@@ -23,7 +20,7 @@ module.exports = function(RED) {
         connected = false;
    
         client.connect(8435, 'databox-test-server', function() {
-            console.log('***** Connected *******');
+            console.log('***** uibuilder connected *******');
             connected = true;
   		
             if (fn){
@@ -35,6 +32,7 @@ module.exports = function(RED) {
     function UIBuilder(n) {
      
       	connect(function(){
+      		console.log("uibuilder sending control message");
       		sendmessage({type:"control", payload:{command:"init", data:n}});
       	});
 
