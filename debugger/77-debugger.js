@@ -202,7 +202,7 @@ module.exports = function(RED) {
 
     function sendmessage(msg){
         if (connected){
-           client.write(JSON.stringify({type: "bulbsout", msg: msg}))
+           client.write(JSON.stringify({type: "debug", msg: msg}))
         }
     }
 
