@@ -7,44 +7,35 @@ module.exports = function(RED) {
     ipc.config.silent=false;*/
     var net = require('net');
  	var client = new net.Socket();
+ 	var connected = false;
+
+ 	function connect(fn){
+        connected = false;
+        
+        client.connect(8435, 'databox-test-server', function() {
+            console.log('***** Connected *******');
+            connected = true;
+            if (fn){
+            	fn();
+            }
+        }).on("error", function(err){
+        	console.log("error connecting, retrying in 2 sec");
+        	setTimeout(function(){connect(fn)}, 2000);
+        });
+    }
+
     function UIBuilder(n) {
      
-        /*ipc.connectTo(
-            'webserver',
-             function(){
-             ipc.of.webserver.on(
-                'connect',
-                function(){
-                    
-                }
-            );
-        });*/
-      	
-
-        client.connect(8435, 'databox-test-server', function() {
-            console.log('Connected');
-        });
-
-      	/*ipc.serveNet(
-            function(){
-                ipc.server.on('connect', function(){
-                    console.log("uibuilder: successfully connected to ipc socket");
-                });
-            }
-        );
-
-        ipc.server.start();*/
+      	connect(function(){
+      		sendmessage({type:"control", payload:{command:"init", data:n}});
+      	});
 
         this.name = n.name;
         RED.nodes.createNode(this,n);
         var node = this;
        	
-		sendmessage({type:"control", payload:{command:"init", data:n}});
-        
         this.on('input', function (msg) {
-        	//pass along the full route + data of this node.  
-
-        	  	
+        	//pass along the full route + data of this node. 	  	
         	msg._path = this.path();
         	node.send({type:'uibuilder', sourceId: n.id, payload:msg});
 		})
@@ -55,27 +46,14 @@ module.exports = function(RED) {
     }
 
     function sendmessage(msg){
-		try{
-			client.write(JSON.stringify({type: "message", msg: msg}));
-
-		   //console.log(msg);
-		   /*ipc.of.webserver.emit(
-							'message',  //any event or message type your server listens for 
-							JSON.stringify(msg)
-						)*/
-			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
-		  /*ipc.server.emit(
-                        {
-                            address : 'databox-test-server', //any hostname will work 
-                            port    : 8435
-                        },
-						'message',  //any event or message type your server listens for 
-						JSON.stringify(msg)
-					)*/
-		}catch(err){
-			console.log(err);
-		}
+        if (connected){
+            client.write(JSON.stringify({type: "message", msg: msg})).on("error", function(err){
+                console.log('error writing to socket', err); 
+                connect(function(){sendmessage(msg)});
+            });
+        }
 	}
+
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
     RED.nodes.registerType("uibuilder",UIBuilder);

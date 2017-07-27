@@ -26,23 +26,36 @@ module.exports = function(RED) {
     
     var net = require('net');
     var client = new net.Socket();
+    var connected = false;
+
+    function connect(fn){
+        connected = false;
+        
+        client.connect(8435, 'databox-test-server', function() {
+            console.log('***** Connected *******');
+            connected = true;
+            if (fn){
+                fn();
+            }
+        }).on("error", function(err){
+            console.log("error connecting, retrying in 2 sec");
+            setTimeout(function(){connect(fn)}, 2000);
+        });
+    }
 
     function DebugNode(n) {
     
     	if (!process.env.TESTING) //do nothing if not testing
     		return;
         
-       
+        
         
         RED.nodes.createNode(this,n);
          
-
-        client.connect(8435, 'databox-test-server', function() {
+        connect(function() {
             console.log('Connected');
             closeWebsocket(n.appId);
         });
-        
-
        
         this.name = n.name;
         this.channel = n.appId;
@@ -156,8 +169,8 @@ module.exports = function(RED) {
 	
 	function closeWebsocket(channel){
 		console.log("closing any open websockets");
-		try{
-          client.write(JSON.stringify({
+	
+        client.write(JSON.stringify({
                                             type: "message", 
                                             msg: {
                                                         channel:channel, 
@@ -167,38 +180,31 @@ module.exports = function(RED) {
                                                             channel:channel
                                                         }
                                             }
-                                        }));
-
-		  console.log("scuccessfully sent close message to socket");
-		}catch(err){
-			console.log("error sending close messsage");
-			console.log(err);
-		}
-	}
-	
+                                        })).on("error", function(err){
+                                                console.log('error writing to socket', err); 
+                                                connect(function(){sendmessage(msg)});
+                                     });
+    }
+    
 	function sendClose(channel){
-		try{
-          client.write(JSON.stringify({
-                                            type: "message", 
-                                            msg: {channel:channel, type:"control", payload:{command:"reset", channel:channel}}
-                                     }));
-		  console.log("scuccessfully sent close message to socket");
-		}catch(err){
-			console.log("error sending close messsage");
-			console.log(err);
-		}finally{
-			
-		}
+		
+        client.write(JSON.stringify({
+                                        type: "message", 
+                                        msg: {channel:channel, type:"control", payload:{command:"reset", channel:channel}}
+                                     })).on("error", function(err){
+                                                console.log('error writing to socket', err); 
+                                                connect(function(){sendmessage(msg)});
+                                     });
 	}
 	
+
 	function sendmessage(msg){
-		try{
-          client.write(JSON.stringify({type: "message", msg:msg}));
-		  console.log("scuccessfully sent message to socket");
-		}catch(err){
-			console.log("error sending debug messsage");
-			console.log(err);
-		}
+        if (connected){
+            client.write(JSON.stringify({type: "message", msg: msg})).on("error", function(err){
+                console.log('error writing to socket', err); 
+                connect(function(){sendmessage(msg)});
+            });
+        }
 	}
 
     DebugNode.logHandler = new events.EventEmitter();

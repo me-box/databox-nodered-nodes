@@ -19,35 +19,38 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
-    var ipc = require('node-ipc');
+  
    	var databox = require('node-databox');
  	var url = require("url");
-    
+	var client = new net.Socket();
+    var connected = false;
 
-    function testing (node, n){
-    	ipc.config.id   = 'webserver';
-    	ipc.config.retry= 1500;
-    	ipc.config.silent=true;
-    	
+ 	function connect(fn){
+        connected = false;
         
-		ipc.connectTo(
-	    'webserver',
-	     function(){
-	     	ipc.of.webserver.on(
-	        	'connect',
-	        	function(){
-	            	console.log("connected to webserver!!");
-	        	}
-	   	 	);
-		});
+        client.connect(8435, 'databox-test-server', function() {
+            console.log('***** Connected *******');
+            connected = true;
+            if (fn){
+            	fn();
+            }
+        }).on("error", function(err){
+        	console.log("error connecting, retrying in 2 sec");
+        	setTimeout(function(){connect(fn)}, 2000);
+        });
+    }
+    
+    function testing (node, n){
+    	
+    	connect();
 
 		node.on('input', function (msg) {
 			const testmsg =  {actuator_id: n.id, method: msg.type||n.subtype||"", channel:n.appId, data: msg.payload ? msg.payload : n.value ? n.value : null};
-			sendmessage(ipc,testmsg);
+			sendmessage(testmsg);
        	});
 
 		node.on("close", function() {
-			sendClose(ipc, n.appId);
+			sendClose(n.appId);
         });
     }
 
@@ -82,26 +85,42 @@ module.exports = function(RED) {
        	});
     }
     
-    function sendClose(ipc, channel){
+    function sendClose(channel){
 		try{
-		  ipc.of.webserver.emit('message',JSON.stringify({channel:channel, type:"control", payload:{command:"reset", channel:channel}}));
-		  console.log("scuccessfully sent close message to socket");
+		  client.write(JSON.stringify({type: "message", msg: 	{
+		  															channel:channel, 
+		  															type:"control", 
+		  															payload:{
+		  																command:"reset", 
+		  																channel:channel
+		  															}
+		  														}
+		  								})).on(function(error){
+		  									console.log('error writing to socket', error); 
+		  									connect(function(){sendClose(channel)});
+		  								});
+
 		}catch(err){
 			console.log("error sending close messsage");
 			console.log(err);
 		}finally{
-			ipc.of.webserver.destroy;
+			
 		}
 	}
 
-	function sendmessage(ipc, msg){
-		try{
-		  ipc.of.webserver.emit('bulbsout',JSON.stringify(msg));
-		  console.log("scuccessfully sent message to socket");
-		}catch(err){
-			console.log("error sending bulbsout messsage");
-			console.log(err);
-		}
+
+    function sendmessage(msg){
+        if (connected){
+            try{
+                client.write(JSON.stringify({type: "bulbsout", msg: msg})).on("error", function(err){
+                	console.log('error writing to socket', err); 
+                	connect(function(){sendmessage(msg)});
+                });
+            }catch(err){
+                console.log("error sending", err);
+                connect();
+            }
+	    }
 	}
 	
     // Register the node by name. This must be called before overriding any of the

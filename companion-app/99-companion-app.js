@@ -21,18 +21,19 @@ module.exports = function(RED) {
     var net = require('net');
     var client = new net.Socket();
     var connected = false;
-    /*var ipc = require('node-ipc');
-    ipc.config.id   = 'webserver';
-    ipc.config.retry= 1500;
-    ipc.config.silent=false;*/
-    
-    // The main node definition - most things happen in here
 
-    function connect(){
+    function connect(fn){
         connected = false;
+        
         client.connect(8435, 'databox-test-server', function() {
             console.log('***** Connected *******');
             connected = true;
+            if (fn){
+                fn();
+            }
+        }).on("error", function(err){
+            console.log("error connecting, retrying in 2 sec");
+            setTimeout(function(){connect(fn)}, 2000);
         });
     }
 
@@ -41,30 +42,11 @@ module.exports = function(RED) {
         
         // Create a RED node
         RED.nodes.createNode(this,n);
-		
-       
-        connect();
-        
-
-        /*ipc.serveNet(
-            function(){
-                ipc.server.on('connect', function(){
-                    console.log("companion app: successfully connected to ipc socket");
-                });
-            }
-        );
-
-        ipc.server.start();
-        
-        /*ipc.connectTo(
-            'webserver',
-             function(){
-             ipc.of.webserver.on(
-                'connect',
-                function(){  
-                }
-            );
-        });*/
+		   
+        connect(function(){
+            sendmessage({type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
+        });
+    
 
         // Store local copies of the node configuration (as defined in the .html)
         this.appId = n.appId;
@@ -72,9 +54,8 @@ module.exports = function(RED) {
         var node = this;
 		
 		var fallbackId = (1+Math.random()*42949433295).toString(16);
-		
-        console.log("sending init message");
-        sendmessage({type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
+	
+        
 
         this.on('input', function (m) {
             var msg = {
@@ -98,24 +79,12 @@ module.exports = function(RED) {
     }
     
     function sendmessage(msg){
-		try{
-		   //console.log(msg);
-           if (connected){
-                client.write(JSON.stringify({type: "message", msg: msg}));
-		   }
-           /*ipc.server.emit(
-                            {
-                                address : 'databox-test-server', //any hostname will work 
-                                port    : 8435
-                            },
-							'message',  //any event or message type your server listens for 
-							JSON.stringify(msg)
-						)*/
-			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
-		}catch(err){
-			console.log("error sending", err);
-            connect();
-        }
+        if (connected){
+            client.write(JSON.stringify({type: "message", msg: msg})).on("error", function(err){
+                    console.log('error writing to socket', err); 
+                    connect(function(){sendmessage(msg)});
+            });
+	    }
 	}
 
     // Register the node by name. This must be called before overriding any of the
