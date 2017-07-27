@@ -18,11 +18,12 @@
 
 module.exports = function(RED) {
     "use strict";
-    
-    var ipc = require('node-ipc');
+    var net = require('net');
+
+    /*var ipc = require('node-ipc');
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
-    ipc.config.silent=false;
+    ipc.config.silent=false;*/
     
     // The main node definition - most things happen in here
     function CompanionApp(n) {
@@ -31,7 +32,13 @@ module.exports = function(RED) {
         // Create a RED node
         RED.nodes.createNode(this,n);
 		
-        ipc.serveNet(
+        var client = new net.Socket();
+        
+        client.connect(8435, 'databox-test-server', function() {
+            console.log('Connected');
+        });
+
+        /*ipc.serveNet(
             function(){
                 ipc.server.on('connect', function(){
                     console.log("companion app: successfully connected to ipc socket");
@@ -87,14 +94,15 @@ module.exports = function(RED) {
 		try{
 		   //console.log(msg);
            console.log("companion app, sending message", JSON.stringify(msg));
-		   ipc.server.emit(
+           client.write(JSON.stringify(msg));
+		   /*ipc.server.emit(
                             {
                                 address : 'databox-test-server', //any hostname will work 
                                 port    : 8435
                             },
 							'message',  //any event or message type your server listens for 
 							JSON.stringify(msg)
-						)
+						)*/
 			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
 		}catch(err){
 			console.log("error sending", err);

@@ -20,7 +20,6 @@
     "moment": "^2.18.0",
     "mustache": "^2.3.0",
     "node-databox": "^0.2.8",
-    "node-ipc": "^9.1.0",
     "request": "^2.81.0"
   }
 }
