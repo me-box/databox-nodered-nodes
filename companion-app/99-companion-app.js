@@ -20,12 +20,22 @@ module.exports = function(RED) {
     "use strict";
     var net = require('net');
     var client = new net.Socket();
+    var connected = false;
     /*var ipc = require('node-ipc');
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
     ipc.config.silent=false;*/
     
     // The main node definition - most things happen in here
+
+    function connect(){
+        connected = false;
+        client.connect(8435, 'databox-test-server', function() {
+            console.log('Connected');
+            connected = true;
+        });
+    }
+
     function CompanionApp(n) {
     
         
@@ -33,10 +43,8 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
 		
        
+        connect();
         
-        client.connect(8435, 'databox-test-server', function() {
-            console.log('Connected');
-        });
 
         /*ipc.serveNet(
             function(){
@@ -93,8 +101,10 @@ module.exports = function(RED) {
     function sendmessage(msg){
 		try{
 		   //console.log(msg);
-           client.write(JSON.stringify({type: "message", msg: msg}));
-		   /*ipc.server.emit(
+           if (connected){
+                client.write(JSON.stringify({type: "message", msg: msg}));
+		   }
+           /*ipc.server.emit(
                             {
                                 address : 'databox-test-server', //any hostname will work 
                                 port    : 8435
@@ -105,7 +115,8 @@ module.exports = function(RED) {
 			//client.publish(MQTT_APP_CHANNEL, JSON.stringify(msg));
 		}catch(err){
 			console.log("error sending", err);
-		}
+            connect();
+        }
 	}
 
     // Register the node by name. This must be called before overriding any of the
