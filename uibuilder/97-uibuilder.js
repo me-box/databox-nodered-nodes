@@ -56,7 +56,7 @@ module.exports = function(RED) {
 
     function sendmessage(msg){
 		try{
-			client.write(JSON.stringify(msg));
+			client.write(JSON.stringify({type: "message", msg: msg}));
 
 		   //console.log(msg);
 		   /*ipc.of.webserver.emit(

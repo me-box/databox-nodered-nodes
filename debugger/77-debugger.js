@@ -24,11 +24,9 @@ module.exports = function(RED) {
     var debuglength = RED.settings.debugMaxLength||1000;
     var useColors = false;
     
- 	var ipc = require('node-ipc');
-    ipc.config.id   = 'webserver';
-    ipc.config.retry= 1500;
-    ipc.config.silent=false;
-    
+    var net = require('net');
+    var client = new net.Socket();
+
     function DebugNode(n) {
     
     	if (!process.env.TESTING) //do nothing if not testing
@@ -37,18 +35,14 @@ module.exports = function(RED) {
        
         
         RED.nodes.createNode(this,n);
-        ipc.connectTo(
-            'webserver',
-             function(){
-             ipc.of.webserver.on(
-                'connect',
-                function(){
-                    console.log("connected to webserver!!");
-                }
-            );
+         
+
+        client.connect(8435, 'databox-test-server', function() {
+            console.log('Connected');
+            closeWebsocket(n.appId);
         });
         
-        closeWebsocket(ipc, n.appId);
+
        
         this.name = n.name;
         this.channel = n.appId;
@@ -102,7 +96,7 @@ module.exports = function(RED) {
         });
         
          this.on("close", function() {
-         	 sendClose(ipc, this.channel);
+         	 sendClose(this.channel);
          });
     }
 
@@ -156,14 +150,25 @@ module.exports = function(RED) {
             msg.msg = msg.msg.substr(0,debuglength) +" ....";
         }
        
-        sendmessage(ipc, msg);
+        sendmessage(msg);
     }
 
 	
-	function closeWebsocket(ipc, channel){
+	function closeWebsocket(channel){
 		console.log("closing any open websockets");
 		try{
-		  ipc.of.webserver.emit('message',JSON.stringify({channel:channel, type:"control", payload:{command:"reset", channel:channel}}));
+          client.write(JSON.stringify({
+                                            type: "message", 
+                                            msg: {
+                                                        channel:channel, 
+                                                        type:"control", 
+                                                        payload:{
+                                                            command:"reset", 
+                                                            channel:channel
+                                                        }
+                                            }
+                                        }));
+
 		  console.log("scuccessfully sent close message to socket");
 		}catch(err){
 			console.log("error sending close messsage");
@@ -171,21 +176,24 @@ module.exports = function(RED) {
 		}
 	}
 	
-	function sendClose(ipc, channel){
+	function sendClose(channel){
 		try{
-		  ipc.of.webserver.emit('message',JSON.stringify({channel:channel, type:"control", payload:{command:"reset", channel:channel}}));
+          client.write(JSON.stringify({
+                                            type: "message", 
+                                            msg: {channel:channel, type:"control", payload:{command:"reset", channel:channel}}
+                                     }));
 		  console.log("scuccessfully sent close message to socket");
 		}catch(err){
 			console.log("error sending close messsage");
 			console.log(err);
 		}finally{
-			ipc.of.webserver.destroy;
+			
 		}
 	}
 	
-	function sendmessage(ipc, msg){
+	function sendmessage(msg){
 		try{
-		  ipc.of.webserver.emit('debug',JSON.stringify(msg));
+          client.write(JSON.stringify({type: "message", msg:msg}));
 		  console.log("scuccessfully sent message to socket");
 		}catch(err){
 			console.log("error sending debug messsage");

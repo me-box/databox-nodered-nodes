@@ -93,8 +93,7 @@ module.exports = function(RED) {
     function sendmessage(msg){
 		try{
 		   //console.log(msg);
-           console.log("companion app, sending message", JSON.stringify(msg));
-           client.write(JSON.stringify(msg));
+           client.write(JSON.stringify({type: "message", msg: msg}));
 		   /*ipc.server.emit(
                             {
                                 address : 'databox-test-server', //any hostname will work 
