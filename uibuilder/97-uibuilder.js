@@ -5,6 +5,7 @@ module.exports = function(RED) {
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
     ipc.config.silent=false;*/
+    var net = require('net');
  	var client = new net.Socket();
     function UIBuilder(n) {
      
