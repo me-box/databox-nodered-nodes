@@ -22,16 +22,16 @@ window.onload = function(){
 	}
 }	
 
-function requestAnimFrame(){
-   return 	window.requestAnimationFrame ||
-        	window.webkitRequestAnimationFrame ||
-        	window.mozRequestAnimationFrame ||
-        	window.oRequestAnimationFrame ||
-        	window.msRequestAnimationFrame ||
-        	function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-            	return window.setTimeout(callback, 1000/60);
-        	};
-}
+window.requestAnimFrame = (function() {
+    return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+            return window.setTimeout(callback, 1000/60);
+        };
+})();
 
 function umSuccess(stream) {
     if (vid.mozCaptureStream) {
