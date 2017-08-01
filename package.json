@@ -17,9 +17,11 @@
   },
   "homepage": "https://github.com/tlodge/databox-nodered-nodes#readme",
   "dependencies": {
+    "express": "^4.15.3",
     "moment": "^2.18.0",
     "mustache": "^2.3.0",
     "node-databox": "^0.2.8",
-    "request": "^2.81.0"
+    "request": "^2.81.0",
+    "ws": "^3.1.0"
   }
 }
