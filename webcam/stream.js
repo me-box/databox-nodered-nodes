@@ -1,29 +1,36 @@
 var socket;
 var vidReady = false;
-var vid = document.getElementById('videoel');
+var vid 
 
-navigator.getUserMedia = navigator.getUserMedia 
+window.onload = function(){
+	console.log("window loaded");
+
+	vid = document.getElementById('videoel');
+
+	navigator.getUserMedia = navigator.getUserMedia 
 						|| navigator.webkitGetUserMedia 
 						|| (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) ? function(c, os, oe) { navigator.mediaDevices.getUserMedia(c).then(os,oe);} : null 
 						|| navigator.msGetUserMedia;
 
 
-window.requestAnimFrame = (function() {
-    return window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.msRequestAnimationFrame ||
-        function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-            return window.setTimeout(callback, 1000/60);
-        };
-})();
 
-if (navigator.getUserMedia) {
-    var videoSelector = {video : true};
-    navigator.getUserMedia(videoSelector, umSuccess, function() {
-             alert("Error fetching video from webcam");
-    });
+
+	if (navigator.getUserMedia) {
+	    navigator.getUserMedia({video : true}, umSuccess, function() {
+	             alert("Error fetching video from webcam");
+	    });
+	}
+}	
+
+function requestAnimFrame(){
+   return 	window.requestAnimationFrame ||
+        	window.webkitRequestAnimationFrame ||
+        	window.mozRequestAnimationFrame ||
+        	window.oRequestAnimationFrame ||
+        	window.msRequestAnimationFrame ||
+        	function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+            	return window.setTimeout(callback, 1000/60);
+        	};
 }
 
 function umSuccess(stream) {
