@@ -1,5 +1,6 @@
 var socket;
 var vidReady = false;
+var vid = document.getElementById('videoel');
 
 navigator.getUserMedia = navigator.getUserMedia 
 						|| navigator.webkitGetUserMedia 
@@ -83,4 +84,4 @@ function createSocket(address, name) {
     }
 }
 
-createSocket("wss:" + window.location.hostname + ":9000");
+createSocket("ws:" + window.location.hostname + ":9000");
