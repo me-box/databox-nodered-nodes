@@ -62,15 +62,11 @@ function sendFrameLoop() {
     var dataURL = canvas.toDataURL('image/jpeg', 0.6)
 
     var msg = {
-        'type': 'FRAME',
         'dataURL': dataURL,
     };
 
-    console.log("sending message!!");
     socket.send(JSON.stringify(msg));
-    console.log("sent");
     setTimeout(function() {
-    	console.log("in timeout");
     	requestAnimFrame(sendFrameLoop)
     }, 250);
 }
