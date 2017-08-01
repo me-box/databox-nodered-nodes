@@ -45,8 +45,10 @@ function umSuccess(stream) {
 }
 
 function sendFrameLoop() {
+	console.log("in send frame loop!");
 
     if (socket == null || socket.readyState != socket.OPEN || !vidReady) {
+    	console.log("returning!");
         return;
     }
 
@@ -64,8 +66,13 @@ function sendFrameLoop() {
         'dataURL': dataURL,
     };
 
+    console.log("sending message!!");
     socket.send(JSON.stringify(msg));
-    setTimeout(function() {requestAnimFrame(sendFrameLoop)}, 250);
+    console.log("sent");
+    setTimeout(function() {
+    	console.log("in timeout");
+    	requestAnimFrame(sendFrameLoop)
+    }, 250);
 }
 
 function createSocket(address, name) {
