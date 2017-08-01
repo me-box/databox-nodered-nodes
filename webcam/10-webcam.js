@@ -2,6 +2,7 @@ module.exports = function(RED) {
     
     "use strict";
  	var express = require('express');
+ 	var http = require('http');
     var WebSocket = require('ws');
     var wss = new WebSocket.Server({ port: 9000 });
 
@@ -22,10 +23,10 @@ module.exports = function(RED) {
 
   		var server = http.createServer(app);
   		
- 		server.listen(8888, "0.0.0.0", function(){
+ 		server.listen(8086, "0.0.0.0", function(){
  			console.log("ok am listening now!!");
  		});
- 		
+
         var node = this;
     }
     
