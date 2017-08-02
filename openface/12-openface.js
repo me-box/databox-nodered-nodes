@@ -8,7 +8,7 @@ module.exports = function(RED) {
 
 
     function OpenFace(n) {
-        console.log("in openfacce...");
+        console.log("in new openface...");
 
         RED.nodes.createNode(this,n);
         var node = this;
@@ -61,7 +61,7 @@ module.exports = function(RED) {
         }*/
 
         this.on('input', function (msg) {
-            console.log("seen an image, sending to openface");
+            console.log("seen something, sending to openface");
             if (msg.dataURL){
                 client.write(JSON.stringify(msg));
                 /*if (socket){

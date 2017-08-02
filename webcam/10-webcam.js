@@ -9,16 +9,16 @@ module.exports = function(RED) {
     function Webcam(n) {
  		
  		RED.nodes.createNode(this,n);
-        
+        var node = this;
         //pas in the name of the image here??
 		var app = express();
 
 		wss.on('connection', function connection(ws) {
 		  console.log("successfully connected websocket!");
 		  ws.on('message', function incoming(message) {
-		    console.log('received: %s', message);
+		    //console.log('received: %s', message);
+		  	node.send(message);
 		  });
-		  ws.send("hello");
 		});
 
         app.use("/", express.static(__dirname + '/'))
@@ -29,7 +29,7 @@ module.exports = function(RED) {
  			console.log("ok am listening now!!");
  		});
 
-        var node = this;
+        
     }
     
     // Register the node by name. This must be called before overriding any of the
