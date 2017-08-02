@@ -76,7 +76,8 @@ module.exports = function(RED) {
         this.on('input', function (msg) {
             console.log("seen something, sending to openface");
             //if (msg.dataURL){
-            client.write(JSON.stringify(msg));
+            const data = JSON.stringify(msg);
+            client.write(`${data.length}:${data}`);
                 /*if (socket){
                     try{
                         socket.send("ahello!!");
