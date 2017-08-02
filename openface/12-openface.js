@@ -43,6 +43,32 @@ module.exports = function(RED) {
         return Buffer.concat(result);
     };
 
+    const parse = (netstring, { encoding = 'utf-8', response = 'string' } = {}) => {
+        let result = [];
+        if (!netstring) {
+            return;
+        }
+        netstring = new Buffer(netstring, encoding);
+
+        for (let i = 0, val, lenStart = 0, len, stringStart, string; i < netstring.length ; i++) {
+
+            val = netstring[i];
+            //First find the ':' - NETSTRING_SEPARATOR character.
+            if (NETSTRING_SEPARATOR_CODE === val) {
+                //Find the length digits on the left side of NETSTRING_SEPARATOR(:)
+                len = netstring.toString(encoding, lenStart, i);
+                len = Number.parseInt(len);
+                //Find the string based on the length value and slice the string.
+                stringStart = i + 1;
+                string = netstring.slice(stringStart, stringStart + len);
+                result.push((response === 'string') ? string.toString(encoding): string);
+                //Reset index to next string.
+                i = stringStart + len + 1;
+                lenStart = i;
+            }
+        }
+        return result;
+    };
 
     function connect(fn){
         connected = false;
@@ -72,7 +98,7 @@ module.exports = function(RED) {
         });
 
         client.on("message", function(msg){
-            console.log("nice - seen message!!", msg);
+            console.log("nice - seen message!!", parse(msg));
         });
         
         client.on('uncaughtException', function (err) {
