@@ -4,8 +4,19 @@ module.exports = function(RED) {
     //var WebSocket = require('ws');
     //var socket;
     var net = require('net');
-     
-
+    var client = new net.Socket();
+    var connected = false;
+    
+    function connect(fn){
+        connected = false;
+   
+        client.connect(9001, 'openface', function() {
+            connected = true;
+            if (fn){
+                fn();
+            }
+        })
+    }
 
     function OpenFace(n) {
         console.log("in new openface...");
@@ -13,8 +24,10 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         var node = this;
 
-        var client = new net.Socket();
-        var connected = false;
+        connect(function(){
+            console.log("connected to openface!");
+        });
+    
 
         client.on("error", function(err){
             connected = false;
