@@ -10,6 +10,7 @@ module.exports = function(RED) {
 
     const NETSTRING_DELIMITER = ',';
     const NETSTRING_SEPARATOR = ':';
+    const NETSTRING_SEPARATOR_CODE = 58;
     
     const netstringify = (string, { encoding = 'utf-8', response = 'string' } = {}) => {
 
@@ -104,7 +105,7 @@ module.exports = function(RED) {
         });
 
         client.on("message", function(data){
-            console.log("got a message", data);
+            console.log("got AAA message", data);
             console.log("nice - seen message!!", parse(data));
         });
         
