@@ -19,7 +19,7 @@ module.exports = function(RED) {
         
             socket.onmessage = function(e) {
                 console.log("got message",e);
-                node.send(e);
+                node.send("hello");
             }
         }catch(error){
             console.log("error connecting to socket", error);
@@ -29,7 +29,11 @@ module.exports = function(RED) {
             console.log("seen an image, sending to openface");
             if (msg.dataURL){
                 if (socket){
-                    socket.send(msg);
+                    try{
+                        socket.send("ahello!!");
+                    }catch(error){
+                        console.log("error sending", error)
+                    }
                 }
             }
         });
