@@ -68,8 +68,7 @@ module.exports = function(RED) {
 
         client.on("error", function(err){
             connected = false;
-            console.log("error connecting, retrying in 2 sec");
-            setTimeout(function(){connect()}, 2000);
+            setTimeout(function(){connect()}, 500);
         });
 
         client.on("message", function(msg){
@@ -113,7 +112,7 @@ module.exports = function(RED) {
         this.on('input', function (msg) {
             console.log("seen something, sending to openface");
             //if (msg.dataURL){
-            const data = JSON.stringify({value:"hello"});
+            const data = JSON.stringify(msg);
             client.write(netstringify(data));
                 /*if (socket){
                     try{
