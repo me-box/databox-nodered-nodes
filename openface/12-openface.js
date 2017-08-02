@@ -93,11 +93,17 @@ module.exports = function(RED) {
     
 
         client.on("error", function(err){
+            console.log("error!", err);
             connected = false;
             setTimeout(function(){connect()}, 500);
         });
 
         client.on("data", function(data){
+            console.log("got a message", data);
+            console.log("nice - seen message!!", parse(data));
+        });
+
+        client.on("message", function(data){
             console.log("got a message", data);
             console.log("nice - seen message!!", parse(data));
         });
