@@ -98,6 +98,7 @@ module.exports = function(RED) {
         });
 
         client.on("message", function(msg){
+            console.log("got a message", msg);
             console.log("nice - seen message!!", parse(msg));
         });
         
@@ -136,7 +137,7 @@ module.exports = function(RED) {
         }*/
 
         this.on('input', function (msg) {
-            console.log("seen something, sending to openface");
+            console.log("sending to openface");
             //if (msg.dataURL){
             const data = JSON.stringify(msg);
             client.write(netstringify(data));
