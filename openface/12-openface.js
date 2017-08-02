@@ -11,7 +11,7 @@ module.exports = function(RED) {
     const NETSTRING_DELIMITER = ',';
     const NETSTRING_SEPARATOR = ':';
     const NETSTRING_SEPARATOR_CODE = 58;
-    
+
     const netstringify = (string, { encoding = 'utf-8', response = 'string' } = {}) => {
 
         let result = [];
@@ -104,10 +104,10 @@ module.exports = function(RED) {
             console.log("nice - seen message!!", parse(data));
         });
 
-        client.on("message", function(data){
+        /*client.on("message", function(data){
             console.log("got AAA message", data);
             console.log("nice - seen message!!", parse(data));
-        });
+        });*/
         
         client.on('uncaughtException', function (err) {
             connected = false;
