@@ -4,12 +4,15 @@ module.exports = function(RED) {
  	var express = require('express');
  	var http = require('http');
     var WebSocket = require('ws');
-    var wss = new WebSocket.Server({ port: 9123 });
-    var server;
+   
 
     function Webcam(n) {
  		
+ 		console.log("creating webcam node");
+ 		
  		RED.nodes.createNode(this,n);
+ 		var wss = new WebSocket.Server({ port: 9123 });
+    	var server;
         var node = this;
         //pas in the name of the image here??
 		var app = express();
@@ -28,7 +31,7 @@ module.exports = function(RED) {
   		
   		try{
  			server.listen(8096, "0.0.0.0", function(){
- 				console.log("ok am listening now!!");
+ 				console.log("---starting listening on 8096 ----");
  			});
  		}catch(err){
  			console.log(err);
