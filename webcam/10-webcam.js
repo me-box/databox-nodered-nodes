@@ -5,6 +5,7 @@ module.exports = function(RED) {
  	var http = require('http');
     var WebSocket = require('ws');
     var wss = new WebSocket.Server({ port: 9123 });
+    var server;
 
     function Webcam(n) {
  		
@@ -23,15 +24,24 @@ module.exports = function(RED) {
 
         app.use("/", express.static(__dirname + '/'))
 
-  		var server = http.createServer(app);
+  		server = http.createServer(app);
   		
- 		server.listen(8096, "0.0.0.0", function(){
- 			console.log("ok am listening now!!");
- 		});
+  		try{
+ 			server.listen(8096, "0.0.0.0", function(){
+ 				console.log("ok am listening now!!");
+ 			});
+ 		}catch(err){
+ 			console.log(err);
+ 		}
 
         
     }
     
+    this.on("close", function() {
+        console.log(`---seen a node close event ----`);
+        server.close();
+    });
+
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
     RED.nodes.registerType("webcam", Webcam);
