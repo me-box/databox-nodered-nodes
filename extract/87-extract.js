@@ -16,8 +16,9 @@ module.exports = function(RED) {
 
         const _lookup = n.filters.reduce((acc, item)=>{
             const entry = acc[item.source] || []
-            const [head, ...tail] = item.path;
-            entry.push(tail);
+            //const [head, ...tail] = item.path;
+            //entry.push(tail);
+            entry.push(item.path);
             acc[item.source] = entry;
             return acc;
         },{});
