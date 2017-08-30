@@ -11,6 +11,9 @@ module.exports = function(RED) {
         
         var node = this;
 
+        console.log("*******************************");
+        console.log("initing with filters", JSON.stringify(n.filters, null, 4));
+
         const _lookup = n.filters.reduce((acc, item)=>{
             const entry = acc[item.source] || []
             const [head, ...tail] = item.path;
@@ -29,7 +32,8 @@ module.exports = function(RED) {
 
         this.on('input', function (msg) {
             
-            console.log("extract" , JSON.stringify(msg,null,4));
+            console.log("new msg:");
+            console.log(JSON.stringify(msg,null,4));
             console.log("looking up", msg.type);
 
             const paths = _lookup[msg.type];
