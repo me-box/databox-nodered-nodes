@@ -19,7 +19,7 @@ module.exports = function(RED) {
             return acc;
         },{});
 
-        console.log("lookup is", JSON.stringify(lookup,null, 4));
+        console.log("lookup is", JSON.stringify(_lookup,null, 4));
 
         const _extract = (msg,path)=>{
             return path.reduce((acc,item)=>{
