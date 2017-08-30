@@ -34,13 +34,15 @@ module.exports = function(RED) {
  			console.log(err);
  		}
 
+ 		this.on("close", function() {
+        	console.log(`---seen a node close event ----`);
+        	wss.close();
+        	server.close();
+    	});
         
     }
     
-    this.on("close", function() {
-        console.log(`---seen a node close event ----`);
-        server.close();
-    });
+    
 
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
