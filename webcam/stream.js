@@ -94,4 +94,4 @@ function createSocket(address, name) {
     }
 }
 
-createSocket("ws:" + window.location.hostname + ":9000");
+createSocket("ws:" + window.location.hostname + ":9123");

@@ -19,6 +19,8 @@ module.exports = function(RED) {
             return acc;
         },{});
 
+        console.log("lookup is", JSON.stringify(lookup,null, 4));
+
         const _extract = (msg,path)=>{
             return path.reduce((acc,item)=>{
                 return acc[item];
@@ -27,9 +29,12 @@ module.exports = function(RED) {
 
         this.on('input', function (msg) {
             
-          
+            console.log("extract" , JSON.stringify(msg,null,4));
+            console.log("looking up", msg.type);
+
             const paths = _lookup[msg.type];
-          
+            console.log("ok have paths", JSON.stringify(paths));
+
             if (paths){
                 const extracted = paths.reduce((acc,path)=>{
                     if (path.length > 0){

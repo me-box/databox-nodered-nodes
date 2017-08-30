@@ -4,7 +4,7 @@ module.exports = function(RED) {
  	var express = require('express');
  	var http = require('http');
     var WebSocket = require('ws');
-    var wss = new WebSocket.Server({ port: 9000 });
+    var wss = new WebSocket.Server({ port: 9123 });
 
     function Webcam(n) {
  		
