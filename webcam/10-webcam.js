@@ -25,7 +25,7 @@ module.exports = function(RED) {
 
   		var server = http.createServer(app);
   		
- 		server.listen(8086, "0.0.0.0", function(){
+ 		server.listen(8096, "0.0.0.0", function(){
  			console.log("ok am listening now!!");
  		});
 
