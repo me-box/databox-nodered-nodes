@@ -92,7 +92,6 @@ module.exports = function(RED) {
             console.log("connected to openface!");
         });
     
-
         client.on("error", function(err){
             console.log("error!", err);
             connected = false;
@@ -103,11 +102,6 @@ module.exports = function(RED) {
             console.log("got a message", data);
             console.log("nice - seen message!!", parse(data));
         });
-
-        /*client.on("message", function(data){
-            console.log("got AAA message", data);
-            console.log("nice - seen message!!", parse(data));
-        });*/
         
         client.on('uncaughtException', function (err) {
             connected = false;
@@ -115,38 +109,10 @@ module.exports = function(RED) {
             setTimeout(function(){connect()}, 2000);
         });
 
-        /*try{
-            console.log("creating new websocket");
-
-            socket = new WebSocket("ws:openface:9001");
-            socket.binaryType = "arraybuffer";
-
-            console.log("done creating new websocket");
-
-            socket.onerror = function(err){
-                console.log("errored creating scoket", err);
-            }
-
-            socket.onopen = function() {
-                console.log("created socket");
-            }
-        
-            socket.onclose = function(event){
-                console.log("closed socket", event);
-            }
-
-            socket.onmessage = function(e) {
-                console.log("got message",e);
-                node.send("hello");
-            }
-        }catch(error){
-            console.log("error connecting to socket", error);
-        }*/
-
         this.on('input', function (msg) {
             console.log("sending to openface");
             //if (msg.dataURL){
-            const data = JSON.stringify(msg);
+            const data = JSON.stringify(msg.payload);
             client.write(netstringify(data));
                 /*if (socket){
                     try{
