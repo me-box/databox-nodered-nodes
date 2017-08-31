@@ -99,8 +99,8 @@ module.exports = function(RED) {
         });
 
         client.on("data", function(data){
-            console.log("got a message", data);
-            console.log("nice - seen message!!", parse(data));
+            console.log("got a message");
+            node.send({name: node.name || "openface", payload:parse(data)});
         });
         
         client.on('uncaughtException', function (err) {
