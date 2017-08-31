@@ -9,8 +9,9 @@ module.exports = function(RED) {
     function Webcam(n) {
  		
  		console.log("creating webcam node");
- 		
+
  		RED.nodes.createNode(this,n);
+ 		
  		var wss = new WebSocket.Server({ port: 9123 });
     	var server;
         var node = this;
@@ -21,7 +22,10 @@ module.exports = function(RED) {
 		  console.log("successfully connected websocket!");
 		  ws.on('message', function incoming(message) {
 		    //console.log('received: %s', message);
-		  	node.send(message);
+		  	node.send({
+		  		name: n.name || "webcam",
+		  		dataURL: message.dataURL,
+		  	});
 		  });
 		});
 
