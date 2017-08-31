@@ -112,7 +112,7 @@ module.exports = function(RED) {
         this.on('input', function (msg) {
             console.log("sending to openface");
             //if (msg.dataURL){
-            const data = JSON.stringify(msg.payload);
+            const data = JSON.stringify({dataURL:"some kind of data"});
             client.write(netstringify(data));
                 /*if (socket){
                     try{
