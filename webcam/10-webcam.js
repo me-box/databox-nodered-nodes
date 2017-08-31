@@ -21,10 +21,10 @@ module.exports = function(RED) {
 		wss.on('connection', function connection(ws) {
 		  console.log("successfully connected websocket!");
 		  ws.on('message', function incoming(message) {
-		    //console.log('received: %s', message);
+		    console.log('received: ', message);
 		  	node.send({
 		  		name: n.name || "webcam",
-		  		dataURL: message.dataURL,
+		  		payload: message,
 		  	});
 		  });
 		});
