@@ -110,18 +110,8 @@ module.exports = function(RED) {
         });
 
         this.on('input', function (msg) {
-            console.log("sending to openface");
-            //if (msg.dataURL){
             const data = JSON.stringify(msg);
             client.write(netstringify(data));
-                /*if (socket){
-                    try{
-                        socket.send("ahello!!");
-                    }catch(error){
-                        console.log("error sending", error)
-                    }
-                }*/
-            //}
         });
     }
 
