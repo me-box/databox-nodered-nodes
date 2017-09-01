@@ -99,10 +99,23 @@ module.exports = function(RED) {
         });
 
         client.on("data", function(data){
-            console.log("got a message");
-            node.send({name: node.name || "openface", payload:parse(data)});
+            const msg = parse(data);
+            console.log(msg);
+            
+            try{
+                var parsed = msg.map(function(item){
+                    console.log("parsing", item);
+                    return JSON.parse(item);
+                });
+                console.log("parsed is", parsed);
+            }catch(err){
+                console.log("error parsing data");
+            }
+
+            node.send({name: node.name || "openface", payload:msg});
         });
-        
+
+     
         client.on('uncaughtException', function (err) {
             connected = false;
             console.error(err.stack);
