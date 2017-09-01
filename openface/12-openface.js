@@ -103,7 +103,12 @@ module.exports = function(RED) {
             
             try{
                 var parsed = msg.map(function(item){
-                    return JSON.parse(item);
+                    var _x = JSON.parse(item);
+                    _x.identities = _x.identities.map(function(identity){
+                        identity.bb = JSON.parse(identity.bb);
+                        return identity; 
+                    });
+                    return _x;
                 });
                 node.send({name: node.name || "openface", payload:parsed});
             }catch(err){
