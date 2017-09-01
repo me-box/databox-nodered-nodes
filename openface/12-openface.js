@@ -104,10 +104,11 @@ module.exports = function(RED) {
             try{
                 var parsed = msg.map(function(item){
                     var _x = JSON.parse(item);
-                    _x.identities = _x.identities.map(function(identity){
-                        identity.bb = JSON.parse(identity.bb);
-                        return identity; 
-                    });
+                    console.log(_x.identities);
+                    //_x.identities = _x.identities.map(function(identity){
+                    //    identity.bb = JSON.parse(identity.bb);
+                    //    return identity; 
+                    //});
                     return _x;
                 });
                 node.send({name: node.name || "openface", payload:parsed});
