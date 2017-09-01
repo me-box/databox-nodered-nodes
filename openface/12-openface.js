@@ -100,19 +100,15 @@ module.exports = function(RED) {
 
         client.on("data", function(data){
             const msg = parse(data);
-            console.log(msg);
             
             try{
                 var parsed = msg.map(function(item){
-                    console.log("parsing", item);
                     return JSON.parse(item);
                 });
-                console.log("parsed is", parsed);
+                node.send({name: node.name || "openface", payload:parsed});
             }catch(err){
                 console.log("error parsing data");
             }
-
-            node.send({name: node.name || "openface", payload:msg});
         });
 
      
