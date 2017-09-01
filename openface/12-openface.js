@@ -103,14 +103,9 @@ module.exports = function(RED) {
             
             try{
                 var parsed = msg.map(function(item){
-                    var _x = JSON.parse(item);
-                    console.log(_x.identities);
-                    //_x.identities = _x.identities.map(function(identity){
-                    //    identity.bb = JSON.parse(identity.bb);
-                    //    return identity; 
-                    //});
-                    return _x;
+                    return JSON.parse(item);
                 });
+                console.log(parsed);
                 node.send({name: node.name || "openface", payload:parsed});
             }catch(err){
                 console.log("error parsing data");
