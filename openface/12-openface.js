@@ -99,9 +99,11 @@ module.exports = function(RED) {
         });
 
         client.on("data", function(data){
-            const msg = parse(data);
+           
             
             try{
+                const msg = parse(data)[0];
+
                 var parsed = msg.map(function(item){
                     return JSON.parse(item);
                 });
