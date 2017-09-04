@@ -72,7 +72,7 @@ module.exports = function(RED) {
     };
 
     function connect(fn){
-        
+        console.log("attempting conncet!!");
         connected = false;
         
         client.connect(9001, 'openface', function() {
@@ -96,8 +96,8 @@ module.exports = function(RED) {
         client.on("error", function(err){
             console.log("error!", err);
             connected = false;
-            console.log("calling client close!");
-            client.close();
+            console.log("calling client end!");
+            client.end();
             console.log("done!");
             setTimeout(function(){connect(function(){
                 console.log("successfully reconnected to openface!");
@@ -122,7 +122,7 @@ module.exports = function(RED) {
      
         client.on('uncaughtException', function (err) {
             connected = false;
-            client.close();
+            client.end();
             console.error("error connecting!!", err.stack);
 
             setTimeout(function(){connect()}, 2000);
