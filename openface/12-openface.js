@@ -117,13 +117,20 @@ module.exports = function(RED) {
      
         client.on('uncaughtException', function (err) {
             connected = false;
-            console.error(err.stack);
+            console.error("error connecting!!", err.stack);
             setTimeout(function(){connect()}, 2000);
         });
 
         this.on('input', function (msg) {
             const data = JSON.stringify(msg);
             client.write(netstringify(data));
+        });
+
+        this.on('close', function(){
+            //closing this client cleanly
+            console.log("CLOSING CLIENT");
+            connected = false;
+            client.destroy();
         });
     }
 
