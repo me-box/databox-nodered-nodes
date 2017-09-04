@@ -117,11 +117,11 @@ module.exports = function(RED) {
 
             client.on("error", function(err){
                 connected = false;
-                console.log("error, calling client destroy, reconnecting in 5s", err);
+                console.log("error, reconnecting in 5s", err);
 
-                client.destroy(function(err){
-                    console.log("error destryong client", err);
-                });
+                //client.destroy(function(err){
+                //    console.log("error destryong client", err);
+                //});
 
                 setTimeout(function(){
                     console.log("attempting reconnect now");
