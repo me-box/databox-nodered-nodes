@@ -91,13 +91,14 @@ module.exports = function(RED) {
         var node = this;
         var client;
 
-        connect(function(client){
+        connect(function(c){
             console.log("successfully connected to openface!");
-            addListeners(client);
+            client = c;
+            addListeners();
         });
     
        
-        function addListeners(client){
+        function addListeners(){
             console.log("adding listeners");
 
             client.on("data", function(data){  
@@ -126,7 +127,8 @@ module.exports = function(RED) {
                     console.log("attempting reconnect now");
                     connect(function(c){
                         console.log("successfully reconnected to openface!");
-                        addListeners(c);
+                        client = c;
+                        addListeners();
                     });
 
                 }, 3000);
