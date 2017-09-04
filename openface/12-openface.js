@@ -4,7 +4,7 @@ module.exports = function(RED) {
     //var WebSocket = require('ws');
     //var socket;
     var net = require('net');
-    var client = new net.Socket();
+    var client;
     var connected = false;
     
 
@@ -75,6 +75,8 @@ module.exports = function(RED) {
         console.log("attempting conncet!!");
         connected = false;
         
+        client = new net.Socket();
+        
         client.connect(9001, 'openface', function() {
             connected = true;
             if (fn){
@@ -91,42 +93,35 @@ module.exports = function(RED) {
 
         connect(function(){
             console.log("connected to openface!");
+            addListeners();
         });
     
         client.on("error", function(err){
-            console.log("error!", err);
             connected = false;
-            console.log("calling client end!");
-            client.end();
-            console.log("done!");
+            console.log("error, calling client destroy, reconnecting in 2s");
+            client.destroy();
+
             setTimeout(function(){connect(function(){
                 console.log("successfully reconnected to openface!");
             })}, 2000);
         });
 
-        client.on("data", function(data){ 
-            
-            try{
-                var msg = parse(data);
-            
-                var parsed = msg.map(function(item){
-                    return JSON.parse(item);
-                });
-                console.log(parsed[0] || []);
-                node.send({name: node.name || "openface", payload:parsed[0] || []});
-            }catch(err){
-                console.log("error parsing data");
-            }
-        });
+        function addListeners(){
 
-     
-        client.on('uncaughtException', function (err) {
-            connected = false;
-            client.end();
-            console.error("error connecting!!", err.stack);
-
-            setTimeout(function(){connect()}, 2000);
-        });
+            client.on("data", function(data){  
+                try{
+                    var msg = parse(data);
+                
+                    var parsed = msg.map(function(item){
+                        return JSON.parse(item);
+                    });
+                    console.log(parsed[0] || []);
+                    node.send({name: node.name || "openface", payload:parsed[0] || []});
+                }catch(err){
+                    console.log("error parsing data");
+                }
+            });
+        }
 
         this.on('input', function (msg) {
             const data = JSON.stringify(msg);
@@ -137,7 +132,7 @@ module.exports = function(RED) {
             //closing this client cleanly
             console.log("CLOSING CLIENT");
             connected = false;
-            client.destroy();
+             client.destroy();
         });
     }
 
