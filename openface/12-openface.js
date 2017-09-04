@@ -4,7 +4,7 @@ module.exports = function(RED) {
     //var WebSocket = require('ws');
     //var socket;
     var net = require('net');
-    var client;
+    var client = new net.Socket();
     var connected = false;
     
 
@@ -75,8 +75,6 @@ module.exports = function(RED) {
         
         connected = false;
         
-        client = new net.Socket();
-        
         client.connect(9001, 'openface', function() {
             connected = true;
             if (fn){
@@ -98,8 +96,8 @@ module.exports = function(RED) {
         client.on("error", function(err){
             console.log("error!", err);
             connected = false;
-            console.log("calling client destroy");
-            client.destroy();
+            console.log("calling client close!");
+            client.close();
             console.log("done!");
             setTimeout(function(){connect(function(){
                 console.log("successfully reconnected to openface!");
@@ -124,7 +122,7 @@ module.exports = function(RED) {
      
         client.on('uncaughtException', function (err) {
             connected = false;
-            client.destroy();
+            client.close();
             console.error("error connecting!!", err.stack);
 
             setTimeout(function(){connect()}, 2000);
