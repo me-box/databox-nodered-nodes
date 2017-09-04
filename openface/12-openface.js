@@ -4,7 +4,6 @@ module.exports = function(RED) {
     //var WebSocket = require('ws');
     //var socket;
     var net = require('net');
-    var client;
     var connected = false;
     
 
@@ -75,45 +74,30 @@ module.exports = function(RED) {
         console.log("attempting conncet!!");
         connected = false;
         
-        client = new net.Socket();
+        var client = new net.Socket();
         
         client.connect(9001, 'openface', function() {
             connected = true;
             if (fn){
-                fn();
+                fn(client);
             }
         })
     }
 
     function OpenFace(n) {
-        console.log("in new openface...");
+        console.log("**** in new openface...");
 
         RED.nodes.createNode(this,n);
         var node = this;
+        var client;
 
-        connect(function(){
-            console.log("connected to openface!");
-            addListeners();
+        connect(function(client){
+            console.log("successfully connected to openface!");
+            addListeners(client);
         });
     
-        client.on("error", function(err){
-            connected = false;
-            console.log("error, calling client destroy, reconnecting in 5s");
-            client.destroy(function(err){
-                console.log("error destryong client", err);
-            });
-
-            setTimeout(function(){
-                console.log("attempting reconnect now");
-                connect(function(){
-                    console.log("successfully reconnected to openface!");
-                    addListeners();
-                });
-
-            }, 5000);
-        });
-
-        function addListeners(){
+       
+        function addListeners(client){
             console.log("adding listeners");
 
             client.on("data", function(data){  
@@ -129,6 +113,24 @@ module.exports = function(RED) {
                     console.log("error parsing data");
                 }
             });
+
+            client.on("error", function(err){
+                connected = false;
+                console.log("error, calling client destroy, reconnecting in 5s", err);
+
+                client.destroy(function(err){
+                    console.log("error destryong client", err);
+                });
+
+                setTimeout(function(){
+                    console.log("attempting reconnect now");
+                    connect(function(c){
+                        console.log("successfully reconnected to openface!");
+                        addListeners(c);
+                    });
+
+                }, 3000);
+            });
         }
 
         this.on('input', function (msg) {
@@ -140,7 +142,8 @@ module.exports = function(RED) {
             //closing this client cleanly
             console.log("CLOSING CLIENT");
             connected = false;
-             client.destroy();
+            client.end();
+            client.destroy();
         });
     }
 
