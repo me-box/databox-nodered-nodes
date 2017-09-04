@@ -98,15 +98,23 @@ module.exports = function(RED) {
     
         client.on("error", function(err){
             connected = false;
-            console.log("error, calling client destroy, reconnecting in 2s");
-            client.destroy();
+            console.log("error, calling client destroy, reconnecting in 5s");
+            client.destroy(function(err){
+                console.log("error destryong client", err);
+            });
 
-            setTimeout(function(){connect(function(){
-                console.log("successfully reconnected to openface!");
-            })}, 2000);
+            setTimeout(function(){
+                console.log("attempting reconnect now");
+                connect(function(){
+                    console.log("successfully reconnected to openface!");
+                    addListeners();
+                });
+
+            }, 5000);
         });
 
         function addListeners(){
+            console.log("adding listeners");
 
             client.on("data", function(data){  
                 try{
