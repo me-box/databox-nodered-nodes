@@ -117,6 +117,23 @@ module.exports = function(RED) {
                 }
             });
 
+            client.on("uncaughtException", function(err){
+                connected = false;
+            
+                client.destroy(function(err){
+                    console.log("error destryong client", err);
+                });
+
+                setTimeout(function(){
+                    connect(function(c){
+                        client = c;
+                        addListeners();
+                    });
+
+                }, 3000);
+            
+            });
+
             client.on("error", function(err){
                 connected = false;
             
