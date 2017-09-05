@@ -107,7 +107,7 @@ module.exports = function(RED) {
                     }); 
                     //split the array of points and send each individually
                     parsed[0].forEach(function(payload, i){
-                        payload.id = payload.id == -1 ? i : payload.id;
+                        payload.id = payload.id == -1 ? i : ""+payload.id;
                         console.log(payload);
                         node.send({name: node.name || "openface", payload:payload});
                     });
