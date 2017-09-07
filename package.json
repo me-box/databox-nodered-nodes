@@ -19,7 +19,7 @@
   "dependencies": {
     "express": "^4.15.3",
     "http": "0.0.0",
-    "json-tcp-socket": "^1.0.3",
+    "json-socket": "^0.3.0",
     "moment": "^2.18.0",
     "mustache": "^2.3.0",
     "node-databox": "^0.2.8",
