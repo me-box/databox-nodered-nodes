@@ -18,14 +18,12 @@
 
 module.exports = function(RED) {
     "use strict";
-    //var net = require('net');
-    //var client = new net.Socket();
-    //var connected = false;
+    var net = require('net');
+   
+    var connected = false;
+    var JsonSocket = require('json-socket');
+    var client =  new JsonSocket(new net.Socket());
     //var netstring = require("../utils/netstring");
-
-    var JSONTCPSOCKET = require('json-tcp-socket');
-    var JSONTCPSOCKET = new JSONTCPSOCKET({tls: false});
-    var client = new JSONTCPSOCKET.Socket();
 
     client.on("error", function(err){
         connected = false;
@@ -41,7 +39,7 @@ module.exports = function(RED) {
 
     function connect(fn){
         connected = false;
-   
+      
         client.connect(8435, 'databox-test-server', function() {
             console.log('***** companion app connected *******');
             connected = true;
@@ -97,7 +95,8 @@ module.exports = function(RED) {
     function sendmessage(msg){
 
         if (connected){
-           client.write({type: "message", msg: msg});
+            client.sendMessage({type: "message", msg: msg});
+            //client.write({type: "message", msg: msg});
         }
     }
 

@@ -1,18 +1,11 @@
 module.exports = function(RED) {
 
     "use strict";
- 	/*var ipc = require('node-ipc');
-    ipc.config.id   = 'webserver';
-    ipc.config.retry= 1500;
-    ipc.config.silent=false;*/
-    //var net = require('net');
- 	//var client = new net.Socket();
+ 	
  	var connected = false;
- 	//var netstring = require("../utils/netstring");
-
-	var JSONTCPSOCKET = require('json-tcp-socket');
-	var JSONTCPSOCKET = new JSONTCPSOCKET({tls: false});
-	var client = new JSONTCPSOCKET.Socket();
+	var net = require('net');
+    var JsonSocket = require('json-socket');
+    var client =  new JsonSocket(new net.Socket());
 
 	client.on("error", function(err){
         console.log("error connecting, retrying in 2 sec");
@@ -61,7 +54,8 @@ module.exports = function(RED) {
 
     function sendmessage(msg){
         if (connected){
-           client.write({type: "message", msg: msg});
+           client.sendMessage({type: "message", msg: msg});
+           //client.write({type: "message", msg: msg});
            //client.write(JSON.stringify({type: "message", msg: msg}))
 	    }
 	}
