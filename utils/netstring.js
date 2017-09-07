@@ -1,10 +1,12 @@
-module.exports = function() {
+const NETSTRING_DELIMITER = ',';
+const NETSTRING_SEPARATOR = ':';
+const NETSTRING_SEPARATOR_CODE = 58;
 
-    const NETSTRING_DELIMITER = ',';
-    const NETSTRING_SEPARATOR = ':';
-    const NETSTRING_SEPARATOR_CODE = 58;
 
-    const netstringify = (string, { encoding = 'utf-8', response = 'string' } = {}) => {
+module.exports = {
+
+    
+    netstringify : function(string, { encoding = 'utf-8', response = 'string' } = {}){
 
         let result = [];
         let input = [];
@@ -34,12 +36,12 @@ module.exports = function() {
         }
         //Return as buffer for all the other types.
         return Buffer.concat(result);
-    };
+    },
 
-    const parse = (netstring, { encoding = 'utf-8', response = 'string' } = {}) => {
+    parse : function(netstring, { encoding = 'utf-8', response = 'string' } = {}){
 
         let result = [];
-        
+
         if (!netstring) {
             return;
         }
@@ -63,5 +65,5 @@ module.exports = function() {
             }
         }
         return result;
-    };
+    }
 }
