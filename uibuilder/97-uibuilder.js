@@ -5,11 +5,15 @@ module.exports = function(RED) {
     ipc.config.id   = 'webserver';
     ipc.config.retry= 1500;
     ipc.config.silent=false;*/
-    var net = require('net');
- 	var client = new net.Socket();
+    //var net = require('net');
+ 	//var client = new net.Socket();
  	var connected = false;
- 	var netstring = require("../utils/netstring");
- 	
+ 	//var netstring = require("../utils/netstring");
+
+	var JSONTCPSOCKET = require('json-tcp-socket');
+	var JSONTCPSOCKET = new JSONTCPSOCKET({tls: false});
+	var client = new JSONTCPSOCKET.Socket();
+
 	client.on("error", function(err){
         console.log("error connecting, retrying in 2 sec");
         setTimeout(function(){connect()}, 2000);
@@ -22,7 +26,7 @@ module.exports = function(RED) {
 
  	function connect(fn){
         connected = false;
-   
+   	
         client.connect(8435, 'databox-test-server', function() {
             console.log('***** Connected *******');
             connected = true;
@@ -57,7 +61,7 @@ module.exports = function(RED) {
 
     function sendmessage(msg){
         if (connected){
-           client.write(netstring.netstringify(JSON.stringify({type: "message", msg: msg})));
+           client.write({type: "message", msg: msg});
            //client.write(JSON.stringify({type: "message", msg: msg}))
 	    }
 	}
