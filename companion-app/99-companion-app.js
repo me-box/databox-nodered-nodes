@@ -21,6 +21,7 @@ module.exports = function(RED) {
     var net = require('net');
     var client = new net.Socket();
     var connected = false;
+    var netstring = require("../utils/netstring");
 
     client.on("error", function(err){
         connected = false;
@@ -92,7 +93,7 @@ module.exports = function(RED) {
     function sendmessage(msg){
 
         if (connected){
-           client.write(JSON.stringify({type: "message", msg: msg}))
+           client.write(netstring.netstringify(JSON.stringify({type: "message", msg: msg})));
         }
     }
 
