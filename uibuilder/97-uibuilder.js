@@ -19,8 +19,10 @@ module.exports = function(RED) {
 
  	function connect(fn){
         connected = false;
-   	
-        client.connect(8435, 'databox-test-server', function() {
+   		
+   		const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
+        
+        client.connect(8435, endpoint, function() {
             console.log('***** Connected *******');
             connected = true;
   		
