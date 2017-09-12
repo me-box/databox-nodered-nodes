@@ -180,8 +180,7 @@ module.exports = function(RED) {
 	
 	function closeWebsocket(channel){
 		console.log("closing any open websockets");
-	
-        client.write(JSON.stringify({
+        client.sendMessage({
                                             type: "message", 
                                             msg: {
                                                         channel:channel, 
@@ -191,21 +190,16 @@ module.exports = function(RED) {
                                                             channel:channel
                                                         }
                                             }
-                                        }));
+                                        });
     }
     
 	function sendClose(channel){
-		
-        client.write(JSON.stringify({
-                                        type: "message", 
-                                        msg: {channel:channel, type:"control", payload:{command:"reset", channel:channel}}
-                                     }))
+        client.sendMessage({type: "message", msg: {channel:channel, type:"control", payload:{command:"reset", channel:channel}}})
 	}
-	
 
     function sendmessage(msg){
         if (connected){
-           client.write(JSON.stringify({type: "debug", msg: msg}))
+           client.sendMessage({type: "debug", msg: msg})
         }
     }
 
