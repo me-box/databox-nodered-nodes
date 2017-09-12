@@ -41,7 +41,7 @@ module.exports = function(RED) {
         connected = false;
         
         const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
-        
+
         client.connect(8435, endpoint, function() {
             console.log('***** companion app connected *******');
             connected = true;
@@ -71,9 +71,9 @@ module.exports = function(RED) {
 		
 		var fallbackId = (1+Math.random()*42949433295).toString(16);
 	
-        
-
+    
         this.on('input', function (m) {
+            console.log("companion app, seen", m);
             var msg = {
                 channel: node.appId,
                 sourceId: m.sourceId || fallbackId,
@@ -97,6 +97,7 @@ module.exports = function(RED) {
     function sendmessage(msg){
 
         if (connected){
+            console.log("companion app, sending", msg);
             client.sendMessage({type: "message", msg: msg});
             //client.write({type: "message", msg: msg});
         }
