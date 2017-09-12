@@ -20,7 +20,6 @@ module.exports = function(RED) {
     "use strict";
     var request = require('request');
   	var net = require('net');
-   	var databox = require('node-databox');
  	var url = require("url");
 	var client = new net.Socket();
     var connected = false;
@@ -73,6 +72,7 @@ module.exports = function(RED) {
         if (process.env.TESTING){
         	return testing(this, n);
         }
+        const databox = require('node-databox');	
         const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
 		const HREF_ENDPOINT = API_ENDPOINT.href || ''; 
         const endpointUrl = url.parse(HREF_ENDPOINT);

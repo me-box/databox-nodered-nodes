@@ -20,7 +20,6 @@ module.exports = function(RED) {
 
     "use strict";
     var request = require('request');
-  	var databox = require('node-databox');
     var url = require("url");
 
     function testing(node, n){
@@ -88,7 +87,10 @@ module.exports = function(RED) {
 		if (process.env.TESTING){
 			return testing(node, n);
 		}
-			
+
+		
+		const databox = require('node-databox');	
+		
 		try{
 
 			const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');

@@ -19,8 +19,7 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
- 	var databox = require('node-databox');
- 	 var url = require("url");
+ 	var url = require("url");
 
     function testing(node, n){
     	
@@ -79,7 +78,7 @@ module.exports = function(RED) {
             return testing(this, n);
         }
 		
-
+        const databox = require('node-databox');
 		const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
     
     	const bulbStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
