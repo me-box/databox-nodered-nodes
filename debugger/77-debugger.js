@@ -25,7 +25,8 @@ module.exports = function(RED) {
     var useColors = false;
     
     var net = require('net');
-    var client = new net.Socket();
+    var JsonSocket = require('json-socket');
+    var client =  new JsonSocket(new net.Socket());
     var connected = false;
 
     client.on("error", function(err){
@@ -40,9 +41,11 @@ module.exports = function(RED) {
 
     function connect(fn){
         connected = false;
-   
-        client.connect(8435, 'databox-test-server', function() {
-            console.log('***** Connected *******');
+        
+        const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
+        
+        client.connect(8435, endpoint, function() {
+            console.log('***** debugger connected *******');
             connected = true;
         
             if (fn){
