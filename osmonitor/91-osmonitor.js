@@ -69,7 +69,7 @@ module.exports = function(RED) {
         if (process.env.TESTING){
             return testing(this, n);
         }
-
+        
         var periodic;
         const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
         const  HREF_ENDPOINT = API_ENDPOINT.href || ''; 
