@@ -81,7 +81,7 @@ module.exports = function(RED) {
         var node = this;
 
         new Promise((resolve,reject)=>{
-                setTimeout(resolve,10000);
+            setTimeout(resolve,10000);
         }).then(()=>{
             var dataEmitter = null; 
             
@@ -97,11 +97,12 @@ module.exports = function(RED) {
                 //pull out the latest....
 
                 periodic = setInterval(function(){
-                    databox.timeseries.latest(dsUrl, dsID)
-                    .then((data)=>{
-                         console.log("sending data");
-                         console.log(data[0].data);
-                         node.send({
+                    databox.timeseries.latest(dsUrl, dsID).then((data)=>{
+                        console.log("got data", data);
+                        console.log("ok --- sending data", data[0].data);
+                        console.log("n is", n);
+
+                        const tosend = {
                             name: n.name || "osmonitor",
                             id:  n.id,
                             subtype: n.subtype,
@@ -109,11 +110,16 @@ module.exports = function(RED) {
                             payload: {
                                 ts: Date.now(),
                                 value: data[0].data, 
-                            },
-                        });   
+                            }
+                        }
+
+                        console.log("to send is", tosend);
+
+                        node.send(tosend);   
                     })
                     .catch((err)=>{
                         console.log("[Error getting timeseries.latest]",dsUrl, dsID);
+                        console.log("node", JSON.stringify(n,null,4));
                     });
                 }, 3000);
 
