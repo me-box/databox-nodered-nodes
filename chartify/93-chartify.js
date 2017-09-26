@@ -103,7 +103,7 @@ module.exports = function(RED) {
     			return acc;
     		},{});		
 	
-        console..log("options are", options);
+        console.log("options are", options);
 	
 		    this.on('input', function (msg) {
         	console.log("chart got", msg);
