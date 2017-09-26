@@ -98,9 +98,7 @@ module.exports = function(RED) {
 
                 periodic = setInterval(()=>{
                     databox.timeseries.latest(dsUrl, dsID).then((data)=>{
-                        console.log("got data", data);
-                        console.log("ok --- sending data", data[0].data);
-                        console.log("node is", node);
+                        
 
                         const tosend = {
                             name: n.name || "osmonitor",
