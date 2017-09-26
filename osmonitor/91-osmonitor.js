@@ -78,7 +78,7 @@ module.exports = function(RED) {
         console.log(`HREF_ENDPOINT: ${HREF_ENDPOINT}`);
 
         this.name = n.name; 
-        var node = this;
+        const node = this;
 
         new Promise((resolve,reject)=>{
             setTimeout(resolve,10000);
@@ -96,11 +96,11 @@ module.exports = function(RED) {
                 console.log(`dsID:${dsID} dsUrl:${dsUrl} dsType${dsType}`);
                 //pull out the latest....
 
-                periodic = setInterval(function(){
+                periodic = setInterval(()=>{
                     databox.timeseries.latest(dsUrl, dsID).then((data)=>{
                         console.log("got data", data);
                         console.log("ok --- sending data", data[0].data);
-                        console.log("n is", n);
+                        console.log("node is", node);
 
                         const tosend = {
                             name: n.name || "osmonitor",
