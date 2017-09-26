@@ -33,7 +33,7 @@ const  _extractdata = function(payload){
 const _isstring = (value, notstring)=>{
 		
 	if (value ==  null || value == undefined){
-		return notnumber;
+		return notstring;
 	}
 	
 	if (typeof value === 'string' || value instanceof String){
@@ -78,55 +78,54 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
         
         var node = this; 
-		this.xtype = n.xtype ? n.xtype.length > 0 ? n.xtype : null : null;
-		this.ytype = n.ytype ? n.ytype.length > 0 ? n.ytype : null : null;
-		this.chart = n.chart;
+		    this.xtype = n.xtype ? n.xtype.length > 0 ? n.xtype : null : null;
+		    this.ytype = n.ytype ? n.ytype.length > 0 ? n.ytype : null : null;
+		    this.chart = n.chart;
+
+		    console.log("setting options for n", JSON.stringify(n,null,4));
 		
+    		const _options = {
+    			title: _isstring(n.title, ""),	
+    			xlabel: _isstring(n.xlabel, ""),
+    			ylabel: _isstring(n.ylabel, ""),
+    			min: _isnumber(n.min),
+    			max: _isnumber(n.max),
+    			ticks: _isnumber(n.ticks),
+    			labels: _isstring(n.labels),
+    			maxreadings: _isnumber(n.maxreadings),
+    		};
 		
-		const _options = {
-			title: _isstring(n.title),	
-			xlabel: _isstring(n.xlabel),
-			ylabel: _isstring(n.ylabel),
-			min: _isnumber(n.min),
-			max: _isnumber(n.max),
-			ticks: _isnumber(n.ticks),
-			labels: _isstring(n.labels),
-			maxreadings: _isnumber(n.maxreadings),
-		};
-		
-		//remove all keys that are undefined.
-		const options = Object.keys(_options).reduce((acc, key)=>{
-			if (_options[key] != undefined){
-				acc[key] = _options[key];
-			}	
-			return acc;
-		},{});		
+    		//remove all keys that are undefined.
+    		const options = Object.keys(_options).reduce((acc, key)=>{
+    			if (_options[key] != undefined){
+    				acc[key] = _options[key];
+    			}	
+    			return acc;
+    		},{});		
 	
+        console..log("options are", options);
 	
-		this.on('input', function (msg) {
-        	console.log("chart got");
-        	console.log(msg);
-        	
-          	if (this.xtype && this.ytype){
-          		
-          		
+		    this.on('input', function (msg) {
+        	console.log("chart got", msg);
+    
+          if (this.xtype && this.ytype){
           		let payload = {};
           		
           		this.ytype.forEach((item)=>{
-          			if (item.source === msg.type){
-          				let payload = {};      			
-	      				payload.options = options;
-          			
-          				payload.values = {
-        					id: `${msg.id} ${item.name}`,
-        					type: 'data',
-        					dataid: Date.now(),
-        				};
-    
-        				payload.values.x = msg.payload[this.xtype[0].name];
-        				payload.values.y =  Number(msg.payload[item.name]);
-        				node.send({type:this.chart, sourceId: node.id, payload:payload});
-        			}
+                  if (item.source === msg.type){
+                  	let payload = {};      			
+                    payload.options = options;
+
+                  	payload.values = {
+                      id: `${msg.id} ${item.name}`,
+                    	type: 'data',
+                  	  dataid: Date.now(),
+                    };
+
+                    payload.values.x = msg.payload[this.xtype[0].name];
+                    payload.values.y =  Number(msg.payload[item.name]);
+                    node.send({type:this.chart, sourceId: node.id, payload:payload});
+                  }
           		});
           	}
           	
@@ -139,14 +138,15 @@ module.exports = function(RED) {
           				payload.options = options;
           			
           				payload.values = {
-        					id: `${msg.id} ${item.name}`,
-        					type: 'data',
-        					dataid: Date.now(),
-        				};
-        				payload.values.x = msg.payload[item.name];				
-        				node.send({type:this.chart, sourceId: node.id, payload:payload});
+        					   id: `${msg.id} ${item.name}`,
+        					   type: 'data',
+        					   dataid: Date.now(),
+        				  };
+
+        				  payload.values.x = msg.payload[item.name];				
+        				  node.send({type:this.chart, sourceId: node.id, payload:payload});
           			}
-        		});
+        		  });
           	}
         });
         
