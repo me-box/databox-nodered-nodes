@@ -22,6 +22,7 @@ module.exports = function(RED) {
     var net = require('net');
     var connected = false;
     var JsonSocket = require('json-socket');
+    var url = require("url");
     var client =  new JsonSocket(new net.Socket());
     //var netstring = require("../utils/netstring");
 
