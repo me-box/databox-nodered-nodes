@@ -72,7 +72,7 @@ module.exports = function(RED) {
     }
     else if (_seen(["audio-level", "light"], sensor)){
       const [ts,value] = data;
-      return {ts, value};
+      return {parseInt(ts), parseFloat(value)};
     }
     return {};
   }
