@@ -18,35 +18,39 @@
 module.exports = function(RED) {
     
     "use strict";
-    var request = require('request');
-  	var net = require('net');
- 	var url = require("url");
-	var client = new net.Socket();
+
+    var net = require('net');
     var connected = false;
+    var JsonSocket = require('json-socket');
+    var client =  new JsonSocket(new net.Socket());
+    //var netstring = require("../utils/netstring");
 
     client.on("error", function(err){
+        connected = false;
         console.log("error connecting, retrying in 2 sec");
         setTimeout(function(){connect()}, 2000);
     });
-	
-	client.on('uncaughtException', function (err) {
-  		console.error(err.stack);
-  		setTimeout(function(){connect()}, 2000);
-	});
-
- 	function connect(fn){
+    
+    client.on('uncaughtException', function (err) {
         connected = false;
-   
-        client.connect(8435, 'databox-test-server', function() {
-            console.log('***** Connected *******');
+        console.error(err.stack);
+        setTimeout(function(){connect()}, 2000);
+    });
+
+    function connect(fn){
+        connected = false;
+        
+        const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
+
+        client.connect(8435, endpoint, function() {
+            console.log('***** companion app connected *******');
             connected = true;
-  		
+        
             if (fn){
-            	fn();
+                fn();
             }
         })
     }
-
 
 
     function testing (node, n){
@@ -96,7 +100,7 @@ module.exports = function(RED) {
     }
     
     function sendClose(channel){
-		client.write(JSON.stringify({type: "message", msg: 	{
+		client.sendMessage({type: "message", msg: 	{
 		  															channel:channel, 
 		  															type:"control", 
 		  															payload:{
@@ -104,14 +108,14 @@ module.exports = function(RED) {
 		  																channel:channel
 		  															}
 		  														}
-		  								}));
+		  								});
 		
 	}
 
 
     function sendmessage(msg){
         if (connected){
-           client.write(JSON.stringify({type: "bulbsout", msg: msg}))
+            client.sendMessage({type: "bulbsout", msg: msg});
 	    }
 	}
 	
