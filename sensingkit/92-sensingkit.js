@@ -56,23 +56,51 @@ module.exports = function(RED) {
     
     if (_seen(["bluetooth"], sensor)){
       const [ts1, ts, name, address, rssi] = data;  
-      return {ts, name, address, rssi};
+      return {
+          ts:parseInt(ts), 
+          name, 
+          address, 
+          rssi: parseFloat(rssi)
+      };
     }
     else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], sensor)){
       const [ts,x,y,z] = data;
-      return {ts,x,y,z};
+      return {
+        ts: parseInt(ts),
+        x: parseFloat(x),
+        y: parseFloat(y),
+        z: parseFloat(z)
+      };
     }
     else if (_seen(["rotation"], sensor)){
       const [ts,x,y,z,cos,headingAccuracy] = data;
-      return {ts,x,y,z,cos,headingAccuracy};
+      return {
+        ts:parseInt(ts),
+        x:parseFloat(x),
+        y:parseFloat(y),
+        z:parseFloat(z),
+        cos:parseFloat(cos),
+        headingAccuracy:parseFloat(headingAccuracy)
+      };
     }
     else if (_seen(["battery"], sensor)){
       const [ts,charge,temperature,voltage,plugged,status,health] = data;
-      return {ts,charge,temperature,voltage,plugged,status,health};
+      return {
+        ts:parseInt(ts),
+        charge:parseFloat(charge),
+        temperature:parseFloat(temperature),
+        voltage:parseFloat(voltage),
+        plugged,
+        status,
+        health
+      };
     }
     else if (_seen(["audio-level", "light"], sensor)){
       const [ts,value] = data;
-      return {parseInt(ts), parseFloat(value)};
+      return {
+        ts:parseInt(ts), 
+        value:parseFloat(value)
+      };
     }
     return {};
   }
@@ -149,9 +177,7 @@ module.exports = function(RED) {
         databox.subscriptions.subscribe(mobileStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
         
         dataEmitter.on('data',(hostname, dsID, d)=>{
-            console.log(d);
             const payload = _format_payload(d, n.subtype);
-
             node.send({
               name: n.name || "sensingkit",
               id:  n.id,

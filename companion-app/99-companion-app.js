@@ -59,7 +59,6 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
 		   
         connect(function(){
-            console.log("sending control message!");
             sendmessage({type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
         });
     
@@ -73,7 +72,7 @@ module.exports = function(RED) {
 	
     
         this.on('input', function (m) {
-            console.log("companion app, seen", m);
+            
             var msg = {
                 channel: node.appId,
                 sourceId: m.sourceId || fallbackId,
@@ -97,7 +96,7 @@ module.exports = function(RED) {
     function sendmessage(msg){
 
         if (connected){
-            console.log("companion app, sending", msg);
+           
             client.sendMessage({type: "message", msg: msg});
             //client.write({type: "message", msg: msg});
         }

@@ -81,8 +81,6 @@ module.exports = function(RED) {
 		    this.xtype = n.xtype ? n.xtype.length > 0 ? n.xtype : null : null;
 		    this.ytype = n.ytype ? n.ytype.length > 0 ? n.ytype : null : null;
 		    this.chart = n.chart;
-
-		    console.log("setting options for n", JSON.stringify(n,null,4));
 		
     		const _options = {
     			title: _isstring(n.title, ""),	
@@ -103,10 +101,10 @@ module.exports = function(RED) {
     			return acc;
     		},{});		
 	
-        console.log("options are", options);
+      
 	
 		    this.on('input', function (msg) {
-        	console.log("chart got", msg);
+        
     
           if (this.xtype && this.ytype){
           		let payload = {};
