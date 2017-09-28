@@ -54,6 +54,8 @@ module.exports = function(RED) {
 
   function _format_payload(data,sensor){
     
+    console.log(data);
+
     if (_seen(["bluetooth"], sensor)){
       const [ts1, ts, name, address, rssi] = data;  
       return {
@@ -66,41 +68,45 @@ module.exports = function(RED) {
     else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], sensor)){
       const [ts,x,y,z] = data;
       return {
-        ts: parseInt(ts),
-        x: parseFloat(x),
-        y: parseFloat(y),
-        z: parseFloat(z)
+        ts,
+        x,
+        y,
+        z,
       };
     }
     else if (_seen(["rotation"], sensor)){
       const [ts,x,y,z,cos,headingAccuracy] = data;
       return {
-        ts:parseInt(ts),
-        x:parseFloat(x),
-        y:parseFloat(y),
-        z:parseFloat(z),
-        cos:parseFloat(cos),
-        headingAccuracy:parseFloat(headingAccuracy)
+        ts,
+        x,
+        y,
+        z,
+        cos,
+        headingAccuracy
       };
     }
     else if (_seen(["battery"], sensor)){
       const [ts,charge,temperature,voltage,plugged,status,health] = data;
       return {
-        ts:parseInt(ts),
-        charge:parseFloat(charge),
-        temperature:parseFloat(temperature),
-        voltage:parseFloat(voltage),
+        ts,
+        charge,
+        temperature,
+        voltage,
         plugged,
         status,
         health
       };
     }
-    else if (_seen(["audio-level", "light"], sensor)){
+    else if (_seen(["light"], sensor)){
       const [ts,value] = data;
       return {
         ts:parseInt(ts), 
         value:parseFloat(value)
       };
+    }
+    else if (_seen(["audio-level"], sensor)){
+      const [ts,value] = data;
+      return {ts, value};
     }
     return {};
   }
@@ -120,7 +126,8 @@ module.exports = function(RED) {
           
           const data = str.replace("\n","").split(",");
           const payload = _format_payload(data, n.subtype);
-          
+          console.log(payload, JSON.stringify(data, null,4));
+
           node.send({
             name: n.name || "sensingkit",
             id:  n.id,
