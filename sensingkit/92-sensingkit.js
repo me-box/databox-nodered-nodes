@@ -54,7 +54,7 @@ module.exports = function(RED) {
 
   function _format_payload(data,sensor){
     
-    console.log(data);
+    console.log("pre-formatted data", data);
 
     if (_seen(["bluetooth"], sensor)){
       const [ts1, ts, name, address, rssi] = data;  
@@ -68,10 +68,10 @@ module.exports = function(RED) {
     else if (_seen(["accelerometer", "linear-acceleration","magnetometer","gravity", "gyroscope"], sensor)){
       const [ts,x,y,z] = data;
       return {
-        ts,
-        x,
-        y,
-        z,
+        ts : parseInt(ts),
+        x : parseFloat(x),
+        y : parseFloat(y),
+        z : parseFloat(z)
       };
     }
     else if (_seen(["rotation"], sensor)){
@@ -126,7 +126,7 @@ module.exports = function(RED) {
           
           const data = str.replace("\n","").split(",");
           const payload = _format_payload(data, n.subtype);
-          console.log(payload, JSON.stringify(data, null,4));
+          console.log("formatted data:", JSON.stringify(payload, null,4));
 
           node.send({
             name: n.name || "sensingkit",
@@ -139,7 +139,7 @@ module.exports = function(RED) {
         }
         catch(err){
           console.log(err);
-          console.log("data is");
+          console.log("error: data is");
           console.log(`[${str.replace("\n","")}]`);
           str = "";
         }
@@ -193,7 +193,9 @@ module.exports = function(RED) {
               payload: payload,
              }); 
         });
-      }).catch((err) => console.error(err));
+      }).catch((err) => {
+         console.log("error with sensinkit data", err);
+      });  
 
       this.on("close", function() {
         console.log("closed")
