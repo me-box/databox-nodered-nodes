@@ -156,15 +156,17 @@ module.exports = function(RED) {
   }
 
   function SensingKit(n){
-      
+    console.log("----- initing sensinkit -----");
     this.name = n.name;
   
     RED.nodes.createNode(this,n);
     var node = this;
     
     if (process.env.TESTING){
+      console.log("in sensingkit testing");
       return testing(this, n);
     }
+
     const databox = require('node-databox');  
 
     const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
@@ -173,7 +175,8 @@ module.exports = function(RED) {
     const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
     
     var dataEmitter = null; 
-    
+    console.log("in databox version of sensingkit");
+
     databox.waitForStoreStatus(mobileStore, 'active')
       .then(() => databox.subscriptions.connect(mobileStore))
       .then((emitter) => {
@@ -183,7 +186,7 @@ module.exports = function(RED) {
         
         dataEmitter.on('data',(hostname, dsID, d)=>{
             const payload = _format_payload(d, n.subtype);
-            console.log(JSON.stringify(payload, null,4));
+            console.log("got data", JSON.stringify(payload, null,4));
             node.send({
               name: n.name || "sensingkit",
               id:  n.id,
