@@ -54,8 +54,6 @@ module.exports = function(RED) {
 
   function _format_payload(data,sensor){
     
-    console.log("pre-formatted data", data);
-
     if (_seen(["bluetooth"], sensor)){
       const [ts1, ts, name, address, rssi] = data;  
       return {
@@ -97,17 +95,14 @@ module.exports = function(RED) {
         health
       };
     }
-    else if (_seen(["light"], sensor)){
+    else if (_seen(["light", "audio-level"], sensor)){
       const [ts,value] = data;
       return {
         ts:parseInt(ts), 
         value:parseFloat(value)
       };
     }
-    else if (_seen(["audio-level"], sensor)){
-      const [ts,value] = data;
-      return {ts, value};
-    }
+    
     return {};
   }
   
@@ -126,7 +121,8 @@ module.exports = function(RED) {
           
           const data = str.replace("\n","").split(",");
           const payload = _format_payload(data, n.subtype);
-          console.log("formatted data:", JSON.stringify(payload, null,4));
+          
+          console.log(JSON.stringify(payload, null,4));
 
           node.send({
             name: n.name || "sensingkit",
