@@ -54,6 +54,8 @@ module.exports = function(RED) {
 
   function _format_payload(data,sensor){
     
+    console.log("formatting", data);
+
     if (_seen(["bluetooth"], sensor)){
       const [ts1, ts, name, address, rssi] = data;  
       return {
@@ -181,6 +183,7 @@ module.exports = function(RED) {
         
         dataEmitter.on('data',(hostname, dsID, d)=>{
             const payload = _format_payload(d, n.subtype);
+            console.log(JSON.stringify(payload, null,4));
             node.send({
               name: n.name || "sensingkit",
               id:  n.id,
