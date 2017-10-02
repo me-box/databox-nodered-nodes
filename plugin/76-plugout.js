@@ -18,9 +18,9 @@
 module.exports = function(RED) {
     
     "use strict";
-    var request = require('request');
     const databox = require('node-databox');   
-
+    const url = require("url");
+    
     function Plug(n) {
 
  		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
