@@ -29,6 +29,8 @@ module.exports = function(RED) {
         const actuationStore = endpointUrl.protocol + '//' + endpointUrl.host;
              
         const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
+        console.log("actuation store", actuationStore);
+        console.log("sensor ID", sensorID);
 
         this.name = n.name;
 
@@ -38,9 +40,12 @@ module.exports = function(RED) {
 		this.on('input', function (msg) {
 			const value = msg.payload ? msg.payload : n.value ? n.value : null;
             
-            databox.timeseries.write(actuationStore,sensorID,{data:value}).catch((error)=>{
-              console.log("error");
-              console.log(err);
+            databox.timeseries.write(actuationStore,sensorID,{data:value}).then((body)=>{
+                console.log("success", body); 
+            }).catch((err)=>{
+                console.log("error");
+                console.log(err);
+                return;
             });
         });
         
