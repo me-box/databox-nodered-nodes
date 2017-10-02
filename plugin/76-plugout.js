@@ -19,12 +19,16 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
-     
+    const databox = require('node-databox');   
+
     function Plug(n) {
 
  		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
-        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/actuate` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/actuate`;
-        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
+        const HREF_ENDPOINT = API_ENDPOINT.href || ''; 
+        const endpointUrl = url.parse(HREF_ENDPOINT);   
+        const actuationStore = endpointUrl.protocol + '//' + endpointUrl.host;
+             
+        const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
 
         this.name = n.name;
 
@@ -32,22 +36,12 @@ module.exports = function(RED) {
         var node = this;
        
 		this.on('input', function (msg) {
-			
-        	const options = {
-  				method: 'post',
-  				body: {actuator_id: SENSOR_ID, method: n.subtype||"", data: msg.payload ? msg.payload : n.value ? n.value : null},
-  				json: true,
-  				url: API_URL,
-			}
-			console.log(options);
-			request(options, function (err, res, body) {
-				if (err) {
-					console.log(err, 'error posting json')
-				}else{
-					console.log(body);
-				}
-			});	
-		
+			const value = msg.payload ? msg.payload : n.value ? n.value : null;
+            
+            databox.timeseries.write(actuationStore,sensorID,{data:value}).catch((error)=>{
+              console.log("error");
+              console.log(err);
+            });
         });
         
         this.on("close", function() {
