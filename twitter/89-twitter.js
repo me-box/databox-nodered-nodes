@@ -60,7 +60,7 @@ module.exports = function(RED) {
 					}
 				}
 			});
-			const nextQuery = Math.round(Math.random() * 30000);
+			const nextQuery = Math.round(Math.random() * 5000);
 			
 			if (shouldquery){
 				setTimeout(getData,nextQuery);
