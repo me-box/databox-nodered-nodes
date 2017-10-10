@@ -35,7 +35,7 @@ module.exports = function(RED) {
             const {url="",data={}} = msg.payload || {};
 			console.log("sending ", data, " to ", url);
             if (url.trim() != ""){
-                databox.export.longpoll(url, payload)
+                databox.export.longpoll(url, data)
                 .catch((err)=>{
                     console.log("ERROR databox.export.longpoll " + err)
                 });
