@@ -18,19 +18,22 @@
 module.exports = function(RED) {
     
     "use strict";
-    const databox = require('node-databox');   
+  
     const url = require("url");
     
     function Plug(n) {
 
- 		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
+        if (process.env.TESTING){
+            return;
+        }
+        
+        const databox = require('node-databox');   
+ 		const API_ENDPOINT 	= JSON.parse(process.env[`DATASOURCE_${n.id}`]);
         const HREF_ENDPOINT = API_ENDPOINT.href || ''; 
         const endpointUrl = url.parse(HREF_ENDPOINT);   
         const actuationStore = endpointUrl.protocol + '//' + endpointUrl.host;
-             
         const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
-        console.log("actuation store", actuationStore);
-        console.log("sensor ID", sensorID);
+  
 
         this.name = n.name;
 

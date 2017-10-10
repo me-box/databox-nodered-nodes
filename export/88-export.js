@@ -19,14 +19,18 @@ module.exports = function(RED) {
     
     "use strict";
     
-    const databox = require('node-databox'); 
-    
     function Export(n) {
 
     	this.name = n.name;
         RED.nodes.createNode(this,n);
         var node = this;
-    	
+
+    	if (process.env.TESTING){
+            return;
+        }
+
+        const databox = require('node-databox');    
+
 		this.on('input', function (msg) {
 			databox.export.longpoll(msg.url, msg.payload)
             .catch((err)=>{
