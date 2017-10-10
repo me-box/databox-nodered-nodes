@@ -32,10 +32,14 @@ module.exports = function(RED) {
         const databox = require('node-databox');    
 
 		this.on('input', function (msg) {
-			databox.export.longpoll(msg.url, msg.payload)
-            .catch((err)=>{
-                console.log("ERROR databox.export.longpoll " + err)
-            });
+            const {url="",data={}} = msg.payload || {};
+			console.log("sending ", data, " to ", url);
+            if (url.trim() != ""){
+                databox.export.longpoll(url, payload)
+                .catch((err)=>{
+                    console.log("ERROR databox.export.longpoll " + err)
+                });
+            }
        	});
     }
     
