@@ -69,7 +69,7 @@ module.exports = function(RED) {
     }
 
     function Bulbs(n) {
-
+        console.log("creating bulbs out node");
     	this.name = n.name;
         RED.nodes.createNode(this,n);
         var node = this;

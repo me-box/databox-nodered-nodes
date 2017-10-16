@@ -40,15 +40,16 @@ module.exports = function(RED) {
    
     function Listify(n) {
         // Create a RED node
-        RED.nodes.createNode(this,n);
+      console.log("creating listify node")
+      RED.nodes.createNode(this,n);
 		
-		var sources = {};
-		var keys = [];
-		var ticks = {};
-        var node = this;
-		var TICK_TTL = 2;
+		  var sources = {};
+		  var keys = [];
+		  var ticks = {};
+      var node = this;
+		  var TICK_TTL = 2;
 		
-		this.on('input', function (msg) {
+		  this.on('input', function (msg) {
           	
           	if (!sources[msg.payload.id]){
           		

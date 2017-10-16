@@ -43,7 +43,7 @@ module.exports = function(RED) {
         const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
 
         client.connect(8435, endpoint, function() {
-            console.log('***** companion app connected *******');
+            console.log("app successfully connected to testserver");
             connected = true;
         
             if (fn){
@@ -54,11 +54,12 @@ module.exports = function(RED) {
 
     function CompanionApp(n) {
     
-        
+        console.log("creating app node");
         // Create a RED node
         RED.nodes.createNode(this,n);
 		   
         connect(function(){
+            console.log("app, sending layout", n.layout);
             sendmessage({type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
         });
     

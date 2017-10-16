@@ -33,8 +33,10 @@ module.exports = function(RED) {
     }
 
     function UIBuilder(n) {
-     
-      	connect(function(){
+        
+        console.log("creating uibuilder node");
+
+        connect(function(){
       		sendmessage({type:"control", payload:{command:"init", data:n}});
       		console.log("sending uibuilder init data to test server", JSON.stringify(n,null, 4));
       	});

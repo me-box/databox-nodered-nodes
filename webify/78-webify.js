@@ -19,6 +19,7 @@ module.exports = function(RED) {
     var mustache = require("mustache");
 
     function WebifyNode(n) {
+        console.log("creating webify node");
         RED.nodes.createNode(this,n);
         this.name = n.name;
         this.field = n.field || "payload";

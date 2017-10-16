@@ -20,7 +20,7 @@ module.exports = function(RED) {
     "use strict";
     
     function Export(n) {
-
+        console.log("creating export node");
     	this.name = n.name;
         RED.nodes.createNode(this,n);
         var node = this;

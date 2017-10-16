@@ -6,13 +6,12 @@ module.exports = function(RED) {
     //a single object, or had an object with a values array
 
     function Extract(n) {
-        
+        console.log("creating extract node");
         RED.nodes.createNode(this,n);
         
         var node = this;
 
-        console.log("*******************************");
-        console.log("initing with filters", JSON.stringify(n.filters, null, 4));
+     
 
         const _lookup = n.filters.reduce((acc, item)=>{
             const entry = acc[item.source] || []
@@ -23,7 +22,6 @@ module.exports = function(RED) {
             return acc;
         },{});
 
-        console.log("lookup is", JSON.stringify(_lookup,null, 4));
 
         const _extract = (msg,path)=>{
             return path.reduce((acc,item)=>{
@@ -33,12 +31,10 @@ module.exports = function(RED) {
 
         this.on('input', function (msg) {
             
-            console.log("new msg:");
-            console.log(JSON.stringify(msg,null,4));
-            console.log("looking up", msg.type);
+            
 
             const paths = _lookup[msg.type];
-            console.log("ok have paths", JSON.stringify(paths));
+         
 
             if (paths){
                 const extracted = paths.reduce((acc,path)=>{
@@ -52,12 +48,7 @@ module.exports = function(RED) {
                 },{}); 
 
                 if (Object.keys(extracted).length > 0){
-                    console.log("sending:")
-                    console.log({
-                        name: n.name || "extract",
-                        id:  n.id,
-                        payload: extracted
-                    });
+                    
                     node.send({
                         name: n.name || "extract",
                         id:  n.id,

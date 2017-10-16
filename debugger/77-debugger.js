@@ -56,6 +56,8 @@ module.exports = function(RED) {
 
     function DebugNode(n) {
     
+        console.log("creating debug node");
+        
     	if (!process.env.TESTING) //do nothing if not testing
     		return;
         
@@ -64,7 +66,6 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
          
         connect(function() {
-            console.log('Connected');
             closeWebsocket(n.appId);
         });
        
@@ -179,18 +180,17 @@ module.exports = function(RED) {
 
 	
 	function closeWebsocket(channel){
-		console.log("closing any open websockets");
         client.sendMessage({
-                                            type: "message", 
-                                            msg: {
-                                                        channel:channel, 
-                                                        type:"control", 
-                                                        payload:{
-                                                            command:"reset", 
-                                                            channel:channel
-                                                        }
-                                            }
-                                        });
+            type: "message", 
+            msg: {
+                        channel:channel, 
+                        type:"control", 
+                        payload:{
+                            command:"reset", 
+                            channel:channel
+                        }
+            }
+        });
     }
     
 	function sendClose(channel){

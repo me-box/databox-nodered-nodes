@@ -69,7 +69,7 @@ module.exports = function(RED) {
     }
     
     function Bulbs(n) {
- 		
+ 		console.log("creating bulbs in node");
  		RED.nodes.createNode(this,n);
         
         var node = this;
@@ -79,6 +79,7 @@ module.exports = function(RED) {
         }
 		
         const databox = require('node-databox');
+        
 		const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
     
     	const bulbStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));

@@ -49,6 +49,7 @@ module.exports = function(RED) {
     }
 
     function FunctionNode(n) {
+        console.log("creating dbfunction node");
         RED.nodes.createNode(this,n);
         var node = this;
         this.name = n.name;

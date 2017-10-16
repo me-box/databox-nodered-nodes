@@ -123,8 +123,6 @@ module.exports = function(RED) {
           
           const data = str.replace("\n","").split(",");
           const payload = _format_payload(data, n.subtype);
-          
-          console.log(JSON.stringify(payload, null,4));
 
           node.send({
             name: n.name || "sensingkit",
@@ -147,23 +145,19 @@ module.exports = function(RED) {
     startStreaming(sensorStream,n.subtype);
   
     node.on("close", function() {
-      console.log("CLOSING STREAM!!");
       sensorStream.end();
-      console.log("Aborting connection");
       rs.abort();
-      console.log("done");
     });
   }
 
   function SensingKit(n){
-    console.log("----- initing sensinkit -----");
+    console.log("creating sensingkit node");
     this.name = n.name;
   
     RED.nodes.createNode(this,n);
     var node = this;
     
     if (process.env.TESTING){
-      console.log("in sensingkit testing");
       return testing(this, n);
     }
 
@@ -175,7 +169,6 @@ module.exports = function(RED) {
     const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
     
     var dataEmitter = null; 
-    console.log("in databox version of sensingkit");
 
     databox.waitForStoreStatus(mobileStore, 'active')
       .then(() => databox.subscriptions.connect(mobileStore))

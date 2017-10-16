@@ -22,16 +22,17 @@ module.exports = function(RED) {
 	var WebSocket = require('ws');
     
     function Plug(n) {
- 		const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
-        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/data/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/data/latest`;
-        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
-		let socket, periodic;
-		
+
+ 		console.log("creating plugin node");
         this.name = n.name;
 
         RED.nodes.createNode(this,n);
         var node = this;
-       
+       	const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
+        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/data/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/data/latest`;
+        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
+		let socket, periodic;
+
        	if (!process.env.TESTING){
 			
 			try{
@@ -90,16 +91,11 @@ module.exports = function(RED) {
 			}
 		
 			periodic = setInterval(function(){
-					
-						console.log("options:");
-						console.log(options);
-					
 						request(options, function (err, res, body) {
 							if (err) {
 								console.log(err, 'error posting json')
 							}else{
-								console.log("response:");
-								console.log(body);
+			
 						
 								if (body.length > 0){
 									const result = body[0];
@@ -117,7 +113,7 @@ module.exports = function(RED) {
 										}
 									}
 									
-									console.log(msg)
+									
 									node.send(msg);   
 								}	
 							}

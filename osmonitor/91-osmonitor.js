@@ -28,17 +28,6 @@ module.exports = function(RED) {
                                 if (result.length > 0){
                                     const {time,value} = result[0];
                                     
-                                    console.log({
-                                            name: n.name || "osmonitor",
-                                            id:  n.id,
-                                            subtype: n.subtype,
-                                            type: "osmonitor",
-                                            payload: {
-                                                ts: moment.utc(time).unix(),
-                                                value: Number(value), 
-                                            },
-                                    });
-                                    
                                     node.send({
                                             name: n.name || "osmonitor",
                                             id:  n.id,
@@ -63,6 +52,8 @@ module.exports = function(RED) {
     }
 
     function OSMonitor(n) {
+
+        console.log("creating os monitor node");
         
         RED.nodes.createNode(this,n);
         

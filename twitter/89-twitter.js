@@ -77,7 +77,8 @@ module.exports = function(RED) {
 
 
     function Twitter(n) {
-    
+
+    	console.log("creating twitter node");
       
         this.name = n.name;
         RED.nodes.createNode(this,n);

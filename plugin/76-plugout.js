@@ -23,10 +23,12 @@ module.exports = function(RED) {
     
     function Plug(n) {
 
+        console.log("creating plugout node");
+
         if (process.env.TESTING){
             return;
         }
-        
+
         const databox = require('node-databox');   
  		const API_ENDPOINT 	= JSON.parse(process.env[`DATASOURCE_${n.id}`]);
         const HREF_ENDPOINT = API_ENDPOINT.href || ''; 
