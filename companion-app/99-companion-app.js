@@ -59,7 +59,6 @@ module.exports = function(RED) {
         RED.nodes.createNode(this,n);
 		   
         connect(function(){
-            console.log("app, sending layout", n.layout);
             sendmessage({type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
         });
     

@@ -177,7 +177,7 @@ module.exports = function(RED) {
         
         dataEmitter.on('data',(hostname, dsID, d)=>{
             const payload = _format_payload(d, n.subtype);
-            console.log("got data", JSON.stringify(payload, null,4));
+            
             node.send({
               name: n.name || "sensingkit",
               id:  n.id,
@@ -187,7 +187,7 @@ module.exports = function(RED) {
              }); 
         });
       }).catch((err) => {
-         console.log("error with sensinkit data", err);
+         console.log("error with sensingkit data", err);
       });  
 
       this.on("close", function() {

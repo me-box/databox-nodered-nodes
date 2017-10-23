@@ -38,7 +38,6 @@ module.exports = function(RED) {
 
         connect(function(){
       		sendmessage({type:"control", payload:{command:"init", data:n}});
-      		console.log("sending uibuilder init data to test server", JSON.stringify(n,null, 4));
       	});
 
         this.name = n.name;
