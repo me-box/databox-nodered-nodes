@@ -1,11 +1,11 @@
 module.exports = function(RED) {
 
-    "use strict";
+  "use strict";
  	
  	var connected = false;
 	var net = require('net');
-    var JsonSocket = require('json-socket');
-    var client =  new JsonSocket(new net.Socket());
+  var JsonSocket = require('json-socket');
+  var client =  new JsonSocket(new net.Socket());
 
 	client.on("error", function(err){
         console.log("error connecting, retrying in 2 sec");
@@ -34,7 +34,7 @@ module.exports = function(RED) {
 
     function UIBuilder(n) {
         
-        console.log("creating uibuilder node");
+        console.log("creating uibuilder node.");
 
         connect(function(){
       		sendmessage({type:"control", payload:{command:"init", data:n}});
@@ -50,9 +50,9 @@ module.exports = function(RED) {
         	node.send({type:'uibuilder', sourceId: n.id, payload:msg});
 		})
 
-        this.on("close", function() {
-        	console.log(`${node.id} stopping requests`);
-        });
+    this.on("close", function() {
+        console.log(`${node.id} stopping requests`);
+      });
     }
 
     function sendmessage(msg){

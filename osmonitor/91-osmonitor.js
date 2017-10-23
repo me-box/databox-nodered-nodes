@@ -65,8 +65,7 @@ module.exports = function(RED) {
         var periodic;
         const  API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
         const  HREF_ENDPOINT = API_ENDPOINT.href || ''; 
-        console.log(`API_ENDPOINT: ${API_ENDPOINT}`);
-        console.log(`HREF_ENDPOINT: ${HREF_ENDPOINT}`);
+       
 
         this.name = n.name; 
         const node = this;
@@ -84,7 +83,7 @@ module.exports = function(RED) {
                 var dsUrl = endpointUrl.protocol + '//' + endpointUrl.host;
                 var dsType = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasType';})[0].val;
                 
-                console.log(`dsID:${dsID} dsUrl:${dsUrl} dsType${dsType}`);
+                
                 //pull out the latest....
 
                 periodic = setInterval(()=>{
@@ -102,7 +101,7 @@ module.exports = function(RED) {
                             }
                         }
 
-                        console.log("to send is", tosend);
+                      
 
                         node.send(tosend);   
                     })
