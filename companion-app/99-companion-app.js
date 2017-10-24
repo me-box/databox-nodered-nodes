@@ -27,7 +27,7 @@ module.exports = function(RED) {
 
     client.on("error", function(err){
         connected = false;
-        console.log("error connecting, retrying in 2 sec");
+        console.log("app: error connecting, retrying in 2 sec");
         setTimeout(function(){connect()}, 2000);
     });
     
