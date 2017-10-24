@@ -28,13 +28,23 @@ module.exports = function(RED) {
     client.on("error", function(err){
         connected = false;
         console.log("app: error connecting, retrying in 2 sec");
-        setTimeout(function(){connect()}, 2000);
+        setTimeout(function(){
+            if (!connected){
+                console.log("app: attempting reconnect now")
+                connect()
+            }
+        }, 2000);
     });
     
     client.on('uncaughtException', function (err) {
         connected = false;
-        console.error(err.stack);
-        setTimeout(function(){connect()}, 2000);
+        console.log("app: uncaught exception", err.stack);
+        setTimeout(function(){
+            if (!connected){
+                console.log("app uce: attempting reconnect now")
+                connect()
+            }
+        }, 2000);
     });
 
     function connect(fn){
@@ -43,8 +53,8 @@ module.exports = function(RED) {
         const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
 
         client.connect(8435, endpoint, function() {
-            console.log("app successfully connected to testserver");
             connected = true;
+            console.log("app: successfully connected to testserver");
         
             if (fn){
                 fn();

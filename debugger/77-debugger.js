@@ -31,15 +31,22 @@ module.exports = function(RED) {
 
     client.on("error", function(err){
         console.log("debug: error connecting, retrying in 2 sec");
-        setTimeout(function(){connect()}, 2000);
+        setTimeout(function(){
+            if (!connected){
+                console.log("debug: attempting reconnect now");
+                connect()
+            }
+        }, 2000);
     });
     
     client.on('uncaughtException', function (err) {
         console.log("uncaught execption: retrying in 2 sec");
         console.log(err.stack);
         setTimeout(()=>{
-            console.log("attempting reconnect")
-            connect()
+            if (!connected){
+                console.log("debug uce: attempting reconnect now")
+                connect()
+            }
         }, 2000);
     });
 
@@ -49,7 +56,7 @@ module.exports = function(RED) {
         const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
         
         client.connect(8435, endpoint, function() {
-            console.log('***** debugger connected *******');
+            console.log("debugger: successfully connected to testserver");
             connected = true;
         
             if (fn){
