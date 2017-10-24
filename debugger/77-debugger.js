@@ -35,8 +35,12 @@ module.exports = function(RED) {
     });
     
     client.on('uncaughtException', function (err) {
-        console.error(err.stack);
-        setTimeout(function(){connect()}, 2000);
+        console.log("uncaught execption: retrying in 2 sec");
+        console.log(err.stack);
+        setTimeout(()=>{
+            console.log("attempting reconnect")
+            connect()
+        }, 2000);
     });
 
     function connect(fn){
@@ -57,7 +61,7 @@ module.exports = function(RED) {
     function DebugNode(n) {
     
         console.log("creating debug node");
-        
+
     	if (!process.env.TESTING) //do nothing if not testing
     		return;
         
@@ -121,7 +125,9 @@ module.exports = function(RED) {
         });
         
          this.on("close", function() {
-         	 sendClose(this.channel);
+            console.log("debugger closing");
+         	sendClose(this.channel);
+            client.disconnect();
          });
     }
 

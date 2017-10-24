@@ -90,7 +90,10 @@ module.exports = function(RED) {
 
         this.on("close", function() {
         	sendmessage({channel:node.appId, type:"control", payload:{command:"reset", channel:node.appId}});
+            console.log("companion app closing");
+            client.disconnect();
         });
+        
     }
     
     function sendmessage(msg){
