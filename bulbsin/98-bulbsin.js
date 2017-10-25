@@ -55,7 +55,6 @@ module.exports = function(RED) {
 							}
 						}
 							
-						console.log(msg)
 						node.send(msg);   
 					}	
 				}
@@ -69,7 +68,7 @@ module.exports = function(RED) {
     }
     
     function Bulbs(n) {
- 		console.log("creating bulbs in node");
+ 		console.log("creating bulbsin node");
  		RED.nodes.createNode(this,n);
         
         var node = this;
@@ -89,8 +88,6 @@ module.exports = function(RED) {
 
     	databox.timeseries.latest(bulbStore, sensorID)
         .then((d)=>{
-       		console.log("got latest reading as ");
-       		console.log(d[0]);
        		
        		const {timestamp, data} = d[0];
 
@@ -110,20 +107,19 @@ module.exports = function(RED) {
 
         var dataEmitter = null; 
 
-        console.log("subscribing now");
+        
     	databox.waitForStoreStatus(bulbStore, 'active')
     	.then(() => databox.subscriptions.connect(bulbStore))
       	.then((emitter) => {
-        	console.log("in after sub");
+        	
         	dataEmitter = emitter;
 
         	databox.subscriptions.subscribe(bulbStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
         	
-        	console.log("called subscribe");
+        	
 
         	dataEmitter.on('data',(hostname, dsID, d)=>{
-            	console.log("seen some data!!");
-            	console.log(d);
+            	
             	var msg = {
 					name: n.name || "bulbsin",
 					id:  n.id,
@@ -134,8 +130,7 @@ module.exports = function(RED) {
 						value: d,
 					}
 				}
-				console.log('sending');
-				console.log(msg);
+				
 				node.send(msg);
 
       		})	
