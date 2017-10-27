@@ -42,7 +42,7 @@ module.exports = function(RED) {
 					if (body.length > 0){
 						const result = body[0];
 						const {data,timestamp=Date.now()} = result;
-						const formattedvalue = n.subtype==="bulb-on" ? data : Number(data);
+						const formattedvalue = ["bulb-on", "hue-ZLLTemperature", "hue-ZLLPresence", "hue-ZLLLightLevel"].indexOf(n.subtype) !== -1 ? data : Number(data);
 
 						const msg = {
 							name: n.name || "bulbsin",
