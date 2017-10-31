@@ -68,7 +68,9 @@ module.exports = function(RED) {
     }
     
     function Bulbs(n) {
- 		console.log("creating bulbsin node");
+ 		
+ 		console.log("******* creating bulbsin node: " + n.id);
+
  		RED.nodes.createNode(this,n);
         
         var node = this;
@@ -81,9 +83,12 @@ module.exports = function(RED) {
         
 		const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
     
+    	console.log(`${n.id} API ENDPOINT IS ${JSON.stringify(API_ENDPOINT,null,4)}`);
     	const bulbStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
     	const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
-    
+    	
+    	console.log(`${n.id} sensor id is ${sensorID}`);
+
     	
 
     	databox.timeseries.latest(bulbStore, sensorID)
