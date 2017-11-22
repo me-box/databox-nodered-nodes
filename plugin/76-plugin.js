@@ -19,10 +19,10 @@ module.exports = function(RED) {
     
     "use strict";
     var request = require('request');
-	var WebSocket = require('ws');
+ 	var url = require("url");
     
 
-     function testing(node, n){
+    function testing(node, n){
     	
     	const API_URL  = `${process.env.MOCK_DATA_SOURCE}/reading/latest`;
 
@@ -68,118 +68,76 @@ module.exports = function(RED) {
         });
     }
 
+
     function Plug(n) {
+ 		
+ 		console.log("******* creating plugin node: " + n.id);
 
-        this.name = n.name;
-
-        RED.nodes.createNode(this,n);
+ 		RED.nodes.createNode(this,n);
+        
         var node = this;
-       	const API_ENDPOINT 	= process.env.TESTING ? {} : JSON.parse(process.env[`DATASOURCE_${n.id}`]);
-        const API_URL 		= process.env.TESTING ? `${process.env.MOCK_DATA_SOURCE}/data/latest` : `http://${API_ENDPOINT.hostname}${API_ENDPOINT.api_url}/data/latest`;
-        const SENSOR_ID 	= process.env.TESTING ? n.subtype : API_ENDPOINT.sensor_id;
-		let socket, periodic;
 
-       	if (!process.env.TESTING){
-			
-			try{
-				socket = new WebSocket(`ws://${API_ENDPOINT.hostname}`);
+        if (process.env.TESTING){
+            return testing(this, n);
+        }
 		
-				console.log(`connecting to ws://${API_ENDPOINT.hostname}`);
-				console.log(socket);
-			
-				socket.onopen = (event)=>{
-					console.log("successfully opened websocket");
-				};
-		
-				socket.onmessage = (event)=>{
-				
-				
-					if (event.data === "ack"){
-						//subscribe
-						console.log("subscribing to sensor!");
-						socket.send(JSON.stringify({sensor_id: SENSOR_ID}));
-					}else{
-						try{
-							const {data,timestamp} = JSON.parse(event.data);
-							const formattedvalue = n.subtype==="TP-PowerState" ? data ? 'on': 'off' : Number(data);
-													
-							const msg = {
-									name: n.name || "plugin",
-									id:  n.id,
-									subtype: n.subtype,
-									type: "plugin",
-									payload: {
-										ts: timestamp,
-										value: formattedvalue,
-									}
-							}
-									
-							node.send(msg);    
-						}
-						catch(err){
-							console.log("error parsing plugin data!");
-							console.log(err);
-						}
+        const databox = require('node-databox');
+        
+		const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
+    
+    	console.log(`${n.id} API ENDPOINT IS ${JSON.stringify(API_ENDPOINT,null,4)}`);
+    	const plugStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
+    	const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
+    	
+    	console.log(`${n.id} sensor id is ${sensorID}`);
+
+    	databox.timeseries.latest(plugStore, sensorID)
+        .then((d)=>{
+       		
+       		const {timestamp, data} = d[0];
+
+       		var msg = {
+					name: n.name || "plugin",
+					id:  n.id,
+					subtype: n.subtype,
+					type: "plugin",
+					payload: {
+						ts: timestamp,
+						value: data,
 					}
-				};
-			}catch(err){
-				console.log("error receiving data!");
-				console.log(err);
 			}
-		}
-		else{
-		
-			const options = {
-				method: 'post',
-				body: {sensor_id: SENSOR_ID},
-				json: true,
-				url: API_URL,
-			}
-		
-			periodic = setInterval(function(){
-						request(options, function (err, res, body) {
-							if (err) {
-								console.log(err, 'error posting json')
-							}else{
-			
-						
-								if (body.length > 0){
-									const result = body[0];
-									const {data,timestamp} = result;
-									const formattedvalue = n.subtype==="power-state" ? data ? 'on': 'off' : Number(data);
-													
-									const msg = {
-										name: n.name || "plugin",
-										id:  n.id,
-										subtype: n.subtype,
-										type: "plugin",
-										payload: {
-											ts: timestamp,
-											value: formattedvalue,
-										}
-									}
-									
-									
-									node.send(msg);   
-								}	
-							}
-						});
-			}, 1000);
-		}
+			node.send(msg);
+        })
+        .catch((err)=>{console.log("[Error getting timeseries.latest]",plugStore, sensorID);});
 
-        this.on("close", function() {
-        	console.log(`${node.id} stopping requests`);
-        	if (process.env.TESTING){
-				clearInterval(periodic);
-			}else{
-				try{
-					socket.close();
-				}catch(err){
-					console.log("error closing socket");
-					console.log(err);
+        var dataEmitter = null; 
+
+        
+    	databox.waitForStoreStatus(plugStore, 'active')
+    	.then(() => databox.subscriptions.connect(plugStore))
+      	.then((emitter) => {
+        	
+        	dataEmitter = emitter;
+
+        	databox.subscriptions.subscribe(plugStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
+        	
+        	dataEmitter.on('data',(hostname, dsID, d)=>{
+            	
+            	var msg = {
+					name: n.name || "plugin",
+					id:  n.id,
+					subtype: n.subtype,
+					type: "plugin",
+					payload: {
+						ts: Date.now(),
+						value: d,
+					}
 				}
-			}
-        });
+				
+				node.send(msg);
+
+      		})	
+		}).catch((err) => console.error(err));
     }
 
     // Register the node by name. This must be called before overriding any of the
