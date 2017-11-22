@@ -40,7 +40,7 @@ module.exports = function(RED) {
                 const extracted = paths.reduce((acc,path)=>{
                     if (path.length > 0){
                         const extracted = _extract(msg, path);
-                        if (extracted){
+                        if (extracted != undefined){
                             acc[path[path.length-1]] = extracted;
                         }
                     }
