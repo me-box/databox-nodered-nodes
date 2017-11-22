@@ -21,9 +21,55 @@ module.exports = function(RED) {
     var request = require('request');
 	var WebSocket = require('ws');
     
+
+     function testing(node, n){
+    	
+    	const API_URL  = `${process.env.MOCK_DATA_SOURCE}/reading/latest`;
+
+    	const options = {
+  			method: 'post',
+  			body: {sensor_id: n.subtype},
+  			json: true,
+  			url: API_URL,
+		}
+
+    	const periodic = setInterval(function(){
+								
+			request(options, function (err, res, body) {
+				if (err) {
+					console.log(err, 'error posting json')
+				}else{
+					
+					if (body.length > 0){
+						const result = body[0];
+						const {data,timestamp=Date.now()} = result;
+						const formattedvalue = ["TP-PowerState"].indexOf(n.subtype) !== -1 ? data : Number(data);
+
+						const msg = {
+							name: n.name || "plugin",
+							id:  n.id,
+							subtype: n.subtype,
+							type: "plugin",
+							payload: {
+								ts: timestamp,
+								value: formattedvalue,
+							}
+						}
+							
+						node.send(msg);   
+					}	
+				}
+			});
+		}, 1000);
+
+        node.on("close", function() {
+          	console.log(`${node.id} stopping requests`);
+			clearInterval(periodic);
+        });
+    }
+
     function Plug(n) {
 
- 		console.log("creating plugin node");
         this.name = n.name;
 
         RED.nodes.createNode(this,n);
@@ -55,7 +101,7 @@ module.exports = function(RED) {
 					}else{
 						try{
 							const {data,timestamp} = JSON.parse(event.data);
-							const formattedvalue = n.subtype==="power-state" ? data ? 'on': 'off' : Number(data);
+							const formattedvalue = n.subtype==="TP-PowerState" ? data ? 'on': 'off' : Number(data);
 													
 							const msg = {
 									name: n.name || "plugin",
