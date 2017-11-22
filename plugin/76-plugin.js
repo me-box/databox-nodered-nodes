@@ -94,6 +94,8 @@ module.exports = function(RED) {
     	databox.timeseries.latest(plugStore, sensorID)
         .then((d)=>{
        		
+       		console.log(d[0]);
+
        		const {timestamp, data} = d[0];
 
        		var msg = {
@@ -122,7 +124,8 @@ module.exports = function(RED) {
         	databox.subscriptions.subscribe(plugStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
         	
         	dataEmitter.on('data',(hostname, dsID, d)=>{
-            	
+            	console.log(d);
+
             	var msg = {
 					name: n.name || "plugin",
 					id:  n.id,
