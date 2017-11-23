@@ -42,6 +42,8 @@ module.exports = function(RED) {
         connected = false;
         
         const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
+        
+        console.log("endpoint is", endpoint);
 
         client.connect(8435, endpoint, function() {
             console.log('***** plugs out connected *******');
@@ -82,6 +84,9 @@ module.exports = function(RED) {
     function Plugs(n) {
 
         console.log("creating plugout node");
+        this.name = n.name;
+        RED.nodes.createNode(this,n);
+        var node = this;
 
         if (process.env.TESTING){
             console.log("in testing mode");
@@ -95,11 +100,6 @@ module.exports = function(RED) {
         const actuationStore = endpointUrl.protocol + '//' + endpointUrl.host;
         const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
   
-
-        this.name = n.name;
-
-        RED.nodes.createNode(this,n);
-        var node = this;
        
 		this.on('input', function (msg) {
 			const value = msg.payload ? msg.payload : n.value ? n.value : null;
