@@ -114,6 +114,26 @@ module.exports = function(RED) {
         });
     }
 
+    function sendClose(channel){
+        client.sendMessage({type: "message", msg:   {
+                                                                    channel:channel, 
+                                                                    type:"control", 
+                                                                    payload:{
+                                                                        command:"reset", 
+                                                                        channel:channel
+                                                                    }
+                                                                }
+                                        });
+        
+    }
+
+
+    function sendmessage(msg){
+        if (connected){
+            client.sendMessage({type: "bulbsout", msg: msg});
+        }
+    }
+
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
     RED.nodes.registerType("plugout",Plug);
