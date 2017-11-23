@@ -55,17 +55,20 @@ module.exports = function(RED) {
 
 
     function testing (node, n){
-        
+        console.log("in testing, connecting");
         connect();
 
         node.on('input', function (msg) {
-            
+            console.log("plug, seen input", msg);
+
             const testmsg =  {
                 actuator_id: n.id, 
                 method: msg.type||n.subtype||"TP-SetPowerState", 
                 channel:n.appId, 
-                data: msg.payload ? msg.payload : ""
+                data: msg.payload || ""
             };
+
+            console.log("sending test message", testmsg);
 
             sendmessage(testmsg);
         });
@@ -76,14 +79,15 @@ module.exports = function(RED) {
     }
    
     
-    function Plug(n) {
+    function Plugs(n) {
 
         console.log("creating plugout node");
 
         if (process.env.TESTING){
+            console.log("in testing mode");
             return testing(this, n);
         }
-
+        console.log("running on databox");
         const databox = require('node-databox');   
  		const API_ENDPOINT 	= JSON.parse(process.env[`DATASOURCE_${n.id}`]);
         const HREF_ENDPOINT = API_ENDPOINT.href || ''; 
@@ -130,11 +134,11 @@ module.exports = function(RED) {
 
     function sendmessage(msg){
         if (connected){
-            client.sendMessage({type: "bulbsout", msg: msg});
+            client.sendMessage({type: "plugout", msg: msg});
         }
     }
 
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
-    RED.nodes.registerType("plugout",Plug);
+    RED.nodes.registerType("plugout",Plugs);
 }
