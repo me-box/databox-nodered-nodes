@@ -44,7 +44,7 @@ module.exports = function(RED) {
         const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
 
         client.connect(8435, endpoint, function() {
-            console.log('***** companion app connected *******');
+            console.log('***** bulbs out connected *******');
             connected = true;
         
             if (fn){

@@ -18,70 +18,15 @@
 module.exports = function(RED) {
     
     "use strict";
-    
-    var net = require('net');
-    var connected = false;
-    var JsonSocket = require('json-socket');
-    var url = require("url");
-    var client =  new JsonSocket(new net.Socket());
-    //var netstring = require("../utils/netstring");
-
-    client.on("error", function(err){
-        connected = false;
-        console.log("error connecting, retrying in 2 sec");
-        setTimeout(function(){connect()}, 2000);
-    });
-    
-    client.on('uncaughtException', function (err) {
-        connected = false;
-        console.error(err.stack);
-        setTimeout(function(){connect()}, 2000);
-    });
-
-    function connect(fn){
-        connected = false;
-        
-        const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
-
-        client.connect(8435, endpoint, function() {
-            console.log('***** plugs out connected *******');
-            connected = true;
-        
-            if (fn){
-                fn();
-            }
-        })
-    }
-
-
-    function testing (node, n){
-        
-        connect();
-
-        node.on('input', function (msg) {
-            
-            const testmsg =  {
-                actuator_id: n.id, 
-                method: msg.type||n.subtype||"TP-SetPowerState", 
-                channel:n.appId, 
-                data: msg.payload ? msg.payload : ""
-            };
-
-            sendmessage(testmsg);
-        });
-
-        node.on("close", function() {
-            sendClose(n.appId);
-        });
-    }
-   
+  
+    const url = require("url");
     
     function Plug(n) {
 
         console.log("creating plugout node");
 
         if (process.env.TESTING){
-            return testing(this, n);
+            return;
         }
 
         const databox = require('node-databox');   
