@@ -111,11 +111,11 @@ module.exports = function(RED) {
                                     node.send({
                                         name: n.name || "trigger",
                                         id: n.id,
-                                        payload:msg.payload
+                                        payload:m2,
                                     })
                                 }
                             }
-                            
+
                             tout = null;
                             node.status({});
                         },node.duration);
