@@ -88,19 +88,34 @@ module.exports = function(RED) {
                         msg.payload = RED.util.evaluateNodeProperty(node.op1,node.op1type,node,msg);
                     }
 
-                    if (node.op1type !== "nul") { node.send(msg); }
+                    if (node.op1type !== "nul") { node.send({
+                                                                name: n.name || "trigger",
+                                                                id: n.id,
+                                                                payload:msg.payload
+                                                            }
+                                                )}//node.send(msg); }
 
                     if (node.duration === 0) { tout = 0; }
                     else {
                         tout = setTimeout(function() {
+                            
                             if (node.op2type !== "nul") {
-                                var msg2 = RED.util.cloneMessage(msg);
-                                if (node.op2type === "flow" || node.op2type === "global") {
-                                    m2 = RED.util.evaluateNodeProperty(node.op2,node.op2type,node,msg);
+                                if (node.op2type === "pay" || node.op2type === "payl"){
+                                    var msg2 = RED.util.cloneMessage(msg);
+                                    if (node.op2type === "flow" || node.op2type === "global") {
+                                        m2 = RED.util.evaluateNodeProperty(node.op2,node.op2type,node,msg);
+                                    }
+                                    msg2.payload = m2;
+                                    node.send(msg2);
+                                }else{
+                                    node.send({
+                                        name: n.name || "trigger",
+                                        id: n.id,
+                                        payload:msg.payload
+                                    })
                                 }
-                                msg2.payload = m2;
-                                node.send(msg2);
                             }
+                            
                             tout = null;
                             node.status({});
                         },node.duration);
@@ -112,12 +127,17 @@ module.exports = function(RED) {
                     if (node.op2type === "payl") { m2 = msg.payload; }
                     tout = setTimeout(function() {
                         if (node.op2type !== "nul") {
-                            var msg2 = RED.util.cloneMessage(msg);
-                            if (node.op2type === "flow" || node.op2type === "global") {
-                                m2 = RED.util.evaluateNodeProperty(node.op2,node.op2type,node,msg);
-                            }
-                            msg2.payload = m2;
-                            node.send(msg2);
+                            //var msg2 = RED.util.cloneMessage(msg);
+                            //if (node.op2type === "flow" || node.op2type === "global") {
+                            //    m2 = RED.util.evaluateNodeProperty(node.op2,node.op2type,node,msg);
+                            //}
+                            //msg2.payload = m2;
+                            //node.send(msg2);
+                            node.send({
+                                        name: n.name || "trigger",
+                                        id: n.id,
+                                        payload:m2,
+                            });
                         }
                         tout = null;
                         node.status({});
