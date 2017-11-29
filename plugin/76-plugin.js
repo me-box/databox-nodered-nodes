@@ -43,7 +43,7 @@ module.exports = function(RED) {
 					if (body.length > 0){
 						const result = body[0];
 						const {data,timestamp=Date.now()} = result;
-						const formattedvalue = ["TP-PowerState"].indexOf(n.subtype) !== -1 ? data : Number(data);
+						const formattedvalue = ["TP-PowerState", "TP-Power-Usage"].indexOf(n.subtype) !== -1 ? data : Number(data);
 
 						const msg = {
 							name: n.name || "plugin",
