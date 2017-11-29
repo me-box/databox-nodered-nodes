@@ -157,6 +157,7 @@ module.exports = function(RED) {
 				}
 
 				if (send){
+
 	            	var msg = {
 						name: n.name || "bulbsin",
 						id:  n.id,
@@ -167,7 +168,7 @@ module.exports = function(RED) {
 							value: d,
 						}
 					}
-					
+					console.log("-----> bulbsin ---->", msg);
 					node.send(msg);
 				}
       		})	
