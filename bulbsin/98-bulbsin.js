@@ -24,6 +24,7 @@ module.exports = function(RED) {
     function testing(node, n){
     	
     	const API_URL  = `${process.env.MOCK_DATA_SOURCE}/reading/latest`;
+    	let LAST_PRESENCE_VALUE = false;
 
     	const options = {
   			method: 'post',
@@ -44,18 +45,30 @@ module.exports = function(RED) {
 						const {data,timestamp=Date.now()} = result;
 						const formattedvalue = ["bulb-on", "hue-ZLLTemperature", "hue-ZLLPresence", "hue-ZLLLightLevel"].indexOf(n.subtype) !== -1 ? data : Number(data);
 
-						const msg = {
-							name: n.name || "bulbsin",
-							id:  n.id,
-							subtype: n.subtype,
-							type: "bulbsin",
-							payload: {
-								ts: timestamp,
-								value: formattedvalue,
-							}
+						var send = true;
+
+						if (n.subtype === "hue-ZLLPresence"){
+							if (data === LAST_PRESENCE_VALUE){
+								send = false;
+							}else{
+								send = true;
+							}		
+							LAST_PRESENCE_VALUE = data;
 						}
-							
-						node.send(msg);   
+
+						if (send){
+							const msg = {
+								name: n.name || "bulbsin",
+								id:  n.id,
+								subtype: n.subtype,
+								type: "bulbsin",
+								payload: {
+									ts: timestamp,
+									value: formattedvalue,
+								}
+							}
+							node.send(msg);   
+						}	
 					}	
 				}
 			});
@@ -74,6 +87,7 @@ module.exports = function(RED) {
  		RED.nodes.createNode(this,n);
         
         var node = this;
+		
 
         if (process.env.TESTING){
             return testing(this, n);
@@ -90,6 +104,7 @@ module.exports = function(RED) {
     	console.log(`${n.id} sensor id is ${sensorID}`);
 
     	
+    	let LAST_PRESENCE_VALUE = false;
 
     	databox.timeseries.latest(bulbStore, sensorID)
         .then((d)=>{
@@ -106,6 +121,11 @@ module.exports = function(RED) {
 						value: data,
 					}
 			}
+			
+			if (n.subtype === "hue-ZLLPresence"){
+				LAST_PRESENCE_VALUE = data;
+			}
+
 			node.send(msg);
         })
         .catch((err)=>{console.log("[Error getting timeseries.latest]",bulbStore, sensorID);});
@@ -125,19 +145,31 @@ module.exports = function(RED) {
 
         	dataEmitter.on('data',(hostname, dsID, d)=>{
             	
-            	var msg = {
-					name: n.name || "bulbsin",
-					id:  n.id,
-					subtype: n.subtype,
-					type: "bulbsin",
-					payload: {
-						ts: Date.now(),
-						value: d,
-					}
-				}
-				
-				node.send(msg);
+            	var send = true;
 
+				if (n.subtype === "hue-ZLLPresence"){
+					if (data === LAST_PRESENCE_VALUE){
+						send = false;
+					}else{
+						send = true;
+					}		
+					LAST_PRESENCE_VALUE = data;
+				}
+
+				if (send){
+	            	var msg = {
+						name: n.name || "bulbsin",
+						id:  n.id,
+						subtype: n.subtype,
+						type: "bulbsin",
+						payload: {
+							ts: Date.now(),
+							value: d,
+						}
+					}
+					
+					node.send(msg);
+				}
       		})	
 		}).catch((err) => console.error(err));
     }
