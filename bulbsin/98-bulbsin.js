@@ -123,6 +123,8 @@ module.exports = function(RED) {
 			}
 			
 			if (n.subtype === "hue-ZLLPresence"){
+				console.log("DATA IS", data);
+				console.log("************** SET LAST_PRESENCE_VALUE TO", data.presence);
 				LAST_PRESENCE_VALUE = data.presence;
 			}
 
@@ -148,13 +150,19 @@ module.exports = function(RED) {
             	var send = true;
 
 				if (n.subtype === "hue-ZLLPresence"){
-					if (data.presence === LAST_PRESENCE_VALUE){
+
+					console.log("CHECKING ", d.presence, " against ", LAST_PRESENCE_VALUE);
+					
+					if (d.presence === LAST_PRESENCE_VALUE){
 						send = false;
 					}else{
 						send = true;
 					}		
-					LAST_PRESENCE_VALUE = data.presence;
+					LAST_PRESENCE_VALUE = d.presence;
+					console.log("SETTING LAST PRESENCE VALUE TO", d.presence);
 				}
+
+				console.log("SEND IS ", send);
 
 				if (send){
 
