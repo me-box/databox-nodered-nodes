@@ -48,12 +48,12 @@ module.exports = function(RED) {
 						var send = true;
 
 						if (n.subtype === "hue-ZLLPresence"){
-							if (data === LAST_PRESENCE_VALUE){
+							if (data.presence === LAST_PRESENCE_VALUE){
 								send = false;
 							}else{
 								send = true;
 							}		
-							LAST_PRESENCE_VALUE = data;
+							LAST_PRESENCE_VALUE = data.presence;
 						}
 
 						if (send){
@@ -123,7 +123,7 @@ module.exports = function(RED) {
 			}
 			
 			if (n.subtype === "hue-ZLLPresence"){
-				LAST_PRESENCE_VALUE = data;
+				LAST_PRESENCE_VALUE = data.presence;
 			}
 
 			node.send(msg);
@@ -148,12 +148,12 @@ module.exports = function(RED) {
             	var send = true;
 
 				if (n.subtype === "hue-ZLLPresence"){
-					if (data === LAST_PRESENCE_VALUE){
+					if (data.presence === LAST_PRESENCE_VALUE){
 						send = false;
 					}else{
 						send = true;
 					}		
-					LAST_PRESENCE_VALUE = data;
+					LAST_PRESENCE_VALUE = data.presence;
 				}
 
 				if (send){
@@ -168,7 +168,7 @@ module.exports = function(RED) {
 							value: d,
 						}
 					}
-					console.log("-----> bulbsin ---->", msg);
+					
 					node.send(msg);
 				}
       		})	
