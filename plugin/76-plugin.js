@@ -68,8 +68,67 @@ module.exports = function(RED) {
         });
     }
 
-
     function Plug(n) {
+ 		
+ 		console.log("******* creating new plugin node: " + n.id);
+
+ 		RED.nodes.createNode(this,n);
+        
+        var node = this;
+		
+        if (process.env.TESTING){
+            return testing(this, n);
+        }
+		
+        const databox = require('node-databox');
+
+        const DATASOURCE_PLUGIN = process.env[`DATASOURCE_${n.id}`;
+
+
+        databox.HypercatToSourceDataMetadata(DATASOURCE_PLUGIN).then((data)=>{
+
+        	console.log("got hypercat data!");
+
+        	const DS_Metadata = data.DataSourceMetadata;
+			
+			const store_url = data.DataSourceURL;
+			
+			console.log("metadata, storeurl", DS_Metadata, store_url);
+
+			const tsc = databox.NewTimeSeriesClient(store_url, false);
+
+			tsc.Observe(DS_Metadata.DataSourceID).then((subs) => {
+			
+
+				subs.on("data", (d)=>{
+					
+					console.log("plugin --- seen data!");
+					
+					const msg = {
+						name: n.name || "plugin",
+						id:  n.id,
+						subtype: n.subtype,
+						type: "plugin",
+						payload: {
+							ts: Date.now(),
+							value: d,
+						}
+					}
+					node.send(msg);
+				});
+				
+				subs.on('error',(err)=>{
+					console.warn(err);
+				});
+
+			}).catch((err) => console.error(err));
+
+        }).catch((err)=>{
+        	console.log("error:", err);
+        });
+    }
+
+    function PlugOLD(n) {
  		
  		console.log("******* creating plugin node: " + n.id);
 

@@ -79,8 +79,90 @@ module.exports = function(RED) {
 			clearInterval(periodic);
         });
     }
-    
+       
     function Bulbs(n) {
+ 		
+ 		console.log("******* creating new bulbsin node: " + n.id);
+
+ 		RED.nodes.createNode(this,n);
+        
+        var node = this;
+		
+
+        if (process.env.TESTING){
+            return testing(this, n);
+        }
+		
+        const databox = require('node-databox');
+
+        const DATASOURCE_BULBSIN = process.env[`DATASOURCE_${n.id}`;
+
+
+        databox.HypercatToSourceDataMetadata(DATASOURCE_BULBSIN).then((data)=>{
+
+        	console.log("got hypercat data!");
+
+        	const DS_Metadata = data.DataSourceMetadata;
+			
+			const store_url = data.DataSourceURL;
+			
+			console.log("metadata, storeurl", DS_Metadata, store_url);
+
+			const tsc = databox.NewTimeSeriesClient(store_url, false);
+
+			let LAST_PRESENCE_VALUE = false;
+
+			tsc.Observe(DS_Metadata.DataSourceID).then((subs) => {
+			
+
+				subs.on("data", (d)=>{
+					console.log("ok got some data:", d);
+				
+					var send = true;
+
+					if (n.subtype === "hue-ZLLPresence"){
+
+						console.log("CHECKING ", d.presence, " against ", LAST_PRESENCE_VALUE);
+						
+						if (d.presence === LAST_PRESENCE_VALUE){
+							send = false;
+						}else{
+							send = true;
+						}		
+						LAST_PRESENCE_VALUE = d.presence;
+						console.log("SETTING LAST PRESENCE VALUE TO", d.presence);
+					}
+
+					if (send){
+
+		            	var msg = {
+							name: n.name || "bulbsin",
+							id:  n.id,
+							subtype: n.subtype,
+							type: "bulbsin",
+							payload: {
+								ts: Date.now(),
+								value: d,
+							}
+						}
+						
+						node.send(msg);
+					}
+				});
+				
+				subs.on('error',(err)=>{
+					console.warn(err);
+				});
+
+			}).catch((err) => console.error(err));
+
+        }).catch((err)=>{
+        	console.log("error:", err);
+        });
+    }
+
+
+    function BulbsOLD(n) {
  		
  		console.log("******* creating bulbsin node: " + n.id);
 

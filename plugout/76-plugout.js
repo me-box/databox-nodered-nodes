@@ -80,8 +80,51 @@ module.exports = function(RED) {
         });
     }
    
-    
-    function Plugs(n) {
+        
+    function Plugs(n){
+
+        console.log("creating new plug out node");
+        this.name = n.name;
+        RED.nodes.createNode(this,n);
+        var node = this;
+
+        if (process.env.TESTING){
+            return testing(this, n);
+        }
+
+        const databox = require('node-databox');    
+        
+        const DATASOURCE_PLUGOUT = process.env[`DATASOURCE_${n.id}`;
+
+        databox.HypercatToSourceDataMetadata(DATASOURCE_PLUGOUT).then((data)=>{
+
+            console.log("plug -> got hypercat data!");
+
+            const DS_Metadata = data.DataSourceMetadata;
+            
+            const store_url = data.DataSourceURL;
+        
+            this.on('input', function (msg) {
+                
+                console.log("plugout, got data");
+
+                const value = msg.payload ? msg.payload : n.value ? n.value : null;
+                
+                console.log("actuating", {data:value});
+
+                databox.timeseries.write(DS_Metadata.DataSourceID,{data:value}).then((body)=>{
+           
+                }, (err)=>{
+                    console.log("error actuating:", err);
+                }).catch((error)=>{
+                    console.log("error");
+                    console.log(err);
+                });
+            });
+        });
+    }
+
+    function PlugsOLD(n) {
 
         console.log("creating plugout node");
         this.name = n.name;
