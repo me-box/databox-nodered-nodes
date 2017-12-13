@@ -103,7 +103,8 @@ module.exports = function(RED) {
             const DS_Metadata = data.DataSourceMetadata;
             
             const store_url = data.DataSourceURL;
-        
+            const tsc = databox.NewTimeSeriesClient(store_url, false);
+            
             this.on('input', function (msg) {
                 
                 console.log("plugout, got data");
@@ -111,8 +112,8 @@ module.exports = function(RED) {
                 const value = msg.payload ? msg.payload : n.value ? n.value : null;
                 
                 console.log("actuating", {data:value});
-                const tsc = databox.NewTimeSeriesClient(store_url, false);
                 
+
                 tsc.Write(DS_Metadata.DataSourceID,{data:value}).then((body)=>{
            
                 }, (err)=>{
