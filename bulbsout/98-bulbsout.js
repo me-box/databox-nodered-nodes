@@ -81,7 +81,7 @@ module.exports = function(RED) {
 
         const databox = require('node-databox');    
         
-        const DATASOURCE_BULBSOUT = process.env[`DATASOURCE_${n.id}`;
+        const DATASOURCE_BULBSOUT = process.env[`DATASOURCE_${n.id}`];
 
 
         databox.HypercatToSourceDataMetadata(DATASOURCE_BULBSOUT).then((data)=>{

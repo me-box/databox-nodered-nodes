@@ -94,7 +94,7 @@ module.exports = function(RED) {
 
         const databox = require('node-databox');    
         
-        const DATASOURCE_PLUGOUT = process.env[`DATASOURCE_${n.id}`;
+        const DATASOURCE_PLUGOUT = process.env[`DATASOURCE_${n.id}`];
 
         databox.HypercatToSourceDataMetadata(DATASOURCE_PLUGOUT).then((data)=>{
 
