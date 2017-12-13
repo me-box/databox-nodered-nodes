@@ -99,7 +99,7 @@ module.exports = function(RED) {
 
                 const value = msg.payload ? msg.payload : n.value ? n.value : null;
             
-                console.log("actuating", {data:value});
+                console.log("BULBS actuating", DS_Metadata.DataSourceID, {data:value});
                 
                 
                 tsc.Write(DS_Metadata.DataSourceID,{data:value}).then((body)=>{
