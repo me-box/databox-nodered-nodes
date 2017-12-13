@@ -102,8 +102,9 @@ module.exports = function(RED) {
 
 				subs.on("data", (d)=>{
 					
-					console.log("plugin --- seen data!");
-					
+					console.log("plugin --- seen data!", d);
+				
+
 					const msg = {
 						name: n.name || "plugin",
 						id:  n.id,

@@ -99,13 +99,15 @@ module.exports = function(RED) {
                 const value = msg.payload ? msg.payload : n.value ? n.value : null;
             
                 console.log("actuating", {data:value});
-                databox.timeseries.write(DS_Metadata.DataSourceID,{data:value}).then((body)=>{
+                const tsc = databox.NewTimeSeriesClient(store_url, false);
+                
+                tsc.Write(DS_Metadata.DataSourceID,{data:value}).then((body)=>{
            
                 }, (err)=>{
                     console.log("error actuating:", err);
                 }).catch((error)=>{
                     console.log("error");
-                    console.log(err);
+                    console.log(error);
                 });
             });
         });
