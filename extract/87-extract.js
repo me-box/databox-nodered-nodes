@@ -34,11 +34,11 @@ module.exports = function(RED) {
         this.on('input', function (msg) {
             
             console.log("extract msg:" , JSON.stringify(msg,null,4));    
-            console.log("looking up", msg.type, " in ", JSON.stringify(_lookup));
+            console.log("looking up", msg.id, " in ", JSON.stringify(_lookup));
 
-            const paths = _lookup[msg.type];
+            const paths = _lookup[msg.id];
          
-            console.log("paths are", JSON.stringify(path));
+            console.log("paths are", JSON.stringify(paths,null,4));
 
             if (paths){
                 const extracted = paths.reduce((acc,path)=>{
