@@ -34,9 +34,10 @@ module.exports = function(RED) {
         this.on('input', function (msg) {
             
             console.log("extract msg:" , JSON.stringify(msg,null,4));    
+            console.log("filyters are", JSON.stringify(n.filters,null,4));
             console.log("looking up", msg.id, " in ", JSON.stringify(_lookup));
 
-            const paths = _lookup[msg.id];
+            const paths = _lookup[msg.id] || [];
          
             console.log("paths are", JSON.stringify(paths,null,4));
 
@@ -45,7 +46,7 @@ module.exports = function(RED) {
                     if (path.length > 0){
                         const extracted = _extract(msg, path);
                         if (extracted != undefined){
-                            acc[path[path.length-1]] = extracted;
+                            acc[path.join(".")] = extracted;
                         }
                     }
                     return acc;    
