@@ -136,8 +136,8 @@ module.exports = function(RED) {
           	}};
           	
             console.log("sending message");
-            console.log(JSON.stringify(nsg,null,4));
-            
+            console.log(JSON.stringify(msg,null,4));
+
           	node.send(msg);
         
         });
