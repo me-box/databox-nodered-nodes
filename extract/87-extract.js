@@ -23,7 +23,7 @@ module.exports = function(RED) {
             //return acc;
         },[]);
 
-        console.log("lookup is", JSON.stringify(_lookup,null,4));
+        //console.log("lookup is", JSON.stringify(_lookup,null,4));
 
         const _extract = (msg,path)=>{
             return path.reduce((acc,item)=>{
@@ -35,7 +35,7 @@ module.exports = function(RED) {
             
             console.log("extract msg:" , JSON.stringify(msg,null,4));    
             console.log("filyters are", JSON.stringify(n.filters,null,4));
-            console.log("looking up", msg.id, " in ", JSON.stringify(_lookup));
+            //console.log("looking up", msg.id, " in ", JSON.stringify(_lookup));
 
             //const paths = _lookup[msg.id] || [];
          
