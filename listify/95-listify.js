@@ -54,8 +54,11 @@ module.exports = function(RED) {
             console.log("msg");
             console.log(JSON.stringify(msg,null,4));
 
-            console.log("path is");
-            console.log(JSON.stringify(this.path));
+            console.log("node is");
+            console.log(JSON.stringify(node,null,4));
+
+            console.log("n is");
+            console.log(JSON.stringify(n,null,4));
 
           	if (!sources[msg.payload.id]){
           		
