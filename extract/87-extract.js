@@ -12,7 +12,7 @@ module.exports = function(RED) {
         var node = this;
 
      
-        console.log("in extract with filters", JSON.stringify(filters,null,4));
+        console.log("in extract with filters", JSON.stringify(n.filters,null,4));
 
         const _lookup = n.filters.reduce((acc, item)=>{
             const entry = acc[item.source] || []
