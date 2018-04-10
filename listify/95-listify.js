@@ -54,9 +54,6 @@ module.exports = function(RED) {
             console.log("msg");
             console.log(JSON.stringify(msg,null,4));
 
-            console.log("node is");
-            console.log(JSON.stringify(node,null,4));
-
             console.log("n is");
             console.log(JSON.stringify(n,null,4));
 
@@ -138,6 +135,9 @@ module.exports = function(RED) {
           		rows:rows,
           	}};
           	
+            console.log("sending message");
+            console.log(JSON.stringify(nsg,null,4));
+            
           	node.send(msg);
         
         });
