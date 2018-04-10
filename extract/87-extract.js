@@ -14,14 +14,14 @@ module.exports = function(RED) {
      
         console.log("in extract with filters", JSON.stringify(n.filters,null,4));
 
-        const _lookup = n.filters.reduce((acc, item)=>{
-            const entry = acc[item.sid] || []
+        const paths = n.filters.reduce((acc, item)=>{
+            //const entry = acc[item.sid] || []
             //const [head, ...tail] = item.path;
             //entry.push(tail);
             //entry.push(item.path);
-            acc[item.sid] = [...entry, item.path];
-            return acc;
-        },{});
+            return [...acc, item.path];
+            //return acc;
+        },[]);
 
         console.log("lookup is", JSON.stringify(_lookup,null,4));
 
@@ -37,7 +37,7 @@ module.exports = function(RED) {
             console.log("filyters are", JSON.stringify(n.filters,null,4));
             console.log("looking up", msg.id, " in ", JSON.stringify(_lookup));
 
-            const paths = _lookup[msg.id] || [];
+            //const paths = _lookup[msg.id] || [];
          
             console.log("paths are", JSON.stringify(paths,null,4));
 
