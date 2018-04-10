@@ -12,6 +12,7 @@ module.exports = function(RED) {
         var node = this;
 
      
+        console.log("in extract with filters", JSON.stringify(filters,null,4));
 
         const _lookup = n.filters.reduce((acc, item)=>{
             const entry = acc[item.source] || []
@@ -22,6 +23,7 @@ module.exports = function(RED) {
             return acc;
         },{});
 
+        console.log("lookup is", JSON.stringify(_lookup,null,4));
 
         const _extract = (msg,path)=>{
             return path.reduce((acc,item)=>{
@@ -31,10 +33,12 @@ module.exports = function(RED) {
 
         this.on('input', function (msg) {
             
-            
+            console.log("extract msg:" , JSON.stringify(msg,null,4));    
+            console.log("looking up", msg.type, " in ", JSON.stringify(_lookup));
 
             const paths = _lookup[msg.type];
          
+            console.log("paths are", JSON.stringify(path));
 
             if (paths){
                 const extracted = paths.reduce((acc,path)=>{
@@ -47,8 +51,14 @@ module.exports = function(RED) {
                     return acc;    
                 },{}); 
 
+                console.log("extracted is", JSON.stringify(extracted,null,4));
+
                 if (Object.keys(extracted).length > 0){
-                    
+                    console.log("sending",{
+                        name: n.name || "extract",
+                        id:  n.id,
+                        payload: extracted
+                    });
                     node.send({
                         name: n.name || "extract",
                         id:  n.id,

@@ -15,7 +15,7 @@
  **/
 
 
-var _extractkeys = function(payload){
+var _extractkeys = (payload)=>{
 	if (payload.values){
 		return Object.keys(payload.values.reduce(function(acc, obj){
           	return Object.keys(obj).reduce(function(acc, key){
@@ -27,8 +27,14 @@ var _extractkeys = function(payload){
     return Object.keys(payload);
 }
 
-var _extractdata = function(payload){
+var _extractdata = (payload)=>{
 	return payload.values ? payload.values : [payload];
+}
+
+
+var _ptype = (ptype={})=>{
+
+
 }
 
 module.exports = function(RED) {
@@ -51,11 +57,11 @@ module.exports = function(RED) {
 		
 		  this.on('input', function (msg) {
           	
-            console.log("msg");
-            console.log(JSON.stringify(msg,null,4));
+            //console.log("msg");
+            //console.log(JSON.stringify(msg,null,4));
 
-            console.log("n is");
-            console.log(JSON.stringify(n,null,4));
+            //console.log("n is");
+            //console.log(JSON.stringify(n,null,4));
 
           	if (!sources[msg.payload.id]){
           		
@@ -128,15 +134,16 @@ module.exports = function(RED) {
           	
           	msg.type = "list";
           	msg.sourceId = node.id;
-          	
+          	msg.ptype = _ptype((node.ptype || {})[msg.id]);
+
           	msg.payload = {values:{
           		timestamp: Date.now(),
           		keys:keys,
           		rows:rows,
           	}};
           	
-            console.log("sending message");
-            console.log(JSON.stringify(msg,null,4));
+            //console.log("sending message");
+            console.log("LISTIFY:", JSON.stringify(msg,null,4));
 
           	node.send(msg);
         
