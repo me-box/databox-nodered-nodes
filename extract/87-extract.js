@@ -15,11 +15,11 @@ module.exports = function(RED) {
         console.log("in extract with filters", JSON.stringify(n.filters,null,4));
 
         const _lookup = n.filters.reduce((acc, item)=>{
-            const entry = acc[item.source] || []
+            const entry = acc[item.sid] || []
             //const [head, ...tail] = item.path;
             //entry.push(tail);
-            entry.push(item.path);
-            acc[item.source] = entry;
+            //entry.push(item.path);
+            acc[item.sid] = [...entry, item.path];
             return acc;
         },{});
 
