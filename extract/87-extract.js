@@ -46,7 +46,7 @@ module.exports = function(RED) {
                     if (path.length > 0){
                         const extracted = _extract(msg, path);
                         if (extracted != undefined){
-                            acc[[...msg.id,...path].join(".")] = extracted;
+                            acc[[msg.id,...path].join(".")] = extracted;
                         }
                     }
                     return acc;    
