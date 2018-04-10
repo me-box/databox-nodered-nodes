@@ -51,28 +51,31 @@ module.exports = function(RED) {
 		
 		  this.on('input', function (msg) {
           	
+            console.log("msg");
+            console.log(JSON.stringify(msg,null,4));
+
+            console.log("path is");
+            console.log(JSON.stringify(this.path));
+
           	if (!sources[msg.payload.id]){
           		
           		//collect list of unique keys of objects contained in the payload values array.  Could
           		//assume that all objects will have same attributes and just pull out keys from the
           		//first element, but probably better to pick up all.
-          		
           		var newkeys = _extractkeys(msg.payload);
-          		 
           		//combine current set of keys with new keys discovered above
-          		keys = keys.concat(newkeys.filter(function (item) {
-    					return keys.indexOf(item) < 0;
-				}));
-          		
+          		keys = keys.concat(newkeys.filter((item)=>{
+    					   return keys.indexOf(item) < 0;
+				      }));
           	}
           	
           	TICK_TTL = Math.max(Object.keys(sources).length * 2, TICK_TTL);
-          	
+
           	//remember last set of values for this data source
           	sources[msg.payload.id] = _extractdata(msg.payload);
           	
         
-        	//record how many ticks (a tick === datasource event);
+        	  //record how many ticks (a tick === datasource event);
         	  	
           	ticks[msg.payload.id] = 0;
         
