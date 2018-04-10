@@ -57,11 +57,11 @@ module.exports = function(RED) {
 		
 		  this.on('input', function (msg) {
           	
-            //console.log("msg");
-            //console.log(JSON.stringify(msg,null,4));
+            console.log("msg");
+            console.log(JSON.stringify(msg,null,4));
 
-            //console.log("n is");
-            //console.log(JSON.stringify(n,null,4));
+            console.log("ptype is");
+            console.log(JSON.stringify(n.ptype,null,4));
 
           	if (!sources[msg.payload.id]){
           		
@@ -134,7 +134,7 @@ module.exports = function(RED) {
           	
           	msg.type = "list";
           	msg.sourceId = node.id;
-          	msg.ptype = _ptype((node.ptype || {})[msg.id]);
+          	//msg.ptype = _ptype((node.ptype || {})[msg.id]);
 
           	msg.payload = {values:{
           		timestamp: Date.now(),
