@@ -20,16 +20,17 @@ module.exports = function(RED) {
         }
 
         this.on('input', function (msg) {
+
             console.log("in extract", JSON.stringify(msg,null,4));
-            console.log("path is", this.path());
-            console.log("n is", JSON.stringify(n,null,4));
-            
-            const src = this.path().hops[0].source;
-            console.log("src is", src);
-            
+            console.log("path is", JSON.stringify(this.path(),null,4), "src is", this.path().hops[0].source);
+            console.log("filters are",JSON.stringify(n.filters,null,4));
+            console.log("so PATHS are", paths);
+
             if (paths){
                 
                 const extracted = paths.reduce((acc,path)=>{
+                    console.log("extracting ", JSON.stringify(path,null,4));
+
                     if (path.length > 0){
                         const extracted = _extract(msg, path);
                         if (extracted != undefined){
@@ -50,7 +51,11 @@ module.exports = function(RED) {
                         id:  n.id,
                         payload: extracted
                     });
+                }else{
+                    console.log("no extraction!");
                 }
+            }else{
+                console.log("no paths!");
             }
         });
     }
