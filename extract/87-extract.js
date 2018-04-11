@@ -20,7 +20,10 @@ module.exports = function(RED) {
         }
 
         this.on('input', function (msg) {
-            
+            console.log("in extract", JSON.stringify(msg,null,4));
+            console.log("path is", this.path());
+            console.log("n is", JSON.stringify(n,null,4));
+
             if (paths){
                 
                 const extracted = paths.reduce((acc,path)=>{
@@ -34,6 +37,11 @@ module.exports = function(RED) {
                 },{}); 
         
                 if (Object.keys(extracted).length > 0){
+                    console.log("sending on", JSON.stringify({
+                        name: n.name || "extract",
+                        id:  n.id,
+                        payload: extracted
+                    },null,4));
                     node.send({
                         name: n.name || "extract",
                         id:  n.id,
