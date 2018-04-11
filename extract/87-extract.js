@@ -20,9 +20,10 @@ module.exports = function(RED) {
         }
 
         this.on('input', function (msg) {
+            const src = this.path().hops[0].source;
 
             console.log("in extract", JSON.stringify(msg,null,4));
-            console.log("path is", JSON.stringify(this.path(),null,4), "src is", this.path().hops[0].source);
+            console.log("path is", JSON.stringify(this.path(),null,4), "src is", src);
             console.log("filters are",JSON.stringify(n.filters,null,4));
             console.log("so PATHS are", paths);
 
