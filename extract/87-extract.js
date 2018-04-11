@@ -23,14 +23,17 @@ module.exports = function(RED) {
             console.log("in extract", JSON.stringify(msg,null,4));
             console.log("path is", this.path());
             console.log("n is", JSON.stringify(n,null,4));
-
+            
+            const src = this.path().hops[0].source;
+            console.log("src is", src);
+            
             if (paths){
                 
                 const extracted = paths.reduce((acc,path)=>{
                     if (path.length > 0){
                         const extracted = _extract(msg, path);
                         if (extracted != undefined){
-                            acc[[msg.id,...path].join(".")] = extracted;
+                            acc[[src,...path].join(".")] = extracted;
                         }
                     }
                     return acc;    
