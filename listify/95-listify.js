@@ -46,8 +46,6 @@ const _personal = (msg, ptype={})=>{
   
   const ptypes = ptype[msg.id] || [];
 
-  console.log("personal pyypes are", ptypes);
-
   return items.reduce((acc,item)=>{
     return  ptypes.reduce((acc, ptype)=>{
                 if (ptype.required.indexOf(item) !== -1 && _aContainsAllOfb(ptype.required,items)){
@@ -60,8 +58,7 @@ const _personal = (msg, ptype={})=>{
 
 module.exports = function(RED) {
     "use strict";
-   
-   
+     
     //Listify assumes that the incoming object with have a payload that either has
     //a single object, or had an object with a values array
    
@@ -78,12 +75,6 @@ module.exports = function(RED) {
 		
 		  this.on('input', function (msg) {
           	
-            console.log("msg");
-            console.log(JSON.stringify(msg,null,4));
-
-            console.log("ptype is");
-            console.log(JSON.stringify(n.ptype,null,4));
-
             const personalfields = _personal(msg, n.ptype);
             console.log("PERSONAL FIELDS ARE", personalfields);
 
@@ -167,7 +158,6 @@ module.exports = function(RED) {
           	}};
           	
             //console.log("sending message");
-            console.log("LISTIFY:", JSON.stringify(msg,null,4));
 
           	node.send(msg);
         
