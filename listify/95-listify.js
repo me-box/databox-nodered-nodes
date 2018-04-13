@@ -42,7 +42,7 @@ const _acontainsAllOfb = (a, b)=>{
 }
 
 const _personal = (msg, ptype={})=>{
-  const items = Object.keys(msg.payload||{}).map=>k=>`payload.${k}`;
+  const items = Object.keys(msg.payload||{}).map(k=>`payload.${k}`);
   
   const ptypes = ptype[msg.id] || [];
 
@@ -51,8 +51,7 @@ const _personal = (msg, ptype={})=>{
   return items.reduce((acc,item)=>{
     return  ptypes.reduce((acc, ptype)=>{
                 if (ptype.required.indexOf(item) !== -1 && _aContainsAllOfb(ptype.required,items)){
-                  acc[item] =  acc[item] || [];
-                  acc.push(ptype);
+                  acc[item] = [...(acc[item] || []), ptype];
                 }
                 return acc;
             },acc);
