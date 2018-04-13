@@ -31,7 +31,7 @@ var _extractdata = (payload)=>{
 	return payload.values ? payload.values : [payload];
 }
 
-const _acontainsAllOfb = (a, b)=>{
+const _aContainsAllOfb = (a, b)=>{
   
   if (a.length <= 0)
     return false;
