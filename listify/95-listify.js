@@ -31,10 +31,29 @@ var _extractdata = (payload)=>{
 	return payload.values ? payload.values : [payload];
 }
 
+const _acontainsAllOfb = (a, b)=>{
+  
+  if (a.length <= 0)
+    return false;
 
-var _ptype = (ptype={})=>{
+  return a.reduce((acc, item)=>{
+    return acc && b.indexOf(item) != -1;
+  }, true);
+}
 
-
+const _personal = (msg, ptype={})=>{
+  const items = Object.keys(msg.payload||{}).map=>(k)=>`payload.${k}`;
+  const ptypes = ptype[msg.id] || [];
+  console.log("personal pyypes are", ptypes);
+  
+  return items.reduce((acc,item)=>{
+    return  ptypes.reduce((acc, ptype)=>{
+                if (ptype.required.indexOf(item) !== -1 && _aContainsAllOfb(ptype.required,items)){
+                  acc[item] =  [...(acc[item] || []), ptype];
+                }
+                return acc;
+            },acc);
+  },{});
 }
 
 module.exports = function(RED) {
@@ -62,6 +81,9 @@ module.exports = function(RED) {
 
             console.log("ptype is");
             console.log(JSON.stringify(n.ptype,null,4));
+
+            const personalfields = _personal(msg, n.ptype);
+            console.log("PERSONAL FIELDS ARE", personalfields);
 
           	if (!sources[msg.payload.id]){
           		
