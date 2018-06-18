@@ -1,4 +1,4 @@
-FROM databox/red-base
+FROM tlodge/databox-red-base 
 MAINTAINER Tom Lodge <tlodge@gmail.com>
 WORKDIR /data/nodes
 RUN git clone https://github.com/tlodge/databox-nodered-nodes.git databox
