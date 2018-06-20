@@ -69,8 +69,21 @@ module.exports = function (RED) {
         this.name = n.name;
         const node = this;
 
-        console.log("started node!!!", API_ENDPOINT, HREF_ENDPOINT);
+        console.log("started node!!!", HREF_ENDPOINT);
 
+
+        let monitorStore = null;
+        let monitorStream;
+
+        console.log("calling hypercat to source data metdata!");
+
+        databox.HypercatToSourceDataMetadata(`DATASOURCE_${n.id}`)
+            .then((data) => {
+                monitorStream = data
+                console.log("monitor stream is", monitorStream);
+                //connect to the store I'm reading data from
+                monitorStore = databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
+            });
         /*new Promise((resolve,reject)=>{
             setTimeout(resolve,10000);
         }).then(()=>{
