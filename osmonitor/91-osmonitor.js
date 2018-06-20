@@ -68,15 +68,16 @@ module.exports = function (RED) {
         this.name = n.name;
         const node = this;
 
-        let monitorStore = null;
+
+        let monitorStream = null;
 
         databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
             monitorStream = data
-            console.log("creating monitor stream from", data.DataSourceURL);
-            monitorStore = databox.NewTimeSeriesBlobClient(data.DataSourceURL, false)
-            return monitorStore;
+            console.log("creating monitor store from", monitorStream.DataSourceURL);
+            return databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
         }).then((store) => {
-            return store.Observe(monitorStore.DataSourceMetadata.DataSourceID)
+            console.log("now have stream", monitorStream);
+            return store.Observe(monitorStream.DataSourceMetadata.DataSourceID)
         }).then((emitter) => {
             emitter.on('data', (data) => {
                 //new data!
@@ -99,7 +100,7 @@ module.exports = function (RED) {
                 console.warn(err);
             });
         }).catch((err) => {
-            console.warn("Error Observing ", monitorStore.DataSourceMetadata.DataSourceID, " ", err);
+            console.warn("Error Observing ", monitorStream.DataSourceMetadata.DataSourceID, " ", err);
         });
         /*new Promise((resolve,reject)=>{
             setTimeout(resolve,10000);
