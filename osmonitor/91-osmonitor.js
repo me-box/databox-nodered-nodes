@@ -89,7 +89,7 @@ module.exports = function (RED) {
                     type: "osmonitor",
                     payload: {
                         ts: Date.now(),
-                        value: data[0].data,
+                        value: JSON.parse(data.data).data,
                     }
                 }
                 console.log(tosend);
