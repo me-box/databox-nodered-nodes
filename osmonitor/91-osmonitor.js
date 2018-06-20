@@ -63,35 +63,51 @@ module.exports = function (RED) {
 
         const databox = require('node-databox');
         var periodic;
-        const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
-        const HREF_ENDPOINT = API_ENDPOINT.href || '';
+
 
         this.name = n.name;
         const node = this;
 
-        console.log("started node!!!", HREF_ENDPOINT);
-
-
         let monitorStore = null;
-        let monitorStream;
 
-        console.log("--> calling hypercat to source data metdata!");
-        console.log("--> process env endpoint", process.env[`DATASOURCE_${n.id}`]);
-
-        databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`])
-            .then((data) => {
-                monitorStream = data
-                console.log("monitor stream is", monitorStream);
-                //connect to the store I'm reading data from
-                monitorStore = databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
+        databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
+            monitorStream = data
+            console.log("creating monitor stream from", data.DataSourceURL);
+            monitorStore = databox.NewTimeSeriesBlobClient(data.DataSourceURL, false)
+            return monitorStore;
+        }).then((store) => {
+            return store.Observe(monitorStore.DataSourceMetadata.DataSourceID)
+        }).then((emitter) => {
+            emitter.on('data', (data) => {
+                //new data!
+                console.log("seen new data!", data);
+                const tosend = {
+                    name: n.name || "osmonitor",
+                    id: n.id,
+                    subtype: n.subtype,
+                    type: "osmonitor",
+                    payload: {
+                        ts: Date.now(),
+                        value: data[0].data,
+                    }
+                }
+                console.log(tosend);
+                node.send(tosend);
             });
+
+            emitter.on('error', (err) => {
+                console.warn(err);
+            });
+        }).catch((err) => {
+            console.warn("Error Observing ", monitorStore.DataSourceMetadata.DataSourceID, " ", err);
+        });
         /*new Promise((resolve,reject)=>{
             setTimeout(resolve,10000);
         }).then(()=>{
             var dataEmitter = null; 
             
             if (HREF_ENDPOINT != ''){
-
+ 
                
                 var endpointUrl = url.parse(HREF_ENDPOINT);
                 var dsID = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasDatasourceid'; })[0].val;
@@ -100,11 +116,11 @@ module.exports = function (RED) {
                 
                 
                 //pull out the latest....
-
+ 
                 periodic = setInterval(()=>{
                     databox.timeseries.latest(dsUrl, dsID).then((data)=>{
                         
-
+ 
                         const tosend = {
                             name: n.name || "osmonitor",
                             id:  n.id,
@@ -115,9 +131,9 @@ module.exports = function (RED) {
                                 value: data[0].data, 
                             }
                         }
-
+ 
                       
-
+ 
                         node.send(tosend);   
                     })
                     .catch((err)=>{
