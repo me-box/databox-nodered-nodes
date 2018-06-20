@@ -75,10 +75,10 @@ module.exports = function (RED) {
         let monitorStore = null;
         let monitorStream;
 
-        console.log("calling hypercat to source data metdata!");
-        console.log(API_ENDPOINT);
+        console.log("--> calling hypercat to source data metdata!");
+        console.log("--> process env endpoint", process.env[`DATASOURCE_${n.id}`]);
 
-        databox.HypercatToSourceDataMetadata(API_ENDPOINT)
+        databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`])
             .then((data) => {
                 monitorStream = data
                 console.log("monitor stream is", monitorStream);
