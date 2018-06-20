@@ -76,9 +76,9 @@ module.exports = function (RED) {
         let monitorStream;
 
         console.log("calling hypercat to source data metdata!");
-        console.log(JSON.parse(`DATASOURCE_${n.id}`));
+        console.log(API_ENDPOINT);
 
-        databox.HypercatToSourceDataMetadata(JSON.parse(`DATASOURCE_${n.id}`))
+        databox.HypercatToSourceDataMetadata(API_ENDPOINT)
             .then((data) => {
                 monitorStream = data
                 console.log("monitor stream is", monitorStream);
