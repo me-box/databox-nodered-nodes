@@ -18,8 +18,8 @@ module.exports = function (RED) {
         }
 
 
-        const periodic = setInterval(function () {
-            request(options, function (err, res, body) {
+        const periodic = setInterval(() => {
+            request(options, (err, res, body) => {
                 if (err) {
                     console.log(err, 'error posting json')
                 } else {
@@ -45,7 +45,7 @@ module.exports = function (RED) {
         }, 3000);
 
 
-        node.on("close", function () {
+        node.on("close", () => {
             console.log(`${node.id} stopping requests`);
             clearInterval(periodic);
         });
@@ -80,7 +80,7 @@ module.exports = function (RED) {
             return store.Observe(monitorStream.DataSourceMetadata.DataSourceID)
         }).then((emitter) => {
             emitter.on('data', (data) => {
-                //new data!
+
                 console.log("seen new data!", data);
                 const tosend = {
                     name: n.name || "osmonitor",
@@ -102,50 +102,9 @@ module.exports = function (RED) {
         }).catch((err) => {
             console.warn("Error Observing ", monitorStream.DataSourceMetadata.DataSourceID, " ", err);
         });
-        /*new Promise((resolve,reject)=>{
-            setTimeout(resolve,10000);
-        }).then(()=>{
-            var dataEmitter = null; 
-            
-            if (HREF_ENDPOINT != ''){
- 
-               
-                var endpointUrl = url.parse(HREF_ENDPOINT);
-                var dsID = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasDatasourceid'; })[0].val;
-                var dsUrl = endpointUrl.protocol + '//' + endpointUrl.host;
-                var dsType = API_ENDPOINT['item-metadata'].filter((itm)=>{return itm.rel === 'urn:X-databox:rels:hasType';})[0].val;
-                
-                
-                //pull out the latest....
- 
-                periodic = setInterval(()=>{
-                    databox.timeseries.latest(dsUrl, dsID).then((data)=>{
-                        
- 
-                        const tosend = {
-                            name: n.name || "osmonitor",
-                            id:  n.id,
-                            subtype: n.subtype,
-                            type: "osmonitor",
-                            payload: {
-                                ts: Date.now(),
-                                value: data[0].data, 
-                            }
-                        }
- 
-                      
- 
-                        node.send(tosend);   
-                    })
-                    .catch((err)=>{
-                        console.log("[Error getting timeseries.latest]",dsUrl, dsID);
-                        console.log("node", JSON.stringify(n,null,4));
-                    });
-                }, 3000);
-            }
-        });*/
 
-        this.on("close", function () {
+
+        this.on("close", () => {
             console.log(`${node.id} stopping requests`);
             clearInterval(periodic);
         });
