@@ -27,6 +27,7 @@ function Node(n) {
     this.id = n.id;
     this.type = n.type;
     this.z = n.z;
+    this.ptype = n.ptype;
     this._closeCallbacks = [];
 
     //added by tlodge to record data path
