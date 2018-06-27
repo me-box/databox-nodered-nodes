@@ -45,19 +45,19 @@ function Node(n) {
 
 util.inherits(Node, EventEmitter);
 
-Node.prototype.updateWires = function(wires) {
+Node.prototype.updateWires = function (wires) {
     //console.log("UPDATE",this.id);
     this.wires = wires || [];
     delete this._wire;
 
     var wc = 0;
-    this.wires.forEach(function(w) {
-        wc+=w.length;
+    this.wires.forEach(function (w) {
+        wc += w.length;
     });
     this._wireCount = wc;
     if (wc === 0) {
         // With nothing wired to the node, no-op send
-        this.send = function(msg) {}
+        this.send = function (msg) { }
     } else {
         this.send = Node.prototype.send;
         if (this.wires.length === 1 && this.wires[0].length === 1) {
@@ -68,16 +68,16 @@ Node.prototype.updateWires = function(wires) {
     }
 
 }
-Node.prototype.context = function() {
+Node.prototype.context = function () {
     if (!this._context) {
-         this._context = context.get(this._alias||this.id,this.z);
+        this._context = context.get(this._alias || this.id, this.z);
     }
     return this._context;
 }
 
 Node.prototype._on = Node.prototype.on;
 
-Node.prototype.on = function(event, callback) {
+Node.prototype.on = function (event, callback) {
     var node = this;
     if (event == "close") {
         this._closeCallbacks.push(callback);
@@ -86,15 +86,15 @@ Node.prototype.on = function(event, callback) {
     }
 };
 
-Node.prototype.close = function() {
+Node.prototype.close = function () {
     var promises = [];
     var node = this;
-    for (var i=0;i<this._closeCallbacks.length;i++) {
+    for (var i = 0; i < this._closeCallbacks.length; i++) {
         var callback = this._closeCallbacks[i];
         if (callback.length == 1) {
             promises.push(
-                when.promise(function(resolve) {
-                    callback.call(node, function() {
+                when.promise(function (resolve) {
+                    callback.call(node, function () {
                         resolve();
                     });
                 })
@@ -104,20 +104,20 @@ Node.prototype.close = function() {
         }
     }
     if (promises.length > 0) {
-        return when.settle(promises).then(function() {
+        return when.settle(promises).then(function () {
             if (this._context) {
-                 context.delete(this._alias||this.id,this.z);
+                context.delete(this._alias || this.id, this.z);
             }
         });
     } else {
         if (this._context) {
-             context.delete(this._alias||this.id,this.z);
+            context.delete(this._alias || this.id, this.z);
         }
         return;
     }
 };
 
-Node.prototype.send = function(msg) {
+Node.prototype.send = function (msg) {
     var msgSent = false;
     var node;
 
@@ -135,13 +135,12 @@ Node.prototype.send = function(msg) {
             //added by tlodge to record path, and sender id
             msg._dataid = redUtil.generateId();
 
-            this.metric("send",msg);
+            this.metric("send", msg);
 
             node = flows.get(this._wire);
             /* istanbul ignore else */
             if (node) {
-                //added by tlodge to record path
-                
+                //added by tlodge to record path 
                 this._sent[this._wire] = redUtil.cloneMessage(msg);
                 node.receive(msg, this.id);
             }
@@ -187,15 +186,15 @@ Node.prototype.send = function(msg) {
                                 }
 
                                 //added by tlodge
-                                if (!sentMessageDataId){
+                                if (!sentMessageDataId) {
                                     sentMessageDataId = m._dataid;
                                 }
 
                                 if (msgSent) {
                                     var clonedmsg = redUtil.cloneMessage(m);
-                                    sendEvents.push({n:node,m:clonedmsg});
+                                    sendEvents.push({ n: node, m: clonedmsg });
                                 } else {
-                                    sendEvents.push({n:node,m:m});
+                                    sendEvents.push({ n: node, m: m });
                                     msgSent = true;
                                 }
                             }
@@ -211,83 +210,87 @@ Node.prototype.send = function(msg) {
     }
 
     //added by tlodge
-    if (!sentMessageDataId){
+    if (!sentMessageDataId) {
         sentMessageDataId = redUtil.generateId();
     }
 
-    this.metric("send",{_msgid:sentMessageId});
+    this.metric("send", { _msgid: sentMessageId });
 
-    for (i=0;i<sendEvents.length;i++) {
+    for (i = 0; i < sendEvents.length; i++) {
         var ev = sendEvents[i];
         /* istanbul ignore else */
-        if (ev.n && ev.n.id){
-            
+        if (ev.n && ev.n.id) {
+
             if (!ev.m._msgid) {
                 ev.m._msgid = sentMessageId;
             }
             /* added by tlodge to record path,id */
             ev.m._dataid = sentMessageDataId;
             this._sent[ev.n.id] = redUtil.cloneMessage(ev.m);
-            ev.n.receive(ev.m,this.id);
+            ev.n.receive(ev.m, this.id);
         }
     }
 };
 
-Node.prototype.receive = function(msg, fromnid) {
+Node.prototype.receive = function (msg, fromnid) {
     if (!msg) {
         msg = {};
     }
     if (!msg._msgid) {
         msg._msgid = redUtil.generateId();
     }
-    if (!msg._dataid){
+    if (!msg._dataid) {
         msg._dataid = redUtil.generateId();
     }
 
     //added by tlodge to ensure msg has this node's id (i.e. all incoming messages will have the id of the node that sent them)
-    if (!msg.id){
+    if (!msg.id) {
         msg.id = fromnid;
-    }     
+    }
     //added by tlodge to record the data path
-    if (this._receivedFrom.indexOf(fromnid) === -1){
+    if (this._receivedFrom.indexOf(fromnid) === -1) {
         this._receivedFrom.push(fromnid);
     }
 
-    this.metric("receive",msg);
+    this.metric("receive", msg);
 
     try {
         this.emit("input", msg);
-    } catch(err) {
-        this.error(err,msg);
+    } catch (err) {
+        this.error(err, msg);
     }
 };
 
-Node.prototype.path = function(){
-    
+Node.prototype.path = function () {
+
     var path = [];
     var data = {};
 
     var parents = this._receivedFrom;
-   
-    if (parents && parents.length > 0){
-        for (var i = 0; i < parents.length; i++){
+
+    if (parents && parents.length > 0) {
+        for (var i = 0; i < parents.length; i++) {
             _traverse(parents[i], this.id, path, data);
         }
     }
-    return {hops:path, data:data};
+    return { hops: path, data: data };
 }
 
-function _traverse(source, target, path, data){
+function _traverse(source, target, path, data) {
     var node = flows.get(source);
     var msg = node._sent[target];
-    if (msg){
-        var hop = {source:source, target: target, msg:msg._dataid}
+
+    console.log("in traverse with source", source, " and target", target);
+    console.log("[path] node:", JSON.stringify(node || {}, null, 4), "msg:", JSON.stringify(msg || {}, null, 4));
+
+    if (msg) {
+        var hop = { source: source, target: target, msg: msg._dataid }
         path.push(hop);
-        data[msg._dataid]=msg;
+        data[msg._dataid] = msg;
 
         var parents = node._receivedFrom;
-        
-        for (var i = 0; i < parents.length; i++){
+
+        for (var i = 0; i < parents.length; i++) {
             _traverse(parents[i], source, path, data);
         }
     }
@@ -306,36 +309,36 @@ function log_helper(self, level, msg) {
     Log.log(o);
 }
 
-Node.prototype.log = function(msg) {
+Node.prototype.log = function (msg) {
     log_helper(this, Log.INFO, msg);
 };
 
-Node.prototype.warn = function(msg) {
+Node.prototype.warn = function (msg) {
     log_helper(this, Log.WARN, msg);
 };
 
-Node.prototype.error = function(logMessage,msg) {
+Node.prototype.error = function (logMessage, msg) {
     if (typeof logMessage != 'boolean') {
         logMessage = logMessage || "";
     }
     log_helper(this, Log.ERROR, logMessage);
     /* istanbul ignore else */
     if (msg) {
-        flows.handleError(this,logMessage,msg);
+        flows.handleError(this, logMessage, msg);
     }
 };
 
 /**                                                                         
  * If called with no args, returns whether metric collection is enabled     
  */
-Node.prototype.metric = function(eventname, msg, metricValue) {
+Node.prototype.metric = function (eventname, msg, metricValue) {
     if (typeof eventname === "undefined") {
-     return Log.metric();
+        return Log.metric();
     }
     var metrics = {};
     metrics.level = Log.METRIC;
     metrics.nodeid = this.id;
-    metrics.event = "node."+this.type+"."+eventname;
+    metrics.event = "node." + this.type + "." + eventname;
     metrics.msgid = msg._msgid;
     metrics.value = metricValue;
     Log.log(metrics);
@@ -344,8 +347,8 @@ Node.prototype.metric = function(eventname, msg, metricValue) {
 /**                                                                         
  * status: { fill:"red|green", shape:"dot|ring", text:"blah" }              
  */
-Node.prototype.status = function(status) {
-    flows.handleStatus(this,status);
+Node.prototype.status = function (status) {
+    flows.handleStatus(this, status);
 };
 
 module.exports = Node;
