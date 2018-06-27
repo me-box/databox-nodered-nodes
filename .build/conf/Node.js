@@ -277,6 +277,38 @@ Node.prototype.path = function () {
     return { hops: path, data: data };
 }
 
+function _haskey(obj, key) {
+    const keys = key.split(".");
+    let tocheck = { ...obj };
+
+    for (i = 0; i < keys.length; i++) {
+        if (!(keys[i] in tocheck)) {
+            return false;
+        }
+        tocheck = keys[i];
+    }
+    return true;
+}
+
+function _keysexist(item, msg) {
+    return item.reduce((acc, key) => {
+        return acc && _haskey(msg, key);
+    }, true);
+}
+
+function _resolve_ptypes(msg, ptype = {}) {
+    const required = Object.keys(ptype || []).reduce((acc, key) => {
+        return [...acc, ...ptype[key]];
+    }, []);
+
+    console.log("required is", required);
+
+    const resolved = required.filter(item => _keysexist(item, msg));
+
+    console.log("resolved is", resolved);
+    return resolved;
+}
+
 function _traverse(source, target, path, data) {
     var node = flows.get(source);
     var msg = node._sent[target];
@@ -286,6 +318,7 @@ function _traverse(source, target, path, data) {
 
     if (msg) {
         var hop = { source: source, target: target, msg: msg._dataid }
+        console.log(_resolve_ptypes(msg, node.ptype || {}));
         path.push(hop);
         data[msg._dataid] = msg;
 

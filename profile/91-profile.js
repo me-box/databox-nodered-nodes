@@ -41,7 +41,9 @@ module.exports = function (RED) {
                     node.send({
                         name: n.name || "profile",
                         id: n.id,
-                        payload: result
+                        payload: {
+                            [result.key]: result.value
+                        }
                     });
                 }).catch((err) => {
                     console.log("error reading for", msg.payload.attribute);
