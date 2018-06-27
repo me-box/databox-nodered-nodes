@@ -279,7 +279,7 @@ Node.prototype.path = function () {
 
 function _haskey(obj, key) {
     const keys = key.split(".");
-    let tocheck = { ...obj };
+    var tocheck = obj;
 
     for (i = 0; i < keys.length; i++) {
         if (!(keys[i] in tocheck)) {
