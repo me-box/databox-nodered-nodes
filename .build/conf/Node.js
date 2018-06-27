@@ -301,28 +301,20 @@ function _resolve_ptypes(msg, ptype = {}) {
     const required = Object.keys(ptype || []).reduce((acc, key) => {
         return [...acc, ...ptype[key]];
     }, []);
-
-    console.log("required is", required);
-
-    const resolved = required.filter(item => _keysexist(item, msg));
-
-    console.log("resolved is", resolved);
-    return resolved;
+    return required.filter(item => _keysexist(item, msg));
 }
 
 function _traverse(source, target, path, data) {
     var node = flows.get(source);
     var msg = node._sent[target];
 
-    console.log("in traverse with source", source, " and target", target);
-    console.log("[path] node:", JSON.stringify(node || {}, null, 4), "msg:", JSON.stringify(msg || {}, null, 4));
+    //console.log("in traverse with source", source, " and target", target);
+    //console.log("[path] node:", JSON.stringify(node || {}, null, 4), "msg:", JSON.stringify(msg || {}, null, 4));
 
     if (msg) {
-        var hop = { source: source, target: target, msg: msg._dataid }
-        console.log(_resolve_ptypes(msg, node.ptype || {}));
+        var hop = { source: source, target: target, msg: msg._dataid, ptype: _resolve_ptypes(msg, node.ptype) || [] }
         path.push(hop);
         data[msg._dataid] = msg;
-
         var parents = node._receivedFrom;
 
         for (var i = 0; i < parents.length; i++) {
