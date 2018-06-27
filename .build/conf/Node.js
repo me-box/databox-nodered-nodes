@@ -291,7 +291,7 @@ function _haskey(obj, key) {
 }
 
 function _keysexist(item, msg) {
-    return item.reduce((acc, key) => {
+    return (item.required || []).reduce((acc, key) => {
         return acc && _haskey(msg, key);
     }, true);
 }

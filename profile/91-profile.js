@@ -35,7 +35,7 @@ module.exports = function (RED) {
             console.log("am now listening for inputs!!");
 
             node.on('input', (msg) => {
-
+                console.log("profile, seen input", msg);
                 client.Read(/*msg.payload.attribute*/"profileEyeColour", "attribute").then((result) => {
                     console.log("sending attribute!", result);
                     node.send({
