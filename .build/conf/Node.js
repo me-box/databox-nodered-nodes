@@ -282,10 +282,11 @@ function _haskey(obj, key) {
     var tocheck = obj;
 
     for (i = 0; i < keys.length; i++) {
-        if (!tocheck || !tocheck.hasOwnProperty(keys[i])) {
+
+        if (!(keys[i] in tocheck)) {
             return false;
         }
-        tocheck = keys[i];
+        tocheck = tocheck[keys[i]];
     }
     return true;
 }
