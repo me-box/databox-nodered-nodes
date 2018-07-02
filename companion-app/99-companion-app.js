@@ -126,12 +126,23 @@ module.exports = function (RED) {
                             }
                         }
                         sendmessage(msg);
-                        console.log("writing to actuator!!", JSON.stringify(node.path()));
-                        client.Write(/*loggerActuator.DataSourceURL*/"personalLoggerActuator", { path: node.path() }).then((body) => {
-                            console.log("successfully sent to actuator");
-                        }).catch((error) => {
-                            console.log("failed to write to actuator", error);
-                        });
+
+                        const { hops = [] } = node.path();
+                        const personalpath = hops.reduce((acc, item) => {
+                            if (item.ptype) {
+                                return [...acc, { source: item.source, target: item.target, ptype: item.ptype }]
+                            }
+                            return acc;
+                        }, []);
+
+                        if (personalpath.length > 0) {
+                            console.log("writing to actuator!!", JSON.stringify(personalpath));
+                            client.Write(loggerActuator.DataSourceID, { app: process.env.DATABOX_LOCAL_NAME, path: personalpath }).then((body) => {
+                                console.log("successfully sent to actuator");
+                            }).catch((error) => {
+                                console.log("failed to write to actuator", error);
+                            });
+                        }
                     });
                 });
         }
