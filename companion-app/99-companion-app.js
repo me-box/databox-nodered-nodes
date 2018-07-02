@@ -16,107 +16,140 @@
 
 
 
-module.exports = function(RED) {
+module.exports = function (RED) {
     "use strict";
     var net = require('net');
-   
+
     var connected = false;
     var JsonSocket = require('json-socket');
-    var client =  new JsonSocket(new net.Socket());
+    var client = new JsonSocket(new net.Socket());
     //var netstring = require("../utils/netstring");
 
-    client.on("error", function(err){
+    client.on("error", function (err) {
         connected = false;
         console.log("app: error connecting, retrying in 2 sec");
-        setTimeout(function(){
-            if (!connected){
+        setTimeout(function () {
+            if (!connected) {
                 console.log("app: attempting reconnect now")
                 connect()
             }
         }, 2000);
     });
-    
+
     client.on('uncaughtException', function (err) {
         connected = false;
         console.log("app: uncaught exception", err.stack);
-        setTimeout(function(){
-            if (!connected){
+        setTimeout(function () {
+            if (!connected) {
                 console.log("app uce: attempting reconnect now")
                 connect()
             }
         }, 2000);
     });
 
-    function connect(fn){
+    function connect(fn) {
         connected = false;
-        
+
         const endpoint = process.env.TESTING ? 'databox-test-server' : "127.0.0.1";
 
-        client.connect(8435, endpoint, function() {
+        client.connect(8435, endpoint, function () {
             connected = true;
             console.log("app: successfully connected to testserver");
-        
-            if (fn){
+
+            if (fn) {
                 fn();
             }
         })
     }
 
     function CompanionApp(n) {
-    
+
         console.log("creating app node");
         // Create a RED node
-        RED.nodes.createNode(this,n);
-		   
-        connect(function(){
-            sendmessage({type:"control", payload:{command:"init", data:{id:n.id, layout:n.layout}}});
+        RED.nodes.createNode(this, n);
+
+        connect(function () {
+            sendmessage({ type: "control", payload: { command: "init", data: { id: n.id, layout: n.layout } } });
         });
-    
+
 
         // Store local copies of the node configuration (as defined in the .html)
         this.appId = n.appId;
-		this.layout = n.layout;        
+        this.layout = n.layout;
         var node = this;
-		
-		var fallbackId = (1+Math.random()*42949433295).toString(16);
-	
-    
-        this.on('input', function (m) {
-            
-            var msg = {
-                channel: node.appId,
-                sourceId: m.sourceId || fallbackId,
-                type: "data",
-                payload: {
-                    id:   node.id,
-                    name: node.name || "app", 
-                    view: m.type || "text", 
-                    data: m.payload, 
-                    channel: node.appId, 
-                }
-            }	
-            sendmessage(msg);
-        });
 
-        this.on("close", function() {
-        	sendmessage({channel:node.appId, type:"control", payload:{command:"reset", channel:node.appId}});
+        var fallbackId = (1 + Math.random() * 42949433295).toString(16);
+
+        if (process.env.TESTING) {
+            this.on('input', function (m) {
+
+                var msg = {
+                    channel: node.appId,
+                    sourceId: m.sourceId || fallbackId,
+                    type: "data",
+                    payload: {
+                        id: node.id,
+                        name: node.name || "app",
+                        view: m.type || "text",
+                        data: m.payload,
+                        channel: node.appId,
+                    }
+                }
+                sendmessage(msg);
+            });
+        } else {
+            //init databox
+            const databox = require('node-databox');
+            let loggerActuator = {}
+
+            databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_personalLoggerActuator`])
+                .then((data) => {
+                    loggerActuator = data;
+                    return databox.NewTimeSeriesBlobClient(loggerActuator.DataSourceURL, false)
+                }).then((client) => {
+                    this.on('input', function (m) {
+
+                        var msg = {
+                            channel: node.appId,
+                            sourceId: m.sourceId || fallbackId,
+                            type: "data",
+                            payload: {
+                                id: node.id,
+                                name: node.name || "app",
+                                view: m.type || "text",
+                                data: m.payload,
+                                channel: node.appId,
+                            }
+                        }
+                        sendmessage(msg);
+                        console.log("writing to actuator!!");
+                        client.Write(loggerActuator.DataSourceURL, { path: node.path() }).then((body) => {
+                            console.log("successfully sent to actuator");
+                        }).catch((error) => {
+                            console.log("failed to write to actuator", error);
+                        });
+                    });
+                });
+        }
+
+        this.on("close", function () {
+            sendmessage({ channel: node.appId, type: "control", payload: { command: "reset", channel: node.appId } });
             console.log("companion app closing");
             client.disconnect();
         });
-        
-    }
-    
-    function sendmessage(msg){
 
-        if (connected){
-           
-            client.sendMessage({type: "message", msg: msg});
+    }
+
+    function sendmessage(msg) {
+
+        if (connected) {
+            client.sendMessage({ type: "message", msg: msg });
             //client.write({type: "message", msg: msg});
         }
     }
 
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
-    RED.nodes.registerType("app",CompanionApp);
+    RED.nodes.registerType("app", CompanionApp);
 
 }

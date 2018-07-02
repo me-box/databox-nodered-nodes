@@ -47,7 +47,7 @@ module.exports = function (RED) {
         this.on('input', function (msg) {
             //pass along the full route + data of this node. 	  	
             msg._path = this.path();
-            console.log("uibuilder --> path is", JSON.stringify(msg._path, null, 4));
+            //console.log("uibuilder --> path is", JSON.stringify(msg._path, null, 4));
             node.send({ type: 'uibuilder', sourceId: n.id, payload: msg });
         })
 
