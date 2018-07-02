@@ -105,8 +105,10 @@ module.exports = function (RED) {
             databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_personalLoggerActuator`])
                 .then((data) => {
                     loggerActuator = data;
+                    console.log("got logger actuator", JSON.stringify(loggerActuator));
                     return databox.NewTimeSeriesBlobClient(loggerActuator.DataSourceURL, false)
                 }).then((client) => {
+                    console.log("client datasource url is", loggerActuator.DataSourceURL);
                     this.on('input', function (m) {
 
                         var msg = {
@@ -122,7 +124,7 @@ module.exports = function (RED) {
                             }
                         }
                         sendmessage(msg);
-                        console.log("writing to actuator!!");
+                        console.log("writing to actuator!!", JSON.stringify(node.path()));
                         client.Write(loggerActuator.DataSourceURL, { path: node.path() }).then((body) => {
                             console.log("successfully sent to actuator");
                         }).catch((error) => {
