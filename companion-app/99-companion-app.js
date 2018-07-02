@@ -102,6 +102,8 @@ module.exports = function (RED) {
             const databox = require('node-databox');
             let loggerActuator = {}
 
+            console.log("process env DATASOURCE_personalLoggerActuator is", process.env[`DATASOURCE_personalLoggerActuator`]);
+
             databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_personalLoggerActuator`])
                 .then((data) => {
                     loggerActuator = data;
@@ -125,7 +127,7 @@ module.exports = function (RED) {
                         }
                         sendmessage(msg);
                         console.log("writing to actuator!!", JSON.stringify(node.path()));
-                        client.Write(loggerActuator.DataSourceURL, { path: node.path() }).then((body) => {
+                        client.Write(/*loggerActuator.DataSourceURL*/"personalLoggerActuator", { path: node.path() }).then((body) => {
                             console.log("successfully sent to actuator");
                         }).catch((error) => {
                             console.log("failed to write to actuator", error);
