@@ -40,12 +40,9 @@ module.exports = function (RED) {
                 console.log("creating monitor store from", personalDatastore.DataSourceURL);
                 return databox.NewTimeSeriesBlobClient(personalDatastore.DataSourceURL, false)
             }).then((store) => {
-                console.log("now have stream", personalDatastore);
                 return store.Observe(personalDatastore.DataSourceMetadata.DataSourceID)
             }).then((emitter) => {
                 emitter.on('data', (data) => {
-
-                    console.log("seen new data!", JSON.parse(data.data));
 
                     const tosend = {
                         name: n.name || "personalflow",
@@ -54,10 +51,10 @@ module.exports = function (RED) {
                         type: "personalflow",
                         payload: {
                             ts: Date.now(),
-                            value: JSON.parse(data.data),
+                            values: JSON.parse(data.data),
                         }
                     }
-
+                    console.log("personal flow sending", tosend);
                     node.send(tosend);
                 });
 
