@@ -14,8 +14,6 @@
  * limitations under the License.
  **/
 
-
-
 module.exports = function (RED) {
 
     "use strict";
@@ -31,10 +29,11 @@ module.exports = function (RED) {
 
         if (process.env.TESTING) {
             console.log("not doing anything...am testing!");
+            return;
         } else {
             //init databox
             const databox = require('node-databox');
-            let personalDatastore = {}
+            /*let personalDatastore = {}
 
             databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
                 personalDatastore = data
@@ -67,7 +66,7 @@ module.exports = function (RED) {
                 });
             }).catch((err) => {
                 console.warn("Error Observing ", personalDatastore.DataSourceMetadata.DataSourceID, " ", err);
-            });
+            });*/
         }
 
         this.on("close", function () {
@@ -78,6 +77,7 @@ module.exports = function (RED) {
 
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
+    console.log("registering personal flow!");
     RED.nodes.registerType("personalflow", PersonalFlow);
 
 }
