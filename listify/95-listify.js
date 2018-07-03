@@ -31,19 +31,17 @@ var _extractkeys = (payload) => {
 }
 
 var _extractdata = (payload) => {
-	if (payload.values) {
-		if (Array.isArray(payload.values)) {
-			return payload.values;
-		} else {
-			const row = Object.keys(payload.values).reduce((acc, key) => {
-				acc[key] = JSON.stringify(payload.values[key]);
-				return acc;
-			}, {});
-			console.log("extract data sending", [row]);
-			return [row];
-		}
+	const data = payload.values || payload;
+
+	if (Array.isArray(data)) {
+		return data;
+	} else {
+		const row = Object.keys(data).reduce((acc, key) => {
+			acc[key] = JSON.stringify(data[key]);
+			return acc;
+		}, {});
+		return [row];
 	}
-	return [payload];
 }
 
 const _aContainsAllOfb = (a, b) => {

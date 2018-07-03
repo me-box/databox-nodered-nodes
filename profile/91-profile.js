@@ -32,24 +32,19 @@ module.exports = function (RED) {
 
         let profileSource = null;
         let store = null;
-        console.log("n is", n);
 
         const toregister = (n.subtype || []).map(i => process.env[`DATASOURCE_${n.id}_${i}`]);
         //should be able to just create a client for one datasource and re-use for all;
-        console.log("to register is", toregister);
 
         databox.HypercatToSourceDataMetadata(toregister[0]).then((data) => {
             profileSource = data
-            console.log("creating profile store from", profileSource.DataSourceURL);
             return databox.NewKeyValueClient(profileSource.DataSourceURL, false)
         }).then((client) => {
 
-            console.log("default profiles are", n.subtype);
 
             const read = (datasourceid, results) => {
                 return new Promise((resolve, reject) => {
                     client.Read(datasourceid, "attribute").then((result) => {
-                        console.log("result:", datasourceid, result);
                         resolve([...results, { key: datasourceid, value: result }]);
                     }).catch((err) => {
                         console.log("error reading for", datasourceid);
@@ -59,35 +54,25 @@ module.exports = function (RED) {
             }
 
             node.on('input', (msg) => {
-                console.log("profile, seen input", msg);
+
                 const toread = msg.payload && msg.payload.profiles ? msg.payload.profiles : n.subtype;
-                console.log("to read is", toread);
+                console.log("** profile reading:", toread, " **");
                 forEachPromise(toread, read).then((results) => {
                     //turn results into key,value
-                    console.log("have results", results);
+
                     const data = results.reduce((acc, item) => {
                         acc[item.key] = item.value;
                         return acc;
                     }, {});
+
+                    console.log("sending payload:", data);
+
                     node.send({
                         name: n.name || "profile",
                         id: n.id,
                         payload: data,
                     });
                 });
-
-                /*client.Read("profileEyeColour", "attribute").then((result) => {
-                    console.log("sending attribute!", result);
-                    node.send({
-                        name: n.name || "profile",
-                        id: n.id,
-                        payload: {
-                            [result.key]: result.value
-                        }
-                    });
-                }).catch((err) => {
-                    console.log("error reading for", msg.payload.attribute);
-                });*/
             });
         }).catch((err) => {
             console.warn("Error setting up stores", err);
