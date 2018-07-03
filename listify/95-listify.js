@@ -25,13 +25,7 @@ var _extractkeys = (payload) => {
 				}, acc);
 			}, {}));
 		} else {
-			return Object.keys(Object.keys(payload.values).reduce((acc, key) => {
-				const obj = payload.values[key];
-				return Object.keys(obj).reduce((acc, key) => {
-					acc[key] = true;
-					return acc;
-				}, acc);
-			}, {}));
+			return Object.keys(payload.values)
 		}
 	}
 	return Object.keys(payload);
@@ -43,7 +37,7 @@ var _extractdata = (payload) => {
 			return payload.values;
 		} else {
 			return Object.keys(payload.values).reduce((acc, key) => {
-				return [...acc, payload.values[key]];
+				return [...acc, JSON.stringify(payload.values[key])];
 			}, []);
 		}
 	}
