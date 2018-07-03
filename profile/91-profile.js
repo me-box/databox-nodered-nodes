@@ -45,7 +45,7 @@ module.exports = function (RED) {
             const read = (datasourceid, results) => {
                 return new Promise((resolve, reject) => {
                     client.Read(datasourceid, "attribute").then((result) => {
-                        resolve([...results, { key: datasourceid, value: result }]);
+                        resolve([...results, result]);
                     }).catch((err) => {
                         console.log("error reading for", datasourceid);
                         resolve([...results]);
@@ -59,7 +59,7 @@ module.exports = function (RED) {
                 console.log("** profile reading:", toread, " **");
                 forEachPromise(toread, read).then((results) => {
                     //turn results into key,value
-
+                    console.log("results are", JSON.stringify(results, null, 4));
                     const data = results.reduce((acc, item) => {
                         acc[item.key] = item.value;
                         return acc;
