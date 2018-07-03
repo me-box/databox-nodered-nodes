@@ -45,7 +45,7 @@ module.exports = function (RED) {
             }).then((emitter) => {
                 emitter.on('data', (data) => {
 
-                    console.log("seen new data!", data);
+                    console.log("seen new data!", JSON.parse(data.data));
 
                     const tosend = {
                         name: n.name || "personalflow",
@@ -54,7 +54,7 @@ module.exports = function (RED) {
                         type: "personalflow",
                         payload: {
                             ts: Date.now(),
-                            //value: JSON.parse(data),
+                            value: JSON.parse(data.data),
                         }
                     }
 
