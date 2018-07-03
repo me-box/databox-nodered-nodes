@@ -39,6 +39,7 @@ var _extractdata = (payload) => {
 				acc[key] = JSON.stringify(payload.values[key]);
 				return acc;
 			}, {});
+			console.log("extract data sending", [row]);
 			return [row];
 		}
 	}
@@ -89,7 +90,7 @@ module.exports = function (RED) {
 
 		this.on('input', function (msg) {
 
-			console.log("listify, getting personal from", JSON.stringify(msg), "and ptype", JSON.stringify(n.ptype || {}));
+			console.log("* listify, getting personal from", JSON.stringify(msg), "and ptype", JSON.stringify(n.ptype || {}));
 
 			const personalfields = _personal(msg, n.ptype);
 
