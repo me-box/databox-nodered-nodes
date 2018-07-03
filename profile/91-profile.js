@@ -34,13 +34,17 @@ module.exports = function (RED) {
         let profileSource = null;
         let store = null;
 
-        databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
+        const toregister = (node.subtype || []).map(i => process.env[`DATASOURCE_${n.id}_${i}`]);
+        //should be able to just create a client for one datasource and re-use for all;
+        console.log("to register is", toregister);
+
+        databox.HypercatToSourceDataMetadata(toregister[0]).then((data) => {
             profileSource = data
             console.log("creating profile store from", profileSource.DataSourceURL);
             return databox.NewKeyValueClient(profileSource.DataSourceURL, false)
         }).then((client) => {
 
-            console.log("default profiles are", n.profiles);
+            console.log("default profiles are", n.subtype);
 
             const read = (datasourceid, results) => {
                 return new Promise((resolve, reject) => {
@@ -56,7 +60,7 @@ module.exports = function (RED) {
 
             node.on('input', (msg) => {
                 console.log("profile, seen input", msg);
-                const toread = msg.payload && msg.payload.profiles ? msg.payload.profiles : n.profiles;
+                const toread = msg.payload && msg.payload.profiles ? msg.payload.profiles : n.subtype;
                 console.log("to read is", toread);
                 forEachPromise(toread, read).then((results) => {
                     //turn results into key,value
@@ -85,6 +89,8 @@ module.exports = function (RED) {
                     console.log("error reading for", msg.payload.attribute);
                 });*/
             });
+        }).catch((err) => {
+            console.warn("Error setting up stores", err);
         });
 
         this.on("close", () => {
