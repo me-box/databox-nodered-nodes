@@ -3,12 +3,12 @@ MAINTAINER Tom Lodge <tlodge@gmail.com>
 WORKDIR /root
 
 #get latest webapp/webserver
-RUN git clone https://github.com/tlodge/node-red-app-webserver.git
+RUN git clone https://github.com/me-box/sdk-app-webserver.git
 
 #we don't re-compile the client code (as this requires node modules that need to be built natively which will fail 
 #on apline unless the build env is installed which would bloat the image.
 COPY conf/Node.js /usr/src/node-red/node_modules/node-red/red/runtime/nodes/
-RUN cd ./node-red-app-webserver/server && npm install
+RUN cd ./sdk-app-webserver/server && npm install
 ADD start.sh /root
 
 #add the latest node-red databox nodes

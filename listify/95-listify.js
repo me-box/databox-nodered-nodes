@@ -14,7 +14,6 @@
  * limitations under the License.
  **/
 
-
 var _extractkeys = (payload) => {
 	if (payload.values) {
 		if (Array.isArray(payload.values)) {
@@ -37,7 +36,7 @@ var _extractdata = (payload) => {
 			return payload.values;
 		} else {
 			return Object.keys(payload.values).reduce((acc, key) => {
-				return [...acc, JSON.stringify(payload.values[key])];
+				return [...acc, { [key]: JSON.stringify(payload.values[key]) }];
 			}, []);
 		}
 	}
