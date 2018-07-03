@@ -24,20 +24,17 @@ module.exports = function (RED) {
         if (process.env.TESTING) {
             return testing(this, n);
         }
-        console.log("am now aboutto call lib node-databox");
+
 
         const databox = require('node-databox');
-
-        console.log("done!");
-
         this.name = n.name;
         const node = this;
 
         let profileSource = null;
         let store = null;
-        console.log("node is", node);
+        console.log("n is", n);
 
-        const toregister = (node.subtype || []).map(i => process.env[`DATASOURCE_${n.id}_${i}`]);
+        const toregister = (n.subtype || []).map(i => process.env[`DATASOURCE_${n.id}_${i}`]);
         //should be able to just create a client for one datasource and re-use for all;
         console.log("to register is", toregister);
 
