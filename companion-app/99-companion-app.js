@@ -99,7 +99,9 @@ module.exports = function (RED) {
             });
         } else {
             //init databox
+            console.log("in app, about to call node-databox lib");
             const databox = require('node-databox');
+            console.log("done");
             let loggerActuator = {}
 
             console.log("process env DATASOURCE_personalLoggerActuator is", process.env[`DATASOURCE_personalLoggerActuator`]);
