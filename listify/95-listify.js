@@ -17,18 +17,37 @@
 
 var _extractkeys = (payload) => {
 	if (payload.values) {
-		return Object.keys(payload.values.reduce(function (acc, obj) {
-			return Object.keys(obj).reduce(function (acc, key) {
-				acc[key] = true;
-				return acc;
-			}, acc);
-		}, {}));
+		if (Array.isArray(payload.values)) {
+			return Object.keys(payload.values.reduce((acc, obj) => {
+				return Object.keys(obj).reduce((acc, key) => {
+					acc[key] = true;
+					return acc;
+				}, acc);
+			}, {}));
+		} else {
+			return Object.keys(Object.keys(payload.values).reduce((acc, key) => {
+				const obj = payload.values[key];
+				return Object.keys(obj).reduce((acc, key) => {
+					acc[key] = true;
+					return acc;
+				}, acc);
+			}, {}));
+		}
 	}
 	return Object.keys(payload);
 }
 
 var _extractdata = (payload) => {
-	return payload.values ? payload.values : [payload];
+	if (payload.values) {
+		if (Array.isArray(payload.values)) {
+			return payload.values;
+		} else {
+			return Object.keys(payload.values).reduce((acc, key) => {
+				return [...acc, payload.values[key]];
+			}, []);
+		}
+	}
+	return [payload];
 }
 
 const _aContainsAllOfb = (a, b) => {
@@ -60,7 +79,7 @@ module.exports = function (RED) {
 	"use strict";
 
 	//Listify assumes that the incoming object with have a payload that either has
-	//a single object, or had an object with a values object
+	//a single object, or had an object with a values array (though should now be able to handle object too!)
 
 	function Listify(n) {
 		// Create a RED node
