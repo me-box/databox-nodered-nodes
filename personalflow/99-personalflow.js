@@ -51,7 +51,7 @@ module.exports = function (RED) {
                         type: "personalflow",
                         payload: {
                             ts: Date.now(),
-                            values: JSON.parse(data.data),
+                            values: JSON.parse(JSON.parse(data.data).data),
                         }
                     }
                     console.log("personal flow sending", tosend);
