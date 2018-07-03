@@ -35,9 +35,11 @@ var _extractdata = (payload) => {
 		if (Array.isArray(payload.values)) {
 			return payload.values;
 		} else {
-			return Object.keys(payload.values).reduce((acc, key) => {
-				return [...acc, { [key]: JSON.stringify(payload.values[key]) }];
-			}, []);
+			const row = Object.keys(payload.values).reduce((acc, key) => {
+				acc[key] = JSON.stringify(payload.values[key]);
+				return acc;
+			}, {});
+			return [row];
 		}
 	}
 	return [payload];
