@@ -36,10 +36,12 @@ var _extractdata = (payload) => {
 	if (Array.isArray(data)) {
 		return data;
 	} else {
+		console.log("extracting", data);
 		const row = Object.keys(data).reduce((acc, key) => {
 			acc[key] = JSON.stringify(data[key]);
 			return acc;
 		}, {});
+		console.log("returning", [row]);
 		return [row];
 	}
 }
@@ -87,10 +89,10 @@ module.exports = function (RED) {
 		var TICK_TTL = 2;
 
 		this.on('input', function (msg) {
+			console.log("listify", msg);
+			//console.log("* listify, getting personal from", JSON.stringify(msg), "and ptype", JSON.stringify(n.ptype || {}));
 
-			console.log("* listify, getting personal from", JSON.stringify(msg), "and ptype", JSON.stringify(n.ptype || {}));
-
-			const personalfields = _personal(msg, n.ptype);
+			//const personalfields = _personal(msg, n.ptype);
 
 			if (!sources[msg.payload.id]) {
 
@@ -174,7 +176,7 @@ module.exports = function (RED) {
 			};
 
 			//console.log("sending message");
-			console.log("listify, sending", JSON.stringify(msg));
+			console.log("listify, sending", JSON.stringify(msg, null, 4));
 			node.send(msg);
 
 		});
