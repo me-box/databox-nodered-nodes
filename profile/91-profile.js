@@ -1,3 +1,11 @@
+const forEachPromise = (items, fn, results = []) => {
+    return items.reduce(function (promise, item) {
+        return promise.then((x = []) => {
+            return fn(item, [...results, ...x]);
+        });
+    }, Promise.resolve([]));
+}
+
 module.exports = function (RED) {
 
     "use strict";
@@ -31,12 +39,40 @@ module.exports = function (RED) {
             console.log("creating profile store from", profileSource.DataSourceURL);
             return databox.NewKeyValueClient(profileSource.DataSourceURL, false)
         }).then((client) => {
-            console.log("now have kv client for source", profileSource);
-            console.log("am now listening for inputs!!");
+
+            console.log("default profiles are", n.profiles);
+
+            const read = (datasourceid, results) => {
+                return new Promise((resolve, reject) => {
+                    client.Read(datasourceid, "attribute").then((result) => {
+                        console.log("result:", datasourceid, result);
+                        resolve([...results, { key: datasourceid, value: result }]);
+                    }).catch((err) => {
+                        console.log("error reading for", datasourceid);
+                        resolve([...results]);
+                    });
+                });
+            }
 
             node.on('input', (msg) => {
                 console.log("profile, seen input", msg);
-                client.Read(/*msg.payload.attribute*/"profileEyeColour", "attribute").then((result) => {
+                const toread = msg.payload && msg.payload.profiles ? msg.payload.profiles : n.profiles;
+                console.log("to read is", toread);
+                forEachPromise(toread, read).then((results) => {
+                    //turn results into key,value
+                    console.log("have results", results);
+                    const data = results.reduce((acc, item) => {
+                        acc[item.key] = item.value;
+                        return acc;
+                    }, {});
+                    node.send({
+                        name: n.name || "profile",
+                        id: n.id,
+                        payload: data,
+                    });
+                });
+
+                /*client.Read("profileEyeColour", "attribute").then((result) => {
                     console.log("sending attribute!", result);
                     node.send({
                         name: n.name || "profile",
@@ -47,7 +83,7 @@ module.exports = function (RED) {
                     });
                 }).catch((err) => {
                     console.log("error reading for", msg.payload.attribute);
-                });
+                });*/
             });
         });
 
