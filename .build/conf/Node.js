@@ -298,14 +298,15 @@ function _keysexist(item, msg) {
 }
 
 function _resolve_ptypes(msg, ptype = {}) {
-    //console.log("resolving ptypes for msg", JSON.stringify(msg));
-    //console.log("with ptypes", JSON.stringify(ptype, null, 4));
+    console.log("resolving ptypes for msg", JSON.stringify(msg));
+    console.log("with ptypes", JSON.stringify(ptype, null, 4));
+
     const required = Object.keys(ptype || []).reduce((acc, key) => {
         return [...acc, ...ptype[key]];
     }, []);
-    //console.log("required is", required);
+    console.log("required is", required);
     const result = required.filter(item => _keysexist(item, msg));
-    //console.log("result is", JSON.stringify(result, null, 4));
+    console.log("result is", JSON.stringify(result, null, 4));
     return result;
 }
 

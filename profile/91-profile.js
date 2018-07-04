@@ -56,16 +56,13 @@ module.exports = function (RED) {
             node.on('input', (msg) => {
 
                 const toread = msg.payload && msg.payload.profiles ? msg.payload.profiles : n.subtype;
-                console.log("** profile reading:", toread, " **");
                 forEachPromise(toread, read).then((results) => {
                     //turn results into key,value
-                    console.log("results are", JSON.stringify(results, null, 4));
+
                     const data = results.reduce((acc, item) => {
                         acc[item.key] = item.value;
                         return acc;
                     }, {});
-
-                    console.log("sending payload:", data);
 
                     node.send({
                         name: n.name || "profile",

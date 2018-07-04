@@ -89,7 +89,7 @@ module.exports = function (RED) {
 		var TICK_TTL = 2;
 
 		this.on('input', function (msg) {
-			console.log("listify", msg);
+
 			//console.log("* listify, getting personal from", JSON.stringify(msg), "and ptype", JSON.stringify(n.ptype || {}));
 
 			//const personalfields = _personal(msg, n.ptype);
@@ -176,7 +176,7 @@ module.exports = function (RED) {
 			};
 
 			//console.log("sending message");
-			console.log("listify, sending", JSON.stringify(msg, null, 4));
+
 			node.send(msg);
 
 		});

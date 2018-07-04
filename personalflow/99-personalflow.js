@@ -37,13 +37,10 @@ module.exports = function (RED) {
 
             databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
                 personalDatastore = data
-                console.log("creating monitor store from", personalDatastore.DataSourceURL);
                 return databox.NewTimeSeriesBlobClient(personalDatastore.DataSourceURL, false)
             }).then((store) => {
-                console.log("have store starting to observe!", personalDatastore.DataSourceMetadata.DataSourceID);
                 return store.Observe(personalDatastore.DataSourceMetadata.DataSourceID)
             }).then((emitter) => {
-                console.log("successfully created emitter");
                 emitter.on('data', (data) => {
 
                     const tosend = {
@@ -56,7 +53,6 @@ module.exports = function (RED) {
                             values: JSON.parse(JSON.parse(data.data).data),
                         }
                     }
-                    console.log("personal flow sending", tosend);
                     node.send(tosend);
                 });
 
@@ -76,7 +72,6 @@ module.exports = function (RED) {
 
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
-    console.log("registering personal flow!");
     RED.nodes.registerType("personalflow", PersonalFlow);
 
 }

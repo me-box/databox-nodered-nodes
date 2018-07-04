@@ -73,15 +73,12 @@ module.exports = function (RED) {
 
         databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
             monitorStream = data
-            console.log("creating monitor store from", monitorStream.DataSourceURL);
             return databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
         }).then((store) => {
-            console.log("now have stream", monitorStream);
             return store.Observe(monitorStream.DataSourceMetadata.DataSourceID)
         }).then((emitter) => {
             emitter.on('data', (data) => {
 
-                console.log("seen new data!", data);
                 const tosend = {
                     name: n.name || "osmonitor",
                     id: n.id,
@@ -92,7 +89,6 @@ module.exports = function (RED) {
                         value: JSON.parse(data.data).data,
                     }
                 }
-                console.log(tosend);
                 node.send(tosend);
             });
 

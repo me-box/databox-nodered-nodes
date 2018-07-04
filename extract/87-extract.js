@@ -1,22 +1,22 @@
-module.exports = function(RED) {
+module.exports = function (RED) {
     "use strict";
-   
-   
+
+
     //Listify assumes that the incoming object with have a payload that either has
     //a single object, or had an object with a values array
 
     function Extract(n) {
-        
-        RED.nodes.createNode(this,n);
+        console.log("creating extract node")
+        RED.nodes.createNode(this, n);
         var node = this;
-        const paths = n.filters.reduce((acc, item)=>{
+        const paths = n.filters.reduce((acc, item) => {
             return [...acc, item.path];
-        },[]);
+        }, []);
 
-        const _extract = (msg,path)=>{
-            return path.reduce((acc,item)=>{
+        const _extract = (msg, path) => {
+            return path.reduce((acc, item) => {
                 return acc[item];
-            },msg)
+            }, msg)
         }
 
         this.on('input', function (msg) {
@@ -28,28 +28,28 @@ module.exports = function(RED) {
             console.log("so PATHS are", paths);
             */
 
-            if (paths){
-                
-                const extracted = paths.reduce((acc,path)=>{
-                    if (path.length > 0){
+            if (paths) {
+
+                const extracted = paths.reduce((acc, path) => {
+                    if (path.length > 0) {
                         const extracted = _extract(msg, path);
-                        if (extracted != undefined){
-                            acc[[msg.id,...path].join(".")] = extracted;
+                        if (extracted != undefined) {
+                            acc[[msg.id, ...path].join(".")] = extracted;
                         }
                     }
-                    return acc;    
-                },{}); 
-        
-                if (Object.keys(extracted).length > 0){
+                    return acc;
+                }, {});
+
+                if (Object.keys(extracted).length > 0) {
                     node.send({
                         name: n.name || "extract",
-                        id:  n.id,
+                        id: n.id,
                         payload: extracted
                     });
                 }
             }
         });
     }
-    RED.nodes.registerType("extract",Extract); 
+    RED.nodes.registerType("extract", Extract);
 }
 

@@ -99,20 +99,16 @@ module.exports = function (RED) {
             });
         } else {
             //init databox
-            console.log("in app, about to call node-databox lib");
-            const databox = require('node-databox');
-            console.log("done");
-            let loggerActuator = {}
 
-            console.log("process env DATASOURCE_personalLoggerActuator is", process.env[`DATASOURCE_personalLoggerActuator`]);
+            const databox = require('node-databox');
+            let loggerActuator = {};
 
             databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_personalLoggerActuator`])
                 .then((data) => {
                     loggerActuator = data;
-                    console.log("got logger actuator", JSON.stringify(loggerActuator));
                     return databox.NewTimeSeriesBlobClient(loggerActuator.DataSourceURL, false)
                 }).then((client) => {
-                    console.log("client datasource url is", loggerActuator.DataSourceURL);
+
                     this.on('input', function (m) {
 
                         var msg = {
@@ -140,7 +136,6 @@ module.exports = function (RED) {
                         if (personalpath.length > 0) {
 
                             client.Write(loggerActuator.DataSourceMetadata.DataSourceID, { app: process.env.DATABOX_LOCAL_NAME, path: personalpath }).then((body) => {
-                                console.log("successfully sent to actuator", { app: process.env.DATABOX_LOCAL_NAME, path: personalpath });
                             }).catch((error) => {
                                 console.log("failed to write to actuator", error);
                             });
