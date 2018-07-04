@@ -26,11 +26,20 @@ module.exports = function (RED) {
 
             if (paths) {
 
+
                 const extracted = paths.reduce((acc, path) => {
                     if (path.length > 0) {
                         const extracted = _extract(msg, path);
+                        console.log("extracted is", extracted);
+
                         if (extracted != undefined) {
-                            [msg.id, ...path].reduce((o, i) => o[i], acc) = extracted;
+                            [msg.id, ...path].reverse().reduce((acc, key) => {
+                                acc[key] = acc;
+                                return acc;
+                            }, extracted);
+
+                            console.log("extracted", JSON.stringify(acc, null, 4));
+                            //[msg.id, ...path].reduce((o, i) => o[i], acc) = extracted;
                             //console.log("extracted obj", JSON.stringify(acc, null, 4));
                             //const ref = [msg.id, ...path].reduce((x, k) => x[k])
                             //ref = extracted;
