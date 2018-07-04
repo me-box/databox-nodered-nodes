@@ -9,7 +9,11 @@ module.exports = function (RED) {
             return [...acc, item.path];
         }, []);
 
+        console.log("paths is", paths);
+
         const _extract = (msg, path) => {
+            console.log("extracting msg", msg, " path ", path);
+
             return path.reduce((acc, item) => {
                 return acc[item];
             }, msg)
@@ -33,12 +37,17 @@ module.exports = function (RED) {
                         console.log("extracted is", extracted);
 
                         if (extracted != undefined) {
-                            [msg.id, ...path].reverse().reduce((acc, key) => {
-                                acc[key] = acc;
+                            const obj = [msg.id, ...path].reverse().reduce((acc, key, i) => {
+                                if (i == 0) {
+                                    acc = {};
+                                    acc[key] = extracted;
+                                } else {
+                                    acc[key] = acc;
+                                }
                                 return acc;
-                            }, extracted);
+                            }, acc);
 
-                            console.log("extracted", JSON.stringify(acc, null, 4));
+                            console.log("extracted", JSON.stringify(obj, null, 4));
                             //[msg.id, ...path].reduce((o, i) => o[i], acc) = extracted;
                             //console.log("extracted obj", JSON.stringify(acc, null, 4));
                             //const ref = [msg.id, ...path].reduce((x, k) => x[k])
