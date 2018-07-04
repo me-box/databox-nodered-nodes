@@ -1,10 +1,6 @@
 module.exports = function (RED) {
     "use strict";
 
-
-    //Listify assumes that the incoming object with have a payload that either has
-    //a single object, or had an object with a values array
-
     function Extract(n) {
         console.log("creating extract node")
         RED.nodes.createNode(this, n);
@@ -34,11 +30,17 @@ module.exports = function (RED) {
                     if (path.length > 0) {
                         const extracted = _extract(msg, path);
                         if (extracted != undefined) {
-                            acc[[msg.id, ...path].join(".")] = extracted;
+                            [msg.id, ...path].reduce((o, i) => o[i], acc) = extracted;
+                            //console.log("extracted obj", JSON.stringify(acc, null, 4));
+                            //const ref = [msg.id, ...path].reduce((x, k) => x[k])
+                            //ref = extracted;
+                            //acc[[msg.id, ...path].join(".")] = extracted;
                         }
                     }
                     return acc;
                 }, {});
+
+                console.log("----- extracted is ", JSON.stringify(extracted));
 
                 if (Object.keys(extracted).length > 0) {
                     node.send({
