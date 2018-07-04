@@ -30,7 +30,7 @@ module.exports = function (RED) {
 
             if (paths) {
 
-                console.log("seen msg", JSON.stringify(msg), " path ", path);
+                console.log("seen msg", JSON.stringify(msg), " path ", paths);
                 const extracted = paths.reduce((acc, path) => {
                     if (path.length > 0) {
                         const extracted = _extract(msg, path);
