@@ -44,7 +44,7 @@ module.exports = function (RED) {
                                 } else {
                                     acc[key] = acc;
                                 }
-                                return acc;
+                                return acc[key];
                             }, acc);
 
                             console.log("extracted", JSON.stringify(obj, null, 4));
