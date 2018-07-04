@@ -40,8 +40,10 @@ module.exports = function (RED) {
                 console.log("creating monitor store from", personalDatastore.DataSourceURL);
                 return databox.NewTimeSeriesBlobClient(personalDatastore.DataSourceURL, false)
             }).then((store) => {
+                console.log("have store starting to observe!", personalDatastore.DataSourceMetadata.DataSourceID);
                 return store.Observe(personalDatastore.DataSourceMetadata.DataSourceID)
             }).then((emitter) => {
+                console.log("successfully created emitter");
                 emitter.on('data', (data) => {
 
                     const tosend = {
