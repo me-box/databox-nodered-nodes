@@ -47,7 +47,7 @@ module.exports = function (RED) {
                     client.Read(datasourceid, "attribute").then((result) => {
                         resolve([...results, result]);
                     }).catch((err) => {
-                        console.log("error reading for", datasourceid);
+                        console.log("error reading for", datasourceid, "error", err);
                         resolve([...results]);
                     });
                 });
