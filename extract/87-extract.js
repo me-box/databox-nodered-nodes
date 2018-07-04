@@ -12,7 +12,7 @@ module.exports = function (RED) {
         console.log("paths is", paths);
 
         const _extract = (msg, path) => {
-            console.log("extracting msg", msg, " path ", path);
+
 
             return path.reduce((acc, item) => {
                 return acc[item];
@@ -30,7 +30,7 @@ module.exports = function (RED) {
 
             if (paths) {
 
-
+                console.log("seen msg", JSON.stringify(msg), " path ", path);
                 const extracted = paths.reduce((acc, path) => {
                     if (path.length > 0) {
                         const extracted = _extract(msg, path);
@@ -38,14 +38,18 @@ module.exports = function (RED) {
                         if (extracted != undefined) {
                             var keys = [msg.id, ...path]
                             var value = extracted;
-                            return Object.assign({}, acc, keys.reduceRight((value, key) => ({ [key]: value }), extracted));
+                            console.log("acc is", JSON.stringify(acc));
+                            const res = keys.reduceRight((value, key) => ({ [key]: value }), extracted);
+                            console.log("res is", JSON.stringify(res));
+                            console.log("combined is", JSON.stringify(Object.assign({}, acc, res)));
+                            return Object.assign({}, acc, res);
                             //acc[[msg.id, ...path].join(".")] = extracted;
                         }
                     }
                     return acc;
                 }, {});
 
-                console.log("----- extracted is ", JSON.stringify(extracted, null, 4));
+                console.log("||----- extracted is ", JSON.stringify(extracted));
 
                 if (Object.keys(extracted).length > 0) {
                     node.send({
