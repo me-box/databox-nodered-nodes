@@ -37,12 +37,22 @@ module.exports = function (RED) {
                         console.log("extracted is", extracted);
 
                         if (extracted != undefined) {
-                            const obj = [msg.id, ...path].reverse().reduce((acc, key, i) => {
+                            var keys = [msg.id, ...path]
+                            var value = extracted;
+                            var res = keys.reduceRight((value, key) => ({ [key]: value }), value);
+                            console.log(JSON.stringify(res, null, 4));
+                            return res;
+                            //const obj = [msg.id, ...path].reduce((o, i) => o[i], {})
+
+                            //console.log("have obj", JSON.stringify(obj));
+                            /*const obj = [msg.id, ...path].reverse().reduce((acc, key, i) => {
                                 if (i == 0) {
                                     acc = {};
+
                                     acc[key] = extracted;
+                                    console.log("acc is", JSON.stringify(acc));
                                 } else {
-                                    acc[key] = acc;
+                                   
                                 }
                                 return acc[key];
                             }, acc);
@@ -51,7 +61,7 @@ module.exports = function (RED) {
                             //[msg.id, ...path].reduce((o, i) => o[i], acc) = extracted;
                             //console.log("extracted obj", JSON.stringify(acc, null, 4));
                             //const ref = [msg.id, ...path].reduce((x, k) => x[k])
-                            //ref = extracted;
+                            //ref = extracted;*/
                             //acc[[msg.id, ...path].join(".")] = extracted;
                         }
                     }
