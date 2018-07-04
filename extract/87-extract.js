@@ -1,5 +1,6 @@
 module.exports = function (RED) {
     "use strict";
+    var deepmerge = require("deepmerge");
 
     function Extract(n) {
         console.log("creating extract node")
@@ -41,8 +42,10 @@ module.exports = function (RED) {
                             console.log("acc is", JSON.stringify(acc));
                             const res = keys.reduceRight((value, key) => ({ [key]: value }), extracted);
                             console.log("res is", JSON.stringify(res));
-                            console.log("combined is", JSON.stringify({ ...acc, res }));
-                            return { ...acc, res };
+                            const merged = deepmerge(acc, res);
+
+                            console.log("merged is", JSON.stringify(merged, null, 4));
+                            return merged;
                             //acc[[msg.id, ...path].join(".")] = extracted;
                         }
                     }

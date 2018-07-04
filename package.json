@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/tlodge/databox-nodered-nodes#readme",
   "dependencies": {
+    "deepmerge": "^2.1.1",
     "express": "^4.15.3",
     "http": "0.0.0",
     "json-socket": "^0.3.0",
