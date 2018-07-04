@@ -41,8 +41,8 @@ module.exports = function (RED) {
                             console.log("acc is", JSON.stringify(acc));
                             const res = keys.reduceRight((value, key) => ({ [key]: value }), extracted);
                             console.log("res is", JSON.stringify(res));
-                            console.log("combined is", JSON.stringify(Object.assign({}, acc, res)));
-                            return Object.assign({}, acc, res);
+                            console.log("combined is", JSON.stringify({ ...acc, res }));
+                            return { ...acc, res };
                             //acc[[msg.id, ...path].join(".")] = extracted;
                         }
                     }
