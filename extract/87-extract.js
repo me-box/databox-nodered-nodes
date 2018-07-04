@@ -34,10 +34,13 @@ module.exports = function (RED) {
                 console.log("seen msg", JSON.stringify(msg), " path ", paths);
                 const extracted = paths.reduce((acc, path) => {
                     if (path.length > 0) {
-                        const extracted = _extract(msg, path);
+                        const _path = path.reduce((acc, item) => {
+                            return [...acc, ...item.split(".")]
+                        }, [])
+                        const extracted = _extract(msg, _path);
 
                         if (extracted != undefined) {
-                            var keys = [msg.id, ...path]
+                            var keys = [msg.id, ..._path]
                             var value = extracted;
                             console.log("acc is", JSON.stringify(acc));
                             const res = keys.reduceRight((value, key) => ({ [key]: value }), extracted);
