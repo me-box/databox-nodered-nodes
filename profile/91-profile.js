@@ -40,7 +40,7 @@ module.exports = function (RED) {
             profileSource = data
             return databox.NewKeyValueClient(profileSource.DataSourceURL, false)
         }).then((client) => {
-
+            this.client = client;
 
             const read = (datasourceid, results) => {
                 return new Promise((resolve, reject) => {
@@ -76,7 +76,9 @@ module.exports = function (RED) {
         });
 
         this.on("close", () => {
-            console.log(`${node.id} stopping requests`);
+            console.log(`${node.id} stopping observing`);
+
+
         });
 
     }

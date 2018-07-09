@@ -71,27 +71,29 @@ module.exports = function (RED) {
 
         let monitorStream = null;
 
+        const cb = (data) => {
+
+            const tosend = {
+                name: n.name || "osmonitor",
+                id: n.id,
+                subtype: n.subtype,
+                type: "osmonitor",
+                payload: {
+                    ts: Date.now(),
+                    value: JSON.parse(data.data).data,
+                }
+            }
+            node.send(tosend);
+        }
+
         databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
             monitorStream = data
             return databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
         }).then((store) => {
             return store.Observe(monitorStream.DataSourceMetadata.DataSourceID)
         }).then((emitter) => {
-            emitter.on('data', (data) => {
-
-                const tosend = {
-                    name: n.name || "osmonitor",
-                    id: n.id,
-                    subtype: n.subtype,
-                    type: "osmonitor",
-                    payload: {
-                        ts: Date.now(),
-                        value: JSON.parse(data.data).data,
-                    }
-                }
-                node.send(tosend);
-            });
-
+            this.emitter = emitter;
+            emitter.on('data', cb);
             emitter.on('error', (err) => {
                 console.warn(err);
             });
@@ -102,6 +104,7 @@ module.exports = function (RED) {
 
         this.on("close", () => {
             console.log(`${node.id} stopping requests`);
+            this.emitter.removeListener("data", cb);
             clearInterval(periodic);
         });
 

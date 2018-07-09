@@ -27,6 +27,21 @@ module.exports = function (RED) {
 
         var node = this;
 
+        const cb = (data) => {
+
+            const tosend = {
+                name: n.name || "personalflow",
+                id: n.id,
+                subtype: n.subtype,
+                type: "personalflow",
+                payload: {
+                    ts: Date.now(),
+                    values: JSON.parse(JSON.parse(data.data).data),
+                }
+            }
+            node.send(tosend);
+        };
+
         if (process.env.TESTING) {
             console.log("not doing anything...am testing!");
             return;
@@ -41,21 +56,8 @@ module.exports = function (RED) {
             }).then((store) => {
                 return store.Observe(personalDatastore.DataSourceMetadata.DataSourceID)
             }).then((emitter) => {
-                emitter.on('data', (data) => {
-
-                    const tosend = {
-                        name: n.name || "personalflow",
-                        id: n.id,
-                        subtype: n.subtype,
-                        type: "personalflow",
-                        payload: {
-                            ts: Date.now(),
-                            values: JSON.parse(JSON.parse(data.data).data),
-                        }
-                    }
-                    node.send(tosend);
-                });
-
+                this.emitter = emitter;
+                emitter.on('data', cb);
                 emitter.on('error', (err) => {
                     console.warn(err);
                 });
@@ -65,6 +67,7 @@ module.exports = function (RED) {
         }
 
         this.on("close", function () {
+            this.emitter.removeListener("data", cb);
             console.log("personal flow...closing");
         });
 
