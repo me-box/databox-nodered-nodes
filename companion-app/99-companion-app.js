@@ -98,9 +98,27 @@ module.exports = function (RED) {
                 sendmessage(msg);
             });
         } else {
+
+            this.on('input', function (m) {
+
+                var msg = {
+                    channel: node.appId,
+                    sourceId: m.sourceId || fallbackId,
+                    type: "data",
+                    payload: {
+                        id: node.id,
+                        name: node.name || "app",
+                        view: m.type || "text",
+                        data: m.payload,
+                        channel: node.appId,
+                    }
+                }
+                sendmessage(msg);
+            });
+
             //init databox
 
-            const databox = require('node-databox');
+            /*const databox = require('node-databox');
             let loggerActuator = {};
 
             databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_personalLoggerActuator`])
@@ -141,7 +159,7 @@ module.exports = function (RED) {
                             });
                         }
                     });
-                });
+                });*/
         }
 
         this.on("close", function () {

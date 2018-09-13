@@ -36,12 +36,12 @@ var _extractdata = (payload) => {
 	if (Array.isArray(data)) {
 		return data;
 	} else {
-		console.log("extracting", data);
+		console.log("listify: extracting", data);
 		const row = Object.keys(data).reduce((acc, key) => {
 			acc[key] = JSON.stringify(data[key]);
 			return acc;
 		}, {});
-		console.log("returning", [row]);
+		console.log("listify: returning", [row]);
 		return [row];
 	}
 }
