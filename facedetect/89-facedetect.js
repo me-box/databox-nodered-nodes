@@ -15,7 +15,7 @@ module.exports = function (RED) {
 
         this.on('input', function (msg) {
 
-            console.log("seen a msg", msg);
+            console.log("seen an image");
             const image = msg.payload.image;
             const imgdata = image.replace(/^data:image\/\w+;base64,/, "");
             const buffer = Buffer.from(imgdata, 'base64');
