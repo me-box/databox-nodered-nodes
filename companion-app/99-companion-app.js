@@ -171,7 +171,7 @@ module.exports = function (RED) {
     }
 
     function sendmessage(msg) {
-
+        //console.log("companion app: sending msg", JSON.stringify(msg, null, 4));
         if (connected) {
             client.sendMessage({ type: "message", msg: msg });
             //client.write({type: "message", msg: msg});

@@ -1,0 +1,25 @@
+FROM justadudewhohacks/opencv-nodejs
+
+RUN apt-get update
+RUN apt-get -y install git
+RUN apt-get -y install make gcc g++ python 
+RUN apt-get install -y -qq libkrb5-dev libzmq-dev
+RUN npm install -g zmq
+
+# Home directory for Node-RED application source code.
+RUN mkdir -p /usr/src/node-red
+
+# User data directory, contains flows, config and nodes.
+RUN mkdir /data
+RUN mkdir /data/nodes
+
+WORKDIR /usr/src/node-red
+
+ENV NODE_PATH /usr/lib/node_modules
+
+# package.json contains Node-RED NPM module and node dependencies
+COPY conf/package.base.json /usr/src/node-red/package.json
+RUN npm install
+COPY conf/Node.js /usr/src/node-red/node_modules/node-red/red/runtime/nodes/
+COPY conf/settings.js /data
+

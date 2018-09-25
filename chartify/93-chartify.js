@@ -14,149 +14,149 @@
  * limitations under the License.
  **/
 
-const _extractkeys = function(payload){
-	if (payload.values){
-		return Object.keys(payload.values.reduce(function(acc, obj){
-          	return Object.keys(obj).reduce(function(acc, key){
-          			acc[key] = true;
-          			return acc;
-          	}, acc);
-        }, {}));
-    }
-    return Object.keys(payload);
+const _extractkeys = function (payload) {
+	if (payload.values) {
+		return Object.keys(payload.values.reduce(function (acc, obj) {
+			return Object.keys(obj).reduce(function (acc, key) {
+				acc[key] = true;
+				return acc;
+			}, acc);
+		}, {}));
+	}
+	return Object.keys(payload);
 }
 
-const  _extractdata = function(payload){
+const _extractdata = function (payload) {
 	return payload.values ? payload.values : [payload];
 }
 
-const _isstring = (value, notstring)=>{
-		
-	if (value ==  null || value == undefined){
+const _isstring = (value, notstring) => {
+
+	if (value == null || value == undefined) {
 		return notstring;
 	}
-	
-	if (typeof value === 'string' || value instanceof String){
+
+	if (typeof value === 'string' || value instanceof String) {
 		if (value.trim() === "")
 			return notstring;
 		return value;
 	}
 
-	if (parseString(value).trim() != ""){
+	if (parseString(value).trim() != "") {
 		return parseString(value);
 	}
-	
+
 	return notstring;
 }
-		
-const _isnumber = (value, notnumber)=>{
-	
-	if (value ==  null || value == undefined){
+
+const _isnumber = (value, notnumber) => {
+
+	if (value == null || value == undefined) {
 		return notnumber;
 	}
-	
-	if (typeof value === 'string' || value instanceof String){
+
+	if (typeof value === 'string' || value instanceof String) {
 		if (value.trim() === "")
 			return notnumber;
 		if (/^\d+$/.test(value))
 			return Number(value);
 	}
-	
-	if(!isNaN(value)){
+
+	if (!isNaN(value)) {
 		return value;
 	}
-	
+
 	return notnumber;
 }
 
-module.exports = function(RED) {
-    "use strict";
-    
-    function Chartify(n) {
-        console.log("creating chartify node");
-        // Create a RED node
-        RED.nodes.createNode(this,n);
-        
-        var node = this; 
-		    this.xtype = n.xtype ? n.xtype.length > 0 ? n.xtype : null : null;
-		    this.ytype = n.ytype ? n.ytype.length > 0 ? n.ytype : null : null;
-		    this.chart = n.chart;
-		
-    		const _options = {
-    			title: _isstring(n.title, ""),	
-    			xlabel: _isstring(n.xlabel, ""),
-    			ylabel: _isstring(n.ylabel, ""),
-    			min: _isnumber(n.min),
-    			max: _isnumber(n.max),
-    			ticks: _isnumber(n.ticks),
-    			labels: _isstring(n.labels),
-    			maxreadings: _isnumber(n.maxreadings),
-    		};
-		
-    		//remove all keys that are undefined.
-    		const options = Object.keys(_options).reduce((acc, key)=>{
-    			if (_options[key] != undefined){
-    				acc[key] = _options[key];
-    			}	
-    			return acc;
-    		},{});		
-	
-      
-	
-		    this.on('input', function (msg) {
-        
-    
-          if (this.xtype && this.ytype){
-          		let payload = {};
-          		
-          		this.ytype.forEach((item)=>{
-                  if (item.source === msg.type){
-                  	let payload = {};      			
-                    payload.options = options;
+module.exports = function (RED) {
+	"use strict";
 
-                  	payload.values = {
-                      id: `${msg.id} ${item.name}`,
-                    	type: 'data',
-                  	  dataid: Date.now(),
-                    };
+	function Chartify(n) {
+		console.log("creating chartify node");
+		// Create a RED node
+		RED.nodes.createNode(this, n);
 
-                    payload.values.x = msg.payload[this.xtype[0].name];
-                    payload.values.y =  Number(msg.payload[item.name]);
-                    node.send({type:this.chart, sourceId: node.id, payload:payload});
-                  }
-          		});
-          	}
-          	
-          	else if (this.xtype){
-          		
-          		this.xtype.forEach((item)=>{
-          					
-          			if (item.source === msg.type){
-          				let payload = {};
-          				payload.options = options;
-          			
-          				payload.values = {
-        					   id: `${msg.id} ${item.name}`,
-        					   type: 'data',
-        					   dataid: Date.now(),
-        				  };
+		var node = this;
+		this.xtype = n.xtype ? n.xtype.length > 0 ? n.xtype : null : null;
+		this.ytype = n.ytype ? n.ytype.length > 0 ? n.ytype : null : null;
+		this.chart = n.chart;
 
-        				  payload.values.x = msg.payload[item.name];				
-        				  node.send({type:this.chart, sourceId: node.id, payload:payload});
-          			}
-        		  });
-          	}
-        });
-        
-        this.on("close", function() {
-           delete this.xtype;
-           delete this.ytype;
-           delete this.chart;
-        });
-    }
+		const _options = {
+			title: _isstring(n.title, ""),
+			xlabel: _isstring(n.xlabel, ""),
+			ylabel: _isstring(n.ylabel, ""),
+			min: _isnumber(n.min),
+			max: _isnumber(n.max),
+			ticks: _isnumber(n.ticks),
+			labels: _isstring(n.labels),
+			maxreadings: _isnumber(n.maxreadings),
+		};
 
-    // Register the node by name. This must be called before overriding any of the
-    // Node functions.
-    RED.nodes.registerType("chartify",Chartify);
+		//remove all keys that are undefined.
+		const options = Object.keys(_options).reduce((acc, key) => {
+			if (_options[key] != undefined) {
+				acc[key] = _options[key];
+			}
+			return acc;
+		}, {});
+
+
+
+		this.on('input', function (msg) {
+
+
+			if (this.xtype && this.ytype) {
+				let payload = {};
+
+				this.ytype.forEach((item) => {
+					if (item.source === msg.type) {
+						let payload = {};
+						payload.options = options;
+
+						payload.values = {
+							id: `${msg.id} ${item.name}`,
+							type: 'data',
+							dataid: Date.now(),
+						};
+
+						payload.values.x = msg.payload[this.xtype[0].name];
+						payload.values.y = Number(msg.payload[item.name]);
+						node.send({ type: this.chart, sourceId: node.id, payload: payload });
+					}
+				});
+			}
+
+			else if (this.xtype) {
+
+				this.xtype.forEach((item) => {
+
+					if (item.source === msg.type) {
+						let payload = {};
+						payload.options = options;
+
+						payload.values = {
+							id: `${msg.id} ${item.name}`,
+							type: 'data',
+							dataid: Date.now(),
+						};
+
+						payload.values.x = msg.payload[item.name];
+						node.send({ type: this.chart, sourceId: node.id, payload: payload });
+					}
+				});
+			}
+		});
+
+		this.on("close", function () {
+			delete this.xtype;
+			delete this.ytype;
+			delete this.chart;
+		});
+	}
+
+	// Register the node by name. This must be called before overriding any of the
+	// Node functions.
+	RED.nodes.registerType("chartify", Chartify);
 
 }
