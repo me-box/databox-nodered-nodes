@@ -126,7 +126,7 @@ module.exports = function (RED) {
                     loggerActuator = data;
                     return databox.NewTimeSeriesBlobClient(loggerActuator.DataSourceURL, false)
                 }).then((client) => {
-                    console.log("SUCCESSFULLY connected to actuator endpoint");
+                    console.log("SUCCESSFULLY connected to actuator endpoint", loggerActuator.DataSourceURL);
                     this.on('input', function (m) {
 
                         var msg = {
@@ -153,7 +153,7 @@ module.exports = function (RED) {
 
                         if (personalpath.length > 0) {
                             console.log("have personal path, sending to actuator");
-                            client.Write(loggerActuator.DataSourceMetadata.DataSourceID, { app: process.env.DATABOX_LOCAL_NAME, path: personalpath }).then((body) => {
+                            client.Write("personalLoggerActuator", { app: process.env.DATABOX_LOCAL_NAME, path: personalpath }).then((body) => {
                             }).catch((error) => {
                                 console.log("failed to write to actuator", error);
                             });
