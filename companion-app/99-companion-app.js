@@ -99,7 +99,7 @@ module.exports = function (RED) {
             });
         } else {
 
-            this.on('input', function (m) {
+            /*this.on('input', function (m) {
 
                 var msg = {
                     channel: node.appId,
@@ -114,11 +114,11 @@ module.exports = function (RED) {
                     }
                 }
                 sendmessage(msg);
-            });
+            });*/
 
             //init databox
 
-            /*const databox = require('node-databox');
+            const databox = require('node-databox');
             let loggerActuator = {};
 
             databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_personalLoggerActuator`])
@@ -126,7 +126,7 @@ module.exports = function (RED) {
                     loggerActuator = data;
                     return databox.NewTimeSeriesBlobClient(loggerActuator.DataSourceURL, false)
                 }).then((client) => {
-
+                    console.log("SUCCESSFULLY connected to actuator endpoint");
                     this.on('input', function (m) {
 
                         var msg = {
@@ -152,14 +152,14 @@ module.exports = function (RED) {
                         }, []);
 
                         if (personalpath.length > 0) {
-
+                            console.log("have personal path, sending to actuator");
                             client.Write(loggerActuator.DataSourceMetadata.DataSourceID, { app: process.env.DATABOX_LOCAL_NAME, path: personalpath }).then((body) => {
                             }).catch((error) => {
                                 console.log("failed to write to actuator", error);
                             });
                         }
                     });
-                });*/
+                });
         }
 
         this.on("close", function () {
