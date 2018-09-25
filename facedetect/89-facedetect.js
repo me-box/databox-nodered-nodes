@@ -29,9 +29,9 @@ module.exports = function (RED) {
                 console.log(res.objects);
 
                 if (!res.objects.length) {
-                    console.log("failed to detect any faces!");
+                    console.log("failed to detect faces!");
                 } else {
-
+                    console.log("detected faces, sending results");
                     var face = grayImg.getRegion(res.objects[0]);
                     var outBase64 = cv.imencode('.jpg', face).toString('base64');
                     //ws.send(JSON.stringify({ type: "result" }));

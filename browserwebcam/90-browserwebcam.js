@@ -73,7 +73,7 @@ module.exports = function (RED) {
 
         const cb = (data) => {
 
-            console.log("seen some webcam data!!", data);
+            console.log("seen some webcam data!!");
 
             const tosend = {
                 name: n.name || "browserwebcam",
