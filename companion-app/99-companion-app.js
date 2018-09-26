@@ -152,7 +152,9 @@ module.exports = function (RED) {
                         }, []);
 
                         if (personalpath.length > 0) {
-                            console.log("have personal path, sending to actuator");
+
+                            console.log("sending following to actuator", JSON.stringify({ app: process.env.DATABOX_LOCAL_NAME, path: personalpath }, null, 4));
+
                             client.Write("personalLoggerActuator", { app: process.env.DATABOX_LOCAL_NAME, path: personalpath }).then((body) => {
                             }).catch((error) => {
                                 console.log("failed to write to actuator", error);
