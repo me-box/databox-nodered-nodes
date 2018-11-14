@@ -29,7 +29,7 @@
         "node-red-node-base64": "*",
         "node-red-node-suncalc": "*",
         "node-red-node-random": "*",
-	"node-databox": "^0.8.1",
+	"node-databox": "^0.9.0",
         "node-ipc": "^8.10.3",
         "moment": "^2.17.1"
     },

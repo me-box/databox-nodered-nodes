@@ -53,7 +53,7 @@ module.exports = function (RED) {
 
     function OSMonitor(n) {
 
-        console.log("creating os monitor node");
+        console.log("creating new os monitor node");
 
         RED.nodes.createNode(this, n);
 
@@ -72,6 +72,9 @@ module.exports = function (RED) {
         let monitorStream = null;
 
         const cb = (data) => {
+
+            console.log("nice, seen data");
+            console.log(JSON.parse(data.data).data);
 
             const tosend = {
                 name: n.name || "osmonitor",
