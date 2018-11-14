@@ -1,4 +1,5 @@
-FROM databox/red-face
+#FROM databox/red-face
+FROM databox/red-base
 MAINTAINER Tom Lodge <tlodge@gmail.com>
 WORKDIR /root
 
@@ -8,11 +9,12 @@ RUN git clone https://github.com/me-box/sdk-app-webserver.git
 #we don't re-compile the client code (as this requires node modules that need to be built natively which will fail 
 #on apline unless the build env is installed which would bloat the image.
 COPY conf/Node.js /usr/src/node-red/node_modules/node-red/red/runtime/nodes/
-RUN cd ./sdk-app-webserver/server && npm install
+RUN mkdir ./sdk-app-webserver/server/node_modules && cp -R /usr/src/node-red/node_modules/zeromq ./sdk-app-webserver/server/node_modules/ && cd ./sdk-app-webserver/server && npm install
 ADD start.sh /root
 
 #add the latest node-red databox nodes
 WORKDIR /data/nodes
 ARG CACHEBUST=1
 RUN git clone https://github.com/tlodge/databox-nodered-nodes.git databox
-RUN cd /data/nodes/databox && npm link zmq && npm install
+RUN mkdir /data/nodes/databox/node_modules && cp -R /usr/src/node-red/node_modules/zeromq /data/nodes/databox/node_modules/
+RUN cd /data/nodes/databox && npm install --production

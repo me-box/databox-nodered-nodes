@@ -1,28 +1,19 @@
-FROM node:6-alpine
-
-RUN apk --update add git 
-RUN apk add --no-cache --virtual .build-dependencies make gcc g++ python && apk add --no-cache krb5-dev zeromq-dev 
-RUN npm install -g zmq
-
-# Home directory for Node-RED application source code.
-RUN mkdir -p /usr/src/node-red
-
-# User data directory, contains flows, config and nodes.
+FROM amd64/alpine:3.8
 RUN mkdir /data
 RUN mkdir /data/nodes
-
+RUN mkdir -p /usr/src/node-red
 WORKDIR /usr/src/node-red
 
-# Add node-red user so we aren't running as root.
-#RUN adduser -h /usr/src/node-red -D -H node-red \
-#    && chown -R node-red:node-red /data \
-#    && chown -R node-red:node-red /usr/src/node-red
+RUN addgroup -S databox && adduser -S -g databox databox && \
+apk --no-cache add build-base pkgconfig nodejs npm git libzmq zeromq-dev libsodium-dev python  && \
+npm install zeromq@4.6.0 --zmq-external --verbose && \
+apk del build-base pkgconfig libsodium-dev python zeromq-dev
 
-#USER node-red
-
+# User data directory, contains flows, config and nodes.
 # package.json contains Node-RED NPM module and node dependencies
+
 COPY conf/package.base.json /usr/src/node-red/package.json
-RUN npm install
+RUN npm install --production
 COPY conf/Node.js /usr/src/node-red/node_modules/node-red/red/runtime/nodes/
 COPY conf/settings.js /data
 #CMD ["npm", "start", "--", "--userDir", "/data"]
