@@ -58,17 +58,15 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n);
 
         if (process.env.TESTING) {
+            console.log("running in test mode!");
             return testing(this, n);
         }
 
         const databox = require('node-databox');
         var periodic;
 
-
         this.name = n.name;
         const node = this;
-
-
         let monitorStream = null;
 
         const cb = (data) => {
@@ -88,13 +86,17 @@ module.exports = function (RED) {
             }
             node.send(tosend);
         }
+        console.log("gegting hypercat to source data metadata", process.env[`DATASOURCE_${n.id}`]);
 
         databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
+            consoe.log("SUCCESSS!!!");
             monitorStream = data
             return databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
         }).then((store) => {
+            console.log("got store, so observing!");
             return store.Observe(monitorStream.DataSourceMetadata.DataSourceID)
         }).then((emitter) => {
+            console.log("now have emitter!");
             this.emitter = emitter;
             emitter.on('data', cb);
             emitter.on('error', (err) => {
