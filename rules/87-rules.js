@@ -1,14 +1,12 @@
 module.exports = function (RED) {
     "use strict";
     const moment = require("moment");
-
     const numberoperators = ["lt","gt","lte","gte","eq"];
     const stringoperators = ["equal","contains","startswith"];
     const timeoperators = ["same", "earlier", "later", "between"];
 
     const evaluate_numeric = (rule, operand)=>{
-        console.log("evaluating numeric");
-
+       
         try{
             
             const msgop = Number(operand);
@@ -23,21 +21,26 @@ module.exports = function (RED) {
             const ruleop = Number(rule.operand);
 
             console.log(msgop, ruleop);
-            
+
             switch (rule.operator){
                 case "lt":
+                    console.log(`evaluating ${msgop}<${ruleop}`);
                     return msgop < ruleop;
 
                 case "gt":
+                    console.log(`evaluating ${msgop}>${ruleop}`);
                     return msgop > ruleop;
 
                 case "lte":
+                    console.log(`evaluating ${msgop}<=${ruleop}`);
                     return msgop <= ruleop;
                 
                 case "gte":
+                    console.log(`evaluating ${msgop}>=${ruleop}`);
                     return msgop >= ruleop;
                 
                 case "eq":
+                    console.log(`evaluating ${msgop}===${ruleop}`);
                     return msgop === ruleop;
                 
                 default:
@@ -56,13 +59,16 @@ module.exports = function (RED) {
 
             switch (rule.operator){
                 case "equal":
-                    return msgop < ruleop;
+                    console.log(`evaluating ${msgop}===${ruleop}`);
+                    return msgop === ruleop;
 
                 case "contains":
-                    return msgop > ruleop;
+                    console.log(`evaluating ${msgop} conatins ${ruleop}`);
+                    return msgop.includes(ruleop);
 
                 case "startswith":
-                    return msgop <= ruleop;
+                    console.log(`evaluating ${msgop} startswith ${ruleop}`);
+                    return msgop.startsWith(ruleop);
                 
                 default:
                     return false;
@@ -139,14 +145,12 @@ module.exports = function (RED) {
 
         console.log("in rules node with rules", rules);
 
-
         this.on('input', function (msg) {
             //const src = this.path().hops[0].source;
 
             console.log("seen a message", JSON.stringify(msg,null,4));
 
             rules.forEach((rule)=>{
-                console.log("evaluatimng rule", JSON.stringify(rule,null,4));
                 if (match(rule, msg)){
                     console.log('seen a match');
                     node.send(rule.outputMessage);
