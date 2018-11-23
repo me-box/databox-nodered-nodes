@@ -1,6 +1,8 @@
 FROM tlodge/databox-red-base 
 MAINTAINER Tom Lodge <tlodge@gmail.com>
 WORKDIR /data/nodes
+ARG CACHEBUST=1
 RUN git clone https://github.com/tlodge/databox-nodered-nodes.git databox
-RUN cd /data/nodes/databox && npm install
+RUN mkdir /data/nodes/databox/node_modules && cp -R /usr/src/node-red/node_modules/zeromq /data/nodes/databox/node_modules/
+RUN cd /data/nodes/databox && npm install --production
 WORKDIR /usr/src/node-red
