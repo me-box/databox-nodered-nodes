@@ -91,7 +91,7 @@ module.exports = function(RED) {
             const DS_Metadata = data.DataSourceMetadata;
             
             const store_url = data.DataSourceURL;
-            const tsc = databox.NewTimeSeriesClient(store_url, false);
+            const tsc = databox.NewTimeSeriesBlobClient(store_url, false);
             
             this.on('input', function (msg) {
                 
@@ -114,39 +114,6 @@ module.exports = function(RED) {
         });
     }
 
-    function BulbsOLD(n) {
-        console.log("creating bulbs out node");
-    	this.name = n.name;
-        RED.nodes.createNode(this,n);
-        var node = this;
-
-        if (process.env.TESTING){
-        	return testing(this, n);
-        }
-
-        const databox = require('node-databox');	
-        const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
-		const HREF_ENDPOINT = API_ENDPOINT.href || ''; 
-        const endpointUrl = url.parse(HREF_ENDPOINT);
-    	const actuationStore = endpointUrl.protocol + '//' + endpointUrl.host;
-    	const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
-    	
-		this.on('input', function (msg) {
-			
-			const value = msg.payload ? msg.payload : n.value ? n.value : null;
-			
-			databox.timeseries.write(actuationStore,sensorID,{data:value})
-		    .then((body)=>{
-		   
-		    })
-		    .catch((error)=>{
-		      console.log("error");
-		      console.log(err);
-		    });
-		
-       	});
-    }
-    
     function sendClose(channel){
 		client.sendMessage({type: "message", msg: 	{
 		  															channel:channel, 
