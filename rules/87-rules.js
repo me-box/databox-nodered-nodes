@@ -1,7 +1,7 @@
 module.exports = function (RED) {
     "use strict";
     const moment = require("moment");
-    const numberoperators = ["lt","gt","lte","gte","eq"];
+    const numberoperators = ["lt","gt","lte","gte","eq","even","odd"];
     const stringoperators = ["equal","contains","startswith"];
     const timeoperators = ["same", "earlier", "later", "between"];
 
@@ -11,6 +11,16 @@ module.exports = function (RED) {
             
             const msgop = Number(operand);
             
+            if (rule.operand === "even"){
+                console.log(`evaluating ${msgop} is even`);
+                return msgop % 2 === 0;
+            }
+            
+            if (rule.operand === "odd"){
+                console.log(`evaluating ${msgop} is odd`);
+                return msgop % 2 !== 0;
+            }
+
             if (rule.operand === "range"){
                 const [from,to] = rule.operand.split(":");
                 const _from = Number(from);
@@ -119,11 +129,12 @@ module.exports = function (RED) {
         }, msg)
     }
 
-    const match = (rule, msg)=>{
+    const match = (rule, msg, msgindex)=>{
         if (msg.id != rule.input){
             return false;
         }
-        const msgoperand  = extract(msg, rule.attribute.split("."))
+
+        const msgoperand  = rule.attribute === "message number" ? msgindex : extract(msg, rule.attribute.split("."))
 
         if (numberoperators.indexOf(rule.operator) != -1){
             return evaluate_numeric(rule, msgoperand);
@@ -142,16 +153,18 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n);
         var node = this;
         const rules = n.rules || [];
-
+        const msgindexes = {};
+        
         console.log("in rules node with rules", rules);
 
         this.on('input', function (msg) {
             //const src = this.path().hops[0].source;
+            msgindexes[msg.id] = (msgindexes[msg.id] || 0) + 1;
 
             console.log("seen a message", JSON.stringify(msg,null,4));
 
             rules.forEach((rule)=>{
-                if (match(rule, msg)){
+                if (match(rule, msg, msgindexes[msg.id])){
                     console.log('seen a match');
                     node.send(rule.outputMessage);
                 }
