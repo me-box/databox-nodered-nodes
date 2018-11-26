@@ -69,6 +69,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, n);
 
         connect(function () {
+            console.log("SENDING LAYOUT MESSAGE",{ type: "control", payload: { command: "init", data: { id: n.id, layout: n.layout }}});
             sendmessage({ type: "control", payload: { command: "init", data: { id: n.id, layout: n.layout } } });
         });
 
@@ -98,33 +99,13 @@ module.exports = function (RED) {
                 sendmessage(msg);
             });
         } else {
-
-            /*this.on('input', function (m) {
-
-                var msg = {
-                    channel: node.appId,
-                    sourceId: m.sourceId || fallbackId,
-                    type: "data",
-                    payload: {
-                        id: node.id,
-                        name: node.name || "app",
-                        view: m.type || "text",
-                        data: m.payload,
-                        channel: node.appId,
-                    }
-                }
-                sendmessage(msg);
-            });*/
-
-            //init databox
-
             const databox = require('node-databox');
             let loggerActuator = {};
 
             databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_personalLoggerActuator`])
                 .then((data) => {
                     loggerActuator = data;
-                    return databox.NewTimeSeriesBlobClient(loggerActuator.DataSourceURL, false)
+                    return databox.NewTimeSeriesClient(loggerActuator.DataSourceURL, false)
                 }).then((client) => {
                     console.log("SUCCESSFULLY connected to actuator endpoint", loggerActuator.DataSourceURL);
                     this.on('input', function (m) {
@@ -153,8 +134,7 @@ module.exports = function (RED) {
 
                         if (personalpath.length > 0) {
 
-                            console.log("sending following to actuator", JSON.stringify({ app: process.env.DATABOX_LOCAL_NAME, path: personalpath }, null, 4));
-
+                            //console.log("sending following to actuator", JSON.stringify({ app: process.env.DATABOX_LOCAL_NAME, path: personalpath }, null, 4));
                             client.Write("personalLoggerActuator", { app: process.env.DATABOX_LOCAL_NAME, path: personalpath }).then((body) => {
                             }).catch((error) => {
                                 console.log("failed to write to actuator", error);
