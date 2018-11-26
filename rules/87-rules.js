@@ -6,19 +6,22 @@ module.exports = function (RED) {
     const timeoperators = ["same", "earlier", "later", "between"];
 
     const evaluate_numeric = (rule, operand)=>{
-       
+        console.log("in evaluate numeric!");
+
         try{
             
             const msgop = Number(operand);
             
+            console.log("messae op is", msgop);
+
             if (rule.operand === "even"){
                 console.log(`evaluating ${msgop} is even`);
-                return msgop % 2 === 0;
+                return msgop%2 === 0;
             }
             
             if (rule.operand === "odd"){
                 console.log(`evaluating ${msgop} is odd`);
-                return msgop % 2 !== 0;
+                return msgop%2 !== 0;
             }
 
             if (rule.operand === "range"){
@@ -134,7 +137,13 @@ module.exports = function (RED) {
             return false;
         }
 
+        console.log("in rule with ruke", rule);
+
         const msgoperand  = rule.attribute === "message number" ? msgindex : extract(msg, rule.attribute.split("."))
+
+        console.log("setting msgoperand to", msgoperand);
+
+        console.log("rule operator is", rule.operator);
 
         if (numberoperators.indexOf(rule.operator) != -1){
             return evaluate_numeric(rule, msgoperand);
