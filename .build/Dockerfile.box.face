@@ -1,4 +1,4 @@
-FROM databox/red-base
+FROM databox/red-face
 MAINTAINER Tom Lodge <tlodge@gmail.com>
 WORKDIR /root
 

@@ -108,7 +108,7 @@ module.exports = function(RED) {
 			
 			console.log("metadata, storeurl", DS_Metadata, store_url);
 
-			const tsc = databox.NewTimeSeriesClient(store_url, false);
+			const tsc = databox.NewTimeSeriesBlobClient(store_url, false);
 
 			let LAST_PRESENCE_VALUE = false;
 

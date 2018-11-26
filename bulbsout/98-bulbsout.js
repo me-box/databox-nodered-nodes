@@ -95,8 +95,6 @@ module.exports = function(RED) {
             
             this.on('input', function (msg) {
                 
-                console.log("bulbsout, got data");
-
                 const value = msg.payload ? msg.payload : n.value ? n.value : null;
             
                 console.log("BULBS actuating", DS_Metadata.DataSourceID, {data:value});
