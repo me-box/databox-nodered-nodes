@@ -4,6 +4,7 @@ module.exports = function (RED) {
     const numberoperators = ["lt","gt","lte","gte","eq","even","odd"];
     const stringoperators = ["equal","contains","startswith"];
     const timeoperators = ["same", "earlier", "later", "between"];
+    const lastmsgoperators = ["greater", "lessthan"];
 
     const evaluate_numeric = (rule, operand)=>{
        
@@ -92,6 +93,26 @@ module.exports = function (RED) {
         }
     }
 
+    const evaluate_lastmsg = (rule, lastmsg)=>{
+        console.log("evaluating last message!");
+        const elapsed = (Date.now() - lastmsg)/1000;
+        console.log("elapsed", elapsed);
+
+        try{ 
+            const duration = Number(rule.operand);
+            if (rule.operator === "lessthan"){
+                 console.log("checking if time since last message ", elapsed , " less than ", duration);
+                return  elapsed < duration;
+            }else{
+                console.log("checking if time since last message ", elapsed , " greater than", duration);
+                return elapsed > duration;
+            }
+        }catch(err){
+            return false;
+        }
+        return false;
+    }
+
     const evaluate_time = (rule, operand)=>{
         try{
             const msgop = moment(operand);
@@ -132,16 +153,17 @@ module.exports = function (RED) {
         }, msg)
     }
 
-    const match = (rule, msg, msgindex)=>{
+    const match = (rule, msg, msgindex, lastmsg)=>{
         if (msg.id != rule.input){
             return false;
         }
 
-      
-
+        if (lastmsgoperators.indexOf(rule.operator)!= -1){
+            return evaluate_lastmsg(rule, lastmsg);
+        }
+        
         const msgoperand  = rule.attribute === "message number" ? msgindex : extract(msg, rule.attribute.split("."))
        
-
         if (numberoperators.indexOf(rule.operator) != -1){
             return evaluate_numeric(rule, msgoperand);
         }
@@ -155,27 +177,27 @@ module.exports = function (RED) {
     }
 
     function Rules(n) {
-        console.log("creating rules node")
+       
         RED.nodes.createNode(this, n);
         var node = this;
         const rules = n.rules || [];
         const msgindexes = {};
-        
-        console.log("in rules node with rules", rules);
+        const lastmsg = Date.now();
 
         this.on('input', function (msg) {
             //const src = this.path().hops[0].source;
             msgindexes[msg.id] = (msgindexes[msg.id] || 0) + 1;
-
+            
             console.log("seen a message", JSON.stringify(msg,null,4));
 
             rules.forEach((rule)=>{
-                if (match(rule, msg, msgindexes[msg.id])){
+                if (match(rule, msg, msgindexes[msg.id],lastmsg)){
                     console.log('seen a match');
                     node.send(rule.outputMessage);
                 }
                 console.log("no match");
             });
+            lastmsg = Date.now();
         });
     }
     RED.nodes.registerType("rules", Rules);
