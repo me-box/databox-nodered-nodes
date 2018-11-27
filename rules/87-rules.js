@@ -162,8 +162,10 @@ module.exports = function (RED) {
         if (msg.id != rule.input){
             return false;
         }
+        console.log("ok rule operator is", rule.operator);
 
         if (lastmsgoperators.indexOf(rule.operator)!= -1){
+            console.log("evcaluating last mssage!!");
             return evaluate_lastmsg(rule, lastmsg);
         }
         
@@ -195,7 +197,7 @@ module.exports = function (RED) {
             
             rules.forEach((rule)=>{
                 if (match(rule, msg, msgindexes[msg.id],lastmsg)){
-                    console.log('seen a match');
+                    console.log('****************************** seen a match ************************');
                     node.send(rule.outputMessage);
                 }else{
                     console.log("no match");
