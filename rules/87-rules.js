@@ -26,9 +26,11 @@ module.exports = function (RED) {
             }
 
             if (rule.operator === "range"){
+               
                 const [from,to] = rule.operand.split(":");
                 const _from = Number(from);
                 const _to = Number(to);
+                console.log(`evaluating ${msgop} is >= ${_from} and < ${_to}`);
                 return msgop >= _from && msgop<_to;
             }
 
@@ -77,7 +79,7 @@ module.exports = function (RED) {
                     return msgop === ruleop;
 
                 case "contains":
-                    console.log(`evaluating ${msgop} conatins ${ruleop}`);
+                    console.log(`evaluating ${msgop} contains ${ruleop}`);
                     return msgop.includes(ruleop);
 
                 case "startswith":
@@ -130,12 +132,15 @@ module.exports = function (RED) {
             switch (rule.operator){
 
                 case "same":
+                    console.log(`checking if time ${msgop} is same as ${ruleop}`);
                     return msgop.isSame(ruleop);
 
                 case "earlier":
+                    console.log(`checking if time ${msgop} is before ${ruleop}`);
                     return msgop.isBefore(ruleop);
 
                 case "later":
+                    console.log(`checking if time ${msgop} is after ${ruleop}`);
                     return msgop.isAfter(ruleop);
  
                 default:
@@ -188,8 +193,6 @@ module.exports = function (RED) {
             //const src = this.path().hops[0].source;
             msgindexes[msg.id] = (msgindexes[msg.id] || 0) + 1;
             
-            console.log("seen a message", JSON.stringify(msg,null,4));
-
             rules.forEach((rule)=>{
                 if (match(rule, msg, msgindexes[msg.id],lastmsg)){
                     console.log('seen a match');
