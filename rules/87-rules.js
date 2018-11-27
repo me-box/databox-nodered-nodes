@@ -182,7 +182,7 @@ module.exports = function (RED) {
         var node = this;
         const rules = n.rules || [];
         const msgindexes = {};
-        const lastmsg = Date.now();
+        let lastmsg = Date.now();
 
         this.on('input', function (msg) {
             //const src = this.path().hops[0].source;
@@ -194,8 +194,9 @@ module.exports = function (RED) {
                 if (match(rule, msg, msgindexes[msg.id],lastmsg)){
                     console.log('seen a match');
                     node.send(rule.outputMessage);
+                }else{
+                    console.log("no match");
                 }
-                console.log("no match");
             });
             lastmsg = Date.now();
         });
