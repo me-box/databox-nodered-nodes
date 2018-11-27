@@ -95,7 +95,7 @@ module.exports = function(RED) {
 			
 			console.log("metadata, storeurl", DS_Metadata, store_url);
 
-			const tsc = databox.NewTimeSeriesClient(store_url, false);
+			const tsc = databox.NewTimeSeriesBlobClient(store_url, false);
 
 			tsc.Observe(DS_Metadata.DataSourceID).then((subs) => {
 			
@@ -128,81 +128,6 @@ module.exports = function(RED) {
         	console.log("error:", err);
         });
     }
-
-    function PlugOLD(n) {
- 		
- 		console.log("******* creating plugin node: " + n.id);
-
- 		RED.nodes.createNode(this,n);
-        
-        var node = this;
-
-        if (process.env.TESTING){
-            return testing(this, n);
-        }
-		
-        const databox = require('node-databox');
-        
-		const API_ENDPOINT = JSON.parse(process.env[`DATASOURCE_${n.id}`] || '{}');
-    
-    	console.log(`${n.id} API ENDPOINT IS ${JSON.stringify(API_ENDPOINT,null,4)}`);
-    	const plugStore = ((url) => url.protocol + '//' + url.host)(url.parse(API_ENDPOINT.href));
-    	const sensorID = API_ENDPOINT['item-metadata'].filter((pair) => pair.rel === 'urn:X-databox:rels:hasDatasourceid')[0].val;
-    	
-    	console.log(`${n.id} sensor id is ${sensorID}`);
-
-    	databox.timeseries.latest(plugStore, sensorID)
-        .then((d)=>{
-       		
-       		console.log(d[0]);
-
-       		const {timestamp, data} = d[0];
-
-       		var msg = {
-					name: n.name || "plugin",
-					id:  n.id,
-					subtype: n.subtype,
-					type: "plugin",
-					payload: {
-						ts: timestamp,
-						value: data,
-					}
-			}
-			node.send(msg);
-        })
-        .catch((err)=>{console.log("[Error getting timeseries.latest]",plugStore, sensorID);});
-
-        var dataEmitter = null; 
-
-        
-    	databox.waitForStoreStatus(plugStore, 'active')
-    	.then(() => databox.subscriptions.connect(plugStore))
-      	.then((emitter) => {
-        	
-        	dataEmitter = emitter;
-
-        	databox.subscriptions.subscribe(plugStore,sensorID,'ts').catch((err)=>{console.log("[ERROR subscribing]",err)});    
-        	
-        	dataEmitter.on('data',(hostname, dsID, d)=>{
-            	console.log(d);
-
-            	var msg = {
-					name: n.name || "plugin",
-					id:  n.id,
-					subtype: n.subtype,
-					type: "plugin",
-					payload: {
-						ts: Date.now(),
-						value: d,
-					}
-				}
-				
-				node.send(msg);
-
-      		})	
-		}).catch((err) => console.error(err));
-    }
-
     // Register the node by name. This must be called before overriding any of the
     // Node functions.
     RED.nodes.registerType("plugin",Plug);

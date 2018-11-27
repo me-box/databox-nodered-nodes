@@ -97,6 +97,12 @@ module.exports = function(RED) {
                         msg.payload = RED.util.evaluateNodeProperty(node.op1,node.op1type,node,msg);
                     }
 
+                    console.log("** -> sending", {
+                        name: n.name || "trigger",
+                        id: n.id,
+                        payload:msg.payload
+                    });
+                    
                     if (node.op1type !== "nul") { node.send({
                                                                 name: n.name || "trigger",
                                                                 id: n.id,
