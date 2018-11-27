@@ -98,24 +98,23 @@ module.exports = function(RED) {
 
         databox.HypercatToSourceDataMetadata(DATASOURCE_PLUGOUT).then((data)=>{
 
-            console.log("plug -> got hypercat data!");
+            console.log("plug, got hypercat data:", JSON.stringify(data,null,4));
 
             const DS_Metadata = data.DataSourceMetadata;
             
             const store_url = data.DataSourceURL;
+
+            console.log("store url is", store_url);
+            console.log("creating new time series blob client!");
+
             const tsc = databox.NewTimeSeriesBlobClient(store_url, false);
             
             this.on('input', function (msg) {
-                
-                console.log("plugout, got data");
-
                 const value = msg.payload ? msg.payload : n.value ? n.value : null;
-                
                 console.log("actuating", {data:value});
-                
 
                 tsc.Write(DS_Metadata.DataSourceID,{data:value}).then((body)=>{
-           
+                    console.log("successfully actuated", JSON.stringify(body));
                 }, (err)=>{
                     console.log("error actuating:", err);
                 }).catch((error)=>{
@@ -128,14 +127,14 @@ module.exports = function(RED) {
 
     function sendClose(channel){
         client.sendMessage({type: "message", msg:   {
-                                                                    channel:channel, 
-                                                                    type:"control", 
-                                                                    payload:{
-                                                                        command:"reset", 
-                                                                        channel:channel
-                                                                    }
-                                                                }
-                                        });
+                                    channel:channel, 
+                                    type:"control", 
+                                    payload:{
+                                        command:"reset", 
+                                        channel:channel
+                                    }
+                                }
+        });
         
     }
 
