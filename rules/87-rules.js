@@ -159,14 +159,16 @@ module.exports = function (RED) {
     }
 
     const match = (rule, msg, msgindex, lastmsg)=>{
-        if (msg.id != rule.input){
-            return false;
-        }
+        
         console.log("ok rule operator is", rule.operator);
 
         if (lastmsgoperators.indexOf(rule.operator)!= -1){
             console.log("evcaluating last mssage!!");
             return evaluate_lastmsg(rule, lastmsg);
+        }
+
+        if (msg.id != rule.input){
+            return false;
         }
         
         const msgoperand  = rule.attribute === "message number" ? msgindex : extract(msg, rule.attribute.split("."))
@@ -190,6 +192,9 @@ module.exports = function (RED) {
         const rules = n.rules || [];
         const msgindexes = {};
         let lastmsg = Date.now();
+
+        console.log("rules are", rules);
+        console.log("length is", rules.length);
 
         this.on('input', function (msg) {
             //const src = this.path().hops[0].source;
