@@ -112,7 +112,7 @@ module.exports = function(RED) {
 						type: "plugin",
 						payload: {
 							ts: Date.now(),
-							value: d,
+							value: JSON.parse(d.data),
 						}
 					}
 					node.send(msg);
