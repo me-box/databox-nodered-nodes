@@ -69,6 +69,10 @@ module.exports = function(RED) {
         var tout = null;
         var m2;
         this.on("input", function(msg) {
+
+            console.log("seen a msg");
+            console.log("op1", this.op1, "opt2", this.op2, "op1type", this.op1type, "op2type", this.op2type, "duration", this.duration);
+
             if (msg.hasOwnProperty("reset") || ((node.reset !== '')&&(msg.payload == node.reset)) ) {
                 clearTimeout(tout);
                 tout = null;
@@ -98,16 +102,26 @@ module.exports = function(RED) {
                     if (node.duration === 0) { tout = 0; }
                     else {
                         tout = setTimeout(function() {
-                            
+                            console.log("seen a timeout!!");
+
                             if (node.op2type !== "nul") {
                                 if (node.op2type === "pay" || node.op2type === "payl"){
                                     var msg2 = RED.util.cloneMessage(msg);
+                                    
                                     if (node.op2type === "flow" || node.op2type === "global") {
                                         m2 = RED.util.evaluateNodeProperty(node.op2,node.op2type,node,msg);
                                     }
                                     msg2.payload = m2;
+                                    console.log("sending", msg2);
                                     node.send(msg2);
                                 }else{
+
+                                    console.log("sending", {
+                                        name: n.name || "trigger",
+                                        id: n.id,
+                                        payload:m2,
+                                    });
+
                                     node.send({
                                         name: n.name || "trigger",
                                         id: n.id,
@@ -133,6 +147,8 @@ module.exports = function(RED) {
                             //}
                             //msg2.payload = m2;
                             //node.send(msg2);
+                            console.log("ne is true sending" , m2);
+
                             node.send({
                                         name: n.name || "trigger",
                                         id: n.id,
@@ -143,6 +159,7 @@ module.exports = function(RED) {
                         node.status({});
                     },node.duration);
                 } else {
+                    console.log("am here...!, not sending anything");
                     if (node.op2type === "payl") { m2 = msg.payload; }
                 }
             }
