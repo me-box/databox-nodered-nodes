@@ -111,7 +111,7 @@ module.exports = function(RED) {
             
             this.on('input', function (msg) {
                 const value = msg.payload ? msg.payload : n.value ? n.value : null;
-                console.log("actuating", {data:value});
+                console.log("actuating", DS_Metadata.DataSourceID, "with data", {data:value});
 
                 tsc.Write(DS_Metadata.DataSourceID,{data:value}).then((body)=>{
                     console.log("successfully actuated", JSON.stringify(body));
@@ -134,7 +134,7 @@ module.exports = function(RED) {
                                         channel:channel
                                     }
                                 }
-        });
+                            });
         
     }
 
