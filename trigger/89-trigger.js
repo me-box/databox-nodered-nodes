@@ -18,7 +18,12 @@ module.exports = function(RED) {
     "use strict";
     var mustache = require("mustache");
     function TriggerNode(n) {
+        console.log("creating trigger node!!");
+        
         RED.nodes.createNode(this,n);
+        
+        console.log("created trigger node", n);
+
         this.op1 = n.op1 || "1";
         this.op2 = n.op2 || "0";
         this.op1type = n.op1type || "str";
