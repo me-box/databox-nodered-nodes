@@ -135,8 +135,8 @@ module.exports = function(RED) {
 							}else{
 								send = true;
 							}		
-							LAST_PRESENCE_VALUE = d.presence;
-							console.log("SETTING LAST PRESENCE VALUE TO", d.presence);
+							LAST_PRESENCE_VALUE = data.presence;
+							console.log("SETTING LAST PRESENCE VALUE TO", data.presence);
 						}
 
 						if (send){
