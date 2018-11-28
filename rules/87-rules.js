@@ -2,9 +2,10 @@ module.exports = function (RED) {
     "use strict";
     const moment = require("moment");
     const numberoperators = ["lt","gt","lte","gte","eq","even","odd"];
-    const stringoperators = ["equal","contains","startswith"];
+    const stringoperators = ["equal","nequal","contains","startswith"];
     const timeoperators = ["same", "earlier", "later", "between"];
     const lastmsgoperators = ["greater", "lessthan"];
+    const booleanoperators = ["true", "false"];
 
     const evaluate_numeric = (rule, operand)=>{
        
@@ -77,8 +78,12 @@ module.exports = function (RED) {
                 case "equal":
                     console.log(`evaluating ${msgop}===${ruleop}`);
                     return msgop === ruleop;
-
-                case "contains":
+                
+                case "nequal":
+                    console.log(`evaluating ${msgop}!==${ruleop}`);
+                    return msgop !== ruleop;
+                
+                    case "contains":
                     console.log(`evaluating ${msgop} contains ${ruleop}`);
                     return msgop.includes(ruleop);
 
@@ -95,10 +100,27 @@ module.exports = function (RED) {
         }
     }
 
+    const evaluate_boolean = (rule,operand)=>{
+        
+        const msgop = `${operand}`;
+        
+        switch (rule.operator){
+            
+            case "true":
+                console.log("checking if", msgop, "=== true");
+                return msgop === "true";
+
+            case "false":
+                console.log("checking if", msgop, "=== false");
+                return msgop === "false";
+        
+            default:
+              return false;
+        }
+    }
+
     const evaluate_lastmsg = (rule, lastmsg)=>{
-        console.log("evaluating last message!");
         const elapsed = (Date.now() - lastmsg)/1000;
-        console.log("elapsed", elapsed);
 
         try{ 
             const duration = Number(rule.operand);
@@ -160,10 +182,7 @@ module.exports = function (RED) {
 
     const match = (rule, msg, msgindex, lastmsg)=>{
         
-        console.log("ok rule operator is", rule.operator);
-
         if (lastmsgoperators.indexOf(rule.operator)!= -1){
-            console.log("evcaluating last mssage!!");
             return evaluate_lastmsg(rule, lastmsg);
         }
 
@@ -181,6 +200,9 @@ module.exports = function (RED) {
         }
         if (timeoperators.indexOf(rule.operator) != -1){
             return evaluate_time(rule, msgoperand);
+        }
+        if (booleanoperators.indexOf(rule.operator) != -1){
+            return evaluate_boolean(rule, msgoperand);
         }
         return false;
     }
