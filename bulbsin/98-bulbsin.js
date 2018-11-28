@@ -116,6 +116,8 @@ module.exports = function(RED) {
 			
 
 				subs.on("data", (d)=>{
+
+					const d = JSON.parse(d.data);
 					console.log("ok got some data:", d);
 				
 					var send = true;
