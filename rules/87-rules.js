@@ -225,7 +225,16 @@ module.exports = function (RED) {
             rules.forEach((rule)=>{
                 if (match(rule, msg, msgindexes[msg.id],lastmsg)){
                     console.log('****************************** seen a match ************************');
-                    node.send(rule.outputMessage);
+                    if(rule.delay && !isNaN(rule.delay)){
+                        console.log("delaying message send!!", rule.delay);
+                        setTimeout(()=>{
+                            console.log("sending delayed message!!");
+                            node.send(rule.outputMessage);
+                        },node.delay);
+                    }else{
+                        node.send(rule.outputMessage);
+                    }
+                    
                 }else{
                     console.log("no match");
                 }
