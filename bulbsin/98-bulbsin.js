@@ -119,39 +119,44 @@ module.exports = function(RED) {
 			
 
 				subs.on("data", (d)=>{
-
-					const d = JSON.parse(d.data);
-					console.log("ok got some data:", d);
+					try{
+						const data = JSON.parse(d.data);
+					
+						console.log("ok got some data:", data);
 				
-					var send = true;
+						var send = true;
 
-					if (n.subtype === "hue-ZLLPresence"){
+						if (n.subtype === "hue-ZLLPresence"){
 
-						console.log("CHECKING ", d.presence, " against ", LAST_PRESENCE_VALUE);
-						
-						if (d.presence === LAST_PRESENCE_VALUE){
-							send = false;
-						}else{
-							send = true;
-						}		
-						LAST_PRESENCE_VALUE = d.presence;
-						console.log("SETTING LAST PRESENCE VALUE TO", d.presence);
-					}
-
-					if (send){
-
-		            	var msg = {
-							name: n.name || "bulbsin",
-							id:  n.id,
-							subtype: n.subtype,
-							type: "bulbsin",
-							payload: {
-								ts: Date.now(),
-								value: d,
-							}
+							console.log("CHECKING ", data.presence, " against ", LAST_PRESENCE_VALUE);
+							
+							if (d.presence === LAST_PRESENCE_VALUE){
+								send = false;
+							}else{
+								send = true;
+							}		
+							LAST_PRESENCE_VALUE = d.presence;
+							console.log("SETTING LAST PRESENCE VALUE TO", d.presence);
 						}
-						
-						node.send(msg);
+
+						if (send){
+
+							var msg = {
+								name: n.name || "bulbsin",
+								id:  n.id,
+								subtype: n.subtype,
+								type: "bulbsin",
+								payload: {
+									ts: Date.now(),
+									value: data,
+								}
+							}
+							
+							node.send(msg);
+						}
+
+					}catch(err){
+						console.log(err);
 					}
 				});
 				
