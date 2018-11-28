@@ -99,9 +99,8 @@ module.exports = function(RED) {
             
                 console.log("BULBS actuating", DS_Metadata.DataSourceID, {data:value});
                 
-                
                 tsc.Write(DS_Metadata.DataSourceID,{data:value}).then((body)=>{
-           
+                    console.log("successfully actuated bulb")
                 }, (err)=>{
                     console.log("error actuating:", err);
                 }).catch((error)=>{

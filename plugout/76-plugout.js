@@ -114,7 +114,7 @@ module.exports = function(RED) {
                 console.log("actuating", DS_Metadata.DataSourceID, "with data", {data:value});
 
                 tsc.Write(DS_Metadata.DataSourceID,{data:value}).then((body)=>{
-                    console.log("successfully actuated", JSON.stringify(body));
+                    console.log("successfully actuated plug");
                 }, (err)=>{
                     console.log("error actuating:", err);
                 }).catch((error)=>{
