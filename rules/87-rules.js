@@ -230,7 +230,7 @@ module.exports = function (RED) {
                         setTimeout(()=>{
                             console.log("sending delayed message!!");
                             node.send(rule.outputMessage);
-                        },node.delay);
+                        },node.delay*1000);
                     }else{
                         node.send(rule.outputMessage);
                     }
