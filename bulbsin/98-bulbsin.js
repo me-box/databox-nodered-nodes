@@ -42,7 +42,10 @@ module.exports = function(RED) {
 					
 					if (body.length > 0){
 						const result = body[0];
+						console.log("got result", result);
 						const {data,timestamp=Date.now()} = result;
+						console.log("data is", JSON.stringify(data,null,4));
+						
 						const formattedvalue = ["bulb-on", "hue-ZLLTemperature", "hue-ZLLPresence", "hue-ZLLLightLevel"].indexOf(n.subtype) !== -1 ? data : Number(data);
 
 						var send = true;
