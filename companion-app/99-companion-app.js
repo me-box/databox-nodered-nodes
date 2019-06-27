@@ -54,7 +54,7 @@ module.exports = function (RED) {
 
         client.connect(8435, endpoint, function () {
             connected = true;
-            console.log("app: successfully connected to testserver");
+            console.log("app: successfully connected to json socket");
 
             if (fn) {
                 fn();
@@ -99,7 +99,26 @@ module.exports = function (RED) {
                 sendmessage(msg);
             });
         } else {
-            const databox = require('node-databox');
+	    console.log("app: running on databox");
+	    this.on('input', function (m) {
+
+                        var msg = {
+                            channel: node.appId,
+                            sourceId: m.sourceId || fallbackId,
+                            type: "data",
+                            payload: {
+                                id: node.id,
+                                name: node.name || "app",
+                                view: m.type || "text",
+                                data: m.payload,
+                                channel: node.appId,
+                            }
+                        }
+			console.log("App, sending message,", msg);
+                        sendmessage(msg);
+	     });
+	
+            /*const databox = require('node-databox');
             let loggerActuator = {};
 
             databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_personalLoggerActuator`])
@@ -141,7 +160,7 @@ module.exports = function (RED) {
                             });
                         }
                     });
-                });
+                });*/
         }
 
         this.on("close", function () {

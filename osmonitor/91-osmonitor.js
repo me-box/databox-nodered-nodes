@@ -86,10 +86,11 @@ module.exports = function (RED) {
             }
             node.send(tosend);
         }
-        console.log("gegting hypercat to source data metadata", process.env[`DATASOURCE_${n.id}`]);
+        
+	console.log("getting hypercat to source data metadata", process.env[`DATASOURCE_${n.id}`]);
 
         databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
-            consoe.log("SUCCESSS!!!");
+            console.log("SUCCESS!!!");
             monitorStream = data
             return databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
         }).then((store) => {
@@ -118,5 +119,4 @@ module.exports = function (RED) {
     // Register the node by name. This must be called beforeoverriding any of the
     // Node functions.
     RED.nodes.registerType("osmonitor", OSMonitor);
-
 }
