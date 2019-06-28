@@ -94,9 +94,11 @@ module.exports = function (RED) {
         const monitorStream = databox.HypercatToSourceDataMetadata(hcatobj);
 
         console.log("have monitorstream", monitorStream);
-
-        databox.NewStoreClient(monitorStream.DataSourceURL, process.env['DATABOX_ARBITER_ENDPOINT'], false).then((store)=>{
-            return store.Observe(monitorStream.DataSourceMetadata.DataSourceID);
+        console.log("store url is ", hcatobj.href);
+        console.log("arbiter endpoint",process.env['DATABOX_ARBITER_ENDPOINT']);
+        
+        databox.NewStoreClient(hcatobj.href, process.env['DATABOX_ARBITER_ENDPOINT'], false).then((store)=>{
+            return store.Observe(monitorStream.DataSourceID);
         }).then((emitter) => {
             console.log("now have emitter!");
             this.emitter = emitter;
