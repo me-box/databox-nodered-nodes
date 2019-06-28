@@ -67,7 +67,7 @@ module.exports = function (RED) {
 
         this.name = n.name;
         const node = this;
-        let monitorStream = null;
+       
 
         const cb = (data) => {
 
@@ -94,9 +94,9 @@ module.exports = function (RED) {
         const monitorStream = databox.HypercatToSourceDataMetadata(hcatobj);
 
         console.log("have monitorstream", monitorStream);
-        
+
         databox.NewStoreClient(monitorStream.DataSourceURL, process.env['DATABOX_ARBITER_ENDPOINT'], false).then((store)=>{
-            return store.Observe(monitorStream.DataSourceMetadata.DataSourceID)
+            return store.Observe(monitorStream.DataSourceMetadata.DataSourceID);
         }).then((emitter) => {
             console.log("now have emitter!");
             this.emitter = emitter;
