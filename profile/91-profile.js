@@ -36,7 +36,7 @@ module.exports = function (RED) {
         const toregister = (n.subtype || []).map(i => process.env[`DATASOURCE_${n.id}_${i}`]);
         //should be able to just create a client for one datasource and re-use for all;
 
-        databox.HypercatToSourceDataMetadata(toregister[0]).then((data) => {
+        databox.HypercatToSourceDataMetadata(JSON.parse(toregister[0])).then((data) => {
             profileSource = data
             return databox.NewKeyValueClient(profileSource.DataSourceURL, false)
         }).then((client) => {

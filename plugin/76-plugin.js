@@ -85,7 +85,7 @@ module.exports = function(RED) {
         const DATASOURCE_PLUGIN = process.env[`DATASOURCE_${n.id}`];
 
 
-        databox.HypercatToSourceDataMetadata(DATASOURCE_PLUGIN).then((data)=>{
+        databox.HypercatToSourceDataMetadata(JSON.parse(DATASOURCE_PLUGIN)).then((data)=>{
 
         	console.log("got hypercat data!");
 

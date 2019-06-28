@@ -88,7 +88,7 @@ module.exports = function (RED) {
             node.send(tosend);
         }
 
-        databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
+        databox.HypercatToSourceDataMetadata(JSON.parse(process.env[`DATASOURCE_${n.id}`])).then((data) => {
             console.log("creating kv client!");
             webcamStream = data
             return databox.NewKeyValueClient(webcamStream.DataSourceURL, false)

@@ -50,7 +50,7 @@ module.exports = function (RED) {
             const databox = require('node-databox');
             let personalDatastore = {}
 
-            databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
+            databox.HypercatToSourceDataMetadata(JSON.parse(process.env[`DATASOURCE_${n.id}`])).then((data) => {
                 personalDatastore = data
                 return databox.NewTimeSeriesBlobClient(personalDatastore.DataSourceURL, false)
             }).then((store) => {

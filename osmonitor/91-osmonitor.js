@@ -89,7 +89,7 @@ module.exports = function (RED) {
         
 	console.log("getting hypercat to source data metadata", process.env[`DATASOURCE_${n.id}`]);
 
-        databox.HypercatToSourceDataMetadata(process.env[`DATASOURCE_${n.id}`]).then((data) => {
+        databox.HypercatToSourceDataMetadata(JSON.parse(process.env[`DATASOURCE_${n.id}`])).then((data) => {
             console.log("SUCCESS!!!");
             monitorStream = data
             return databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
