@@ -87,12 +87,28 @@ module.exports = function (RED) {
             node.send(tosend);
         }
         
-	console.log("getting hypercat to source data metadata", process.env[`DATASOURCE_${n.id}`]);
 
-        databox.HypercatToSourceDataMetadata(JSON.parse(process.env[`DATASOURCE_${n.id}`])).then((data) => {
-            console.log("SUCCESS!!!");
-            monitorStream = data
-            return databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
+        const hcatobj = JSON.parse(process.env[`DATASOURCE_${n.id}`]);
+        console.log("getting hypercat to source data metadata", hcatobj);
+
+        const monitorStream = databox.HypercatToSourceDataMetadata(hcatobj);
+
+        console.log("have monitorstream", monitorStream);
+        
+        databox.NewStoreClient(monitorStream.DataSourceURL, process.env['DATABOX_ARBITER_ENDPOINT'], false).then((store)=>{
+            return store.Observe(monitorStream.DataSourceMetadata.DataSourceID)
+        }).then((emitter) => {
+            console.log("now have emitter!");
+            this.emitter = emitter;
+            emitter.on('data', cb);
+            emitter.on('error', (err) => {
+                console.warn(err);
+            });
+        }).catch((err) => {
+            console.warn("Error Observing ", monitorStream.DataSourceMetadata.DataSourceID, " ", err);
+        });
+           
+        /* //return databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
         }).then((store) => {
             console.log("got store, so observing!");
             return store.Observe(monitorStream.DataSourceMetadata.DataSourceID)
@@ -105,7 +121,7 @@ module.exports = function (RED) {
             });
         }).catch((err) => {
             console.warn("Error Observing ", monitorStream.DataSourceMetadata.DataSourceID, " ", err);
-        });
+        });*/
 
 
         this.on("close", () => {
