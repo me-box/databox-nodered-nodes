@@ -100,8 +100,8 @@ module.exports = function (RED) {
         const store = databox.NewStoreClient(hcatobj.href, process.env['DATABOX_ARBITER_ENDPOINT'], false);
 
         console.log("have store client", store);
-        
-        return store.Observe(monitorStream.DataSourceID).then((emitter) => {
+
+        return store.TSBlob.Observe(monitorStream.DataSourceID).then((emitter) => {
             console.log("now have emitter!");
             this.emitter = emitter;
             emitter.on('data', cb);
