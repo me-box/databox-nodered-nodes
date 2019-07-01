@@ -96,10 +96,12 @@ module.exports = function (RED) {
         console.log("have monitorstream", monitorStream);
         console.log("store url is ", hcatobj.href);
         console.log("arbiter endpoint",process.env['DATABOX_ARBITER_ENDPOINT']);
+
+        const store = databox.NewStoreClient(hcatobj.href, process.env['DATABOX_ARBITER_ENDPOINT'], false);
+
+        console.log("have store client", store);
         
-        databox.NewStoreClient(hcatobj.href, process.env['DATABOX_ARBITER_ENDPOINT'], false).then((store)=>{
-            return store.Observe(monitorStream.DataSourceID);
-        }).then((emitter) => {
+        return store.Observe(monitorStream.DataSourceID).then((emitter) => {
             console.log("now have emitter!");
             this.emitter = emitter;
             emitter.on('data', cb);
