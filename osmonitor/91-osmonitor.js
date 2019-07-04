@@ -109,7 +109,8 @@ module.exports = function (RED) {
                 console.warn(err);
             });
         }).catch((err) => {
-            console.warn("Error Observing ", monitorStream.DataSourceMetadata.DataSourceID, " ", err);
+            console.log(err);
+            console.warn("Error Observing ", monitorStream.DataSourceID, " ", err);
         });
 
         this.on("close", () => {
