@@ -97,11 +97,11 @@ module.exports = function (RED) {
         console.log("store url is ", hcatobj.href);
         console.log("arbiter endpoint",process.env['DATABOX_ARBITER_ENDPOINT']);
 
-        const store = databox.NewStoreClient(hcatobj.href, process.env['DATABOX_ARBITER_ENDPOINT'], false);
+        const store = databox.NewStoreClient(hcatobj.href, process.env['DATABOX_ARBITER_ENDPOINT'], true);
 
-        console.log("have store client", store);
+        console.log("registering with", monitorStream.DataSourceID);
 
-        return store.TSBlob.Observe(monitorStream.DataSourceID).then((emitter) => {
+        store.TSBlob.Observe(monitorStream.DataSourceID).then((emitter) => {
             console.log("now have emitter!");
             this.emitter = emitter;
             emitter.on('data', cb);
@@ -111,22 +111,6 @@ module.exports = function (RED) {
         }).catch((err) => {
             console.warn("Error Observing ", monitorStream.DataSourceMetadata.DataSourceID, " ", err);
         });
-           
-        /* //return databox.NewTimeSeriesBlobClient(monitorStream.DataSourceURL, false)
-        }).then((store) => {
-            console.log("got store, so observing!");
-            return store.Observe(monitorStream.DataSourceMetadata.DataSourceID)
-        }).then((emitter) => {
-            console.log("now have emitter!");
-            this.emitter = emitter;
-            emitter.on('data', cb);
-            emitter.on('error', (err) => {
-                console.warn(err);
-            });
-        }).catch((err) => {
-            console.warn("Error Observing ", monitorStream.DataSourceMetadata.DataSourceID, " ", err);
-        });*/
-
 
         this.on("close", () => {
             console.log(`${node.id} stopping requests`);
